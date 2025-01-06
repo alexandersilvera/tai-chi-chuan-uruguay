@@ -1,0 +1,55 @@
+---
+import ImageModal from "./ImageModal.astro";
+
+const images = [
+  { src: "/sifu_jorge.jpg?height=300&width=400", alt: "Sifu Jorge" },
+  { src: "/altar_tai_chi.jpeg?height=300&width=400", alt: "Saludo a Ip Man" },
+  { src: "/busto_maestro.jpeg?height=300&width=400", alt: "Saludo a Ip Man" },
+  { src: "/familia_tai_chi.jpeg?height=300&width=400", alt: "Saludo a Ip Man" },
+  { src: "/puerta_1.jpeg?height=300&width=400", alt: "Wing Chun" },
+  { src: "/puerta_2.jpeg?height=300&width=400", alt: "Altar Ip Man" },
+  { src: "/familia_sun_lu_tang.jpg?height=300&width=400", alt: "Familia Sun Lu Tang" },
+  { src: "/puerta_3.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/saludo_tai_chi.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_altar_tradicional.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_con_maestro_1.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_con_maestro_2.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_con_maestro_3.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_con_maestro_4.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_con_maestro.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_familia_tai_chi_2.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_maestro_tai_chi_2.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_maestro_tai_chi.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_monasterio_1.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_monasterio_2.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_practica_1.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_practica_2.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_practica_puerta.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_saludo_2.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_saludo.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_tai_chi_1.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_tai_chi_2.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_tai_chi_3.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_tai_chi_4.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_tai_chi_5.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/sifu_tai_chi_saludo.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/tablas_tai_chi.jpeg?height=300&width=400", alt: "Informacion Clases" },
+  { src: "/trofeo.jpeg?height=300&width=400", alt: "Informacion Clases" },
+
+];
+---
+
+<div class="py-12 bg-gray-100">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center text-celeste-500 mb-8">Nuestra Práctica en Imágenes</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {images.map((image) => (
+          <div class="overflow-hidden rounded-lg shadow-lg cursor-pointer">
+            <img src={image.src} alt={image.alt} class="w-full h-64 object-cover transition-transform duration-300 hover:scale-110 gallery-image" />
+          </div>
+        ))}
+      </div>
+    </div>
+</div>
+
+<ImageModal />

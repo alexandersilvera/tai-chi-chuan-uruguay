@@ -1,0 +1,82 @@
+---
+import VideoModal from './VideoModal.astro';
+
+const videos = [
+  { id: "1Ib6DtoIyTM", title: "Entrevista" },
+  { id: "h3rdkpSn99U", title: "Tai Chi" },
+  
+];
+// Función para obtener la mejor miniatura disponible
+function getThumbnailUrl(videoId: string) {
+  const qualities = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'];
+  
+  return qualities.map(quality => `https://img.youtube.com/vi/${videoId}/${quality}.jpg`);
+}
+---
+
+<div class="py-12 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center text-celeste-500 mb-8">Nuestros Videos</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {videos.map((video) => (
+          <div class="video-thumbnail relative cursor-pointer rounded-lg overflow-hidden shadow-lg" data-video-id={video.id}>
+            <div class="relative pb-[56.25%]">
+              {getThumbnailUrl(video.id).map((url, index) => (
+                <img
+                  src={url}
+                  alt={`Miniatura de ${video.title}`}
+                  class={`absolute top-0 left-0 w-full h-full object-cover ${index > 0 ? 'hidden' : ''}`}
+                  onload="if(this.naturalWidth > 120) this.parentElement.querySelectorAll('img').forEach(img => img.style.display = img === this ? 'block' : 'none')"
+                />
+              ))}
+              <div class="absolute inset-0 flex items-center justify-center">
+                <svg class="w-16 h-16 text-white opacity-75 hover:opacity-100 transition-opacity duration-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" fill-rule="evenodd"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="p-4 bg-gray-100">
+              <h3 class="text-lg font-semibold text-gray-800">{video.title}</h3>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+<VideoModal />
+
+<script>
+    const videoThumbnails = document.querySelectorAll('.video-thumbnail');
+    const videoModal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+    const closeVideoModal = document.getElementById('closeVideoModal');
+  
+    videoThumbnails.forEach(thumbnail => {
+      thumbnail.addEventListener('click', () => {
+        const videoId = thumbnail.dataset.videoId;
+        modalVideo.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        videoModal.classList.remove('hidden');
+      });
+    });
+  
+    closeVideoModal.addEventListener('click', () => {
+      modalVideo.src = '';
+      videoModal.classList.add('hidden');
+    });
+  
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) {
+        modalVideo.src = '';
+        videoModal.classList.add('hidden');
+      }
+    });
+  
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !videoModal.classList.contains('hidden')) {
+        modalVideo.src = '';
+        videoModal.classList.add('hidden');
+      }
+    });
+  </script>
+  

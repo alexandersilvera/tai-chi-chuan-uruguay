@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+
+const whatsappNumber = "+59892781471"; // Reemplaza esto con el número de WhatsApp real
+const whatsappMessage = encodeURIComponent("Hola, me gustaría obtener más información sobre las clases de tai-chi.");
+const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+---
+
+<Layout title="Contacto | Tai Ji Quan">
+  <PageHeader
+    title="Contacto"
+    description="¿Tienes preguntas? Estamos aquí para ayudarte. Contáctanos directamente a través de WhatsApp."
+  />
+  <div class="max-w-md mx-auto text-center">
+    <a 
+      href={whatsappLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-block bg-celeste-500 hover:bg-celeste-600 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-celeste-500 focus:ring-opacity-50"
+    >
+      Contactar por WhatsApp
+    </a>
+    <p class="mt-4 text-gray-500">
+      Haz clic en el botón para iniciar una conversación con nosotros en WhatsApp. Estamos listos para responder tus preguntas y ayudarte en tu camino al Tai-chi.
+    </p>
+  </div>
+</Layout>
+
