@@ -7,24 +7,23 @@ const socialLinks = [
 ];
 
 const classSchedule = [
-  { day: 'Lunes', time: '18:00 - 20:00' },
-  { day: 'Miércoles', time: '18:00 - 20:00' },
-  { day: 'Viernes', time: '18:00 - 20:00' },
-  { day: 'Sábado', time: '10:00 - 12:00' },
+  { day: 'Martes', time: '18:00 - 19:15 hs' },
+  { day: 'Jueves', time: '18:00 - 19:15 hs' },
+  
 ];
 
 // Replace with your actual location
 const mapSrc = "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3271.942199728451!2d-56.1621!3d-34.9079!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x959f81a64eb90071%3A0x9d3cbd8467faaa44!2sFrancisco%20Ara%C3%BAcho%201186%2C%2011300%20Montevideo%2C%20Departamento%20de%20Montevideo!5e0!3m2!1ses!2suy!4v1735508632852!5m2!1ses!2suy";
 ---
 
-<footer class="bg-gray-100 pt-12 pb-8">
+<footer class="bg-slate-800 pt-12 pb-8">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="text-center md:text-left">
-        <h3 class="text-lg font-semibold text-celeste-500 mb-4">Redes Sociales</h3>
+        <h3 class="text-lg font-semibold text-slate-500 mb-4">Redes Sociales</h3>
         <div class="flex justify-center md:justify-start space-x-4">
           {socialLinks.map((link) => (
-            <a href={link.href} class="text-gray-400 hover:text-celeste-500 transition-colors duration-200">
+            <a href={link.href} class="text-gray-400 hover:text-green-600 transition-colors duration-200">
               <span class="sr-only">{link.name}</span>
               <i class={`fab fa-${link.icon} text-2xl`} aria-hidden="true"></i>
             </a>
@@ -33,7 +32,7 @@ const mapSrc = "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3271.942199
       </div>
       
       <div>
-        <h3 class="text-lg font-semibold text-celeste-500 mb-4 text-center">Horario de Clases</h3>
+        <h3 class="text-lg font-semibold text-slate-500 mb-4 text-center">Horario de Clases</h3>
         <ul class="space-y-2">
           {classSchedule.map((schedule) => (
             <li class="text-gray-500 text-center">
@@ -44,7 +43,7 @@ const mapSrc = "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3271.942199
       </div>
       
       <div>
-        <h3 class="text-lg font-semibold text-celeste-500 mb-4 text-center md:text-right">Ubicación</h3>
+        <h3 class="text-lg font-semibold text-slate-500 mb-4 text-center md:text-right">Ubicación</h3>
         <div class="aspect-w-16 aspect-h-9">
           <iframe 
             src={mapSrc} 

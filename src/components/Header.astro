@@ -9,14 +9,14 @@ const menuItems = [
   { name: 'Filosofia', href: '/filosofia' },
   { name: 'Beneficios', href: '/beneficios' },
   { name: 'Clases', href: '/clases' },
-  { name: 'Linague', href: '/linague' },
+  { name: 'Linaje', href: '/linaje' },
   { name: 'Contacto', href: '/contacto' },
 ];
 
 ---
 
 
-<header class="bg-white shadow-sm">
+<header class="bg-slate-800 shadow-sm">
   <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center">
@@ -28,7 +28,7 @@ const menuItems = [
             height={48}
             class="rounded-full"
           />
-          <span class="ml-2 text-xl font-bold text-celeste-500">Tai Ji Quan</span>
+          <span class="ml-2 text-xl font-bold text-green-500">Sun Taiji Quan</span>
         </a>
       </div>
       <div class="hidden md:block">
@@ -36,7 +36,7 @@ const menuItems = [
           {menuItems.map((item) => (
             <a
               href={item.href}
-              class="text-gray-500 hover:text-celeste-500 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              class="text-gray-500 hover:text-slate-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
             >
               {item.name}
             </a>
@@ -46,7 +46,7 @@ const menuItems = [
       <div class="-mr-2 flex md:hidden">
         <button
           id="menu-toggle"
-          class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-celeste-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-celeste-500 transition-colors duration-200"
+          class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-slate-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-slate-600 transition-colors duration-200"
         >
           <span class="sr-only">Open main menu</span>
           <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,7 +62,7 @@ const menuItems = [
       {menuItems.map((item) => (
         <a
           href={item.href}
-          class="text-gray-500 hover:text-celeste-500 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+          class="text-gray-500 hover:text-slate-600 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
         >
           {item.name}
         </a>

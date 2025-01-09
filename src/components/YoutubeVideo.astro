@@ -3,8 +3,8 @@ import VideoModal from './VideoModal.astro';
 
 const videos = [
   { id: "1Ib6DtoIyTM", title: "Entrevista" },
-  { id: "h3rdkpSn99U", title: "Tai Chi" },
-  
+  { id: "p-FPM_z2-XE", title: "Tai Chi practica en Monasterio China" },
+  { id: "lE9m692uk_s", title: "Tai Chi practica en Monasterio China" },
 ];
 // Función para obtener la mejor miniatura disponible
 function getThumbnailUrl(videoId: string) {
@@ -14,9 +14,9 @@ function getThumbnailUrl(videoId: string) {
 }
 ---
 
-<div class="py-12 bg-white">
+<div class="py-12 bg-slate-700">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center text-celeste-500 mb-8">Nuestros Videos</h2>
+      <h2 class="text-3xl font-bold text-center text-slate-900 mb-8">Nuestros Videos</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {videos.map((video) => (
           <div class="video-thumbnail relative cursor-pointer rounded-lg overflow-hidden shadow-lg" data-video-id={video.id}>

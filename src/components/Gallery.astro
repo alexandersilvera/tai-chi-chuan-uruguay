@@ -1,6 +1,4 @@
 ---
-import ImageModal from "./ImageModal.astro";
-
 const images = [
   { src: "/sifu_jorge.jpg?height=300&width=400", alt: "Sifu Jorge" },
   { src: "/altar_tai_chi.jpeg?height=300&width=400", alt: "Saludo a Ip Man" },
@@ -39,17 +37,149 @@ const images = [
 ];
 ---
 
-<div class="py-12 bg-gray-100">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center text-celeste-500 mb-8">Nuestra Práctica en Imágenes</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {images.map((image) => (
-          <div class="overflow-hidden rounded-lg shadow-lg cursor-pointer">
-            <img src={image.src} alt={image.alt} class="w-full h-64 object-cover transition-transform duration-300 hover:scale-110 gallery-image" />
-          </div>
-        ))}
-      </div>
-    </div>
-</div>
-
-<ImageModal />
+<div class="gallery">
+    {images.map((image, index) => (
+      <img src={image.src} alt={image.alt} loading="lazy" data-index={index} />
+    ))}
+  </div>
+  
+  <div id="lightbox" class="lightbox">
+    <button id="close" class="close">&times;</button>
+    <img id="lightbox-img" src="/placeholder.svg" alt="Imagen ampliada" />
+    <button id="prev" class="nav-btn prev">&lt;</button>
+    <button id="next" class="nav-btn next">&gt;</button>
+  </div>
+  
+  <style>
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+  
+    .gallery img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+  
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+  
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+  
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      transition: 0.3s;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+  
+    .nav-btn {
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+  
+    .prev {
+      left: 15px;
+    }
+  
+    .next {
+      right: 15px;
+    }
+  </style>
+  
+  <script>
+    let currentIndex = 0;
+    const images = document.querySelectorAll('.gallery img');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const close = document.getElementById('close');
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+  
+    images.forEach((img, index) => {
+      img.addEventListener('click', () => {
+        currentIndex = index;
+        updateLightboxImage();
+        lightbox.style.display = 'flex';
+      });
+    });
+  
+    close.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+  
+    prev.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      updateLightboxImage();
+    });
+  
+    next.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      updateLightboxImage();
+    });
+  
+    function updateLightboxImage() {
+      const img = images[currentIndex];
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+    }
+  
+    // Cerrar el lightbox al hacer clic fuera de la imagen
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
+        lightbox.style.display = 'none';
+      }
+    });
+  
+    // Manejar navegación con teclado
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.style.display === 'flex') {
+        if (e.key === 'ArrowLeft') {
+          prev.click();
+        } else if (e.key === 'ArrowRight') {
+          next.click();
+        } else if (e.key === 'Escape') {
+          close.click();
+        }
+      }
+    });
+  </script>
+  
+  

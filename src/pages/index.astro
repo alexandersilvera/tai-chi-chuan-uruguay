@@ -1,24 +1,23 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
+import ImageCarousel from '../components/ImageCarousel.astro';
 import Gallery from '../components/Gallery.astro';
 import YoutubeVideo from '../components/YoutubeVideo.astro';
 ---
 
 <Layout title="Bienvenidos a Tai Ji Quan Uruguay">
 	<main>
-		<section class="bg-gradient-to-r from-celeste-500 to-celeste-600 text-white py-20">
-			<div class="container mx-auto px-4 text-center">
-			  <h1 class="text-4xl md:text-6xl font-bold mb-4">Descubre el Tai Chi Chuan</h1>
-			  <p class="text-xl mb-8">Forja tu cuerpo, mente y espíritu en nuestra escuela de tai chi estilo Sun tradicional</p>
-			  <a href="/contacto" class="bg-white text-celeste-500 py-2 px-6 rounded-full text-lg font-semibold hover:bg-gray-100 transition duration-300">
-				Comienza Tu Viaje
-			  </a>
+		<!-- Image Carousel Section -->
+		<section class="py-16 bg-green-800">
+			<div class="container mx-auto px-4">
+			  <h2 class="text-3xl font-bold text-green-500 mb-8 text-center"></h2>
+			<!--   <ImageCarousel />-->
 			</div>
 		  </section>
 		
 		  <!-- About Section -->
-		  <section class="py-16 bg-white">
+		  <section class="py-16 bg-green-800">
 			<div class="container mx-auto px-4">
 			  <div class="flex flex-col md:flex-row items-center">
 				<div class="md:w-1/2 mb-8 md:mb-0">
@@ -31,13 +30,11 @@ import YoutubeVideo from '../components/YoutubeVideo.astro';
 				  />
 				</div>
 				<div class="md:w-1/2 md:pl-12">
-				  <h2 class="text-3xl font-bold text-celeste-500 mb-4">Nuestra Filosofía</h2>
-				  <p class="text-gray-600 mb-6">
-					En nuestra escuela Shaolin, creemos en el poder transformador de las artes marciales tradicionales. 
-					Nuestro enfoque holístico combina el entrenamiento físico riguroso con la disciplina mental y el 
-					crecimiento espiritual, permitiéndote alcanzar tu máximo potencial en todos los aspectos de la vida.
+				  <h2 class="text-3xl font-bold text-slate-800 mb-4">Nuestra Filosofía</h2>
+				  <p class="text-white mb-6">
+					En nuestra escuela transmitimos el Taiji Quan basado en la tradición de la familia Sun, promoviendo el equilibrio entre mente, cuerpo y espíritu. A través de una formación auténtica y profunda, buscamos inspirar a nuestros estudiantes a alcanzar su máximo potencial físico y personal, transmitiendo los principios del Taiji con respeto, disciplina y armonía. Queremos formar una comunidad unida, comprometida con el bienestar integral y la preservación del legado marcial de Sun Lutang, llevando el Taiji a cada rincón del Uruguay.
 				  </p>
-				  <a href="/filosofia" class="text-celeste-500 font-semibold hover:text-celeste-600 transition duration-300">
+				  <a href="/filosofia" class="text-slate-800 font-semibold hover:text-celeste-600 transition duration-300">
 					Descubre más sobre nuestra filosofía →
 				  </a>
 				</div>
@@ -52,11 +49,11 @@ import YoutubeVideo from '../components/YoutubeVideo.astro';
 		<YoutubeVideo />
 		
 		<!-- Call to Action -->
-		<section class="bg-gray-100 py-16">
+		<section class="bg-green-600 py-16 mt-7">
 		  <div class="container mx-auto px-4 text-center">
-			<h2 class="text-3xl font-bold text-celeste-500 mb-4">¿Listo para Comenzar?</h2>
-			<p class="text-xl text-gray-600 mb-8">Únete a nuestra comunidad y comienza tu viaje en el Shaolin Kung Fu</p>
-			<a href="/clases" class="bg-celeste-500 text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-celeste-600 transition duration-300">
+			<h2 class="text-3xl font-bold text-slate-700 mb-4">¿Listo para Comenzar?</h2>
+			<p class="text-xl text-gray-600 mb-8">Únete a nuestra comunidad y comienza tu viaje en el auténtico Sun Taiji Quan</p>
+			<a href="/clases" class="bg-slate-500 text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-slate-600 transition duration-300">
 			  Ver Nuestras Clases
 			</a>
 		  </div>
@@ -65,4 +62,3 @@ import YoutubeVideo from '../components/YoutubeVideo.astro';
   <!-- Hero Section -->
 
 </Layout>
-
