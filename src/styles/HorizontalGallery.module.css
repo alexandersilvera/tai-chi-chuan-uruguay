@@ -7,28 +7,17 @@
 
 .gallery {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  height: 400px;
   overflow: hidden;
 }
 
-.galleryInner {
-  display: flex;
-  transition: transform 0.3s ease;
-}
-
 .galleryImage {
-  flex: 0 0 calc(25% - 10px);
-  width: 400px;
-  height: 600px;
-  object-fit: cover;
-  margin-right: 10px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.galleryImage:hover {
-  transform: scale(1.05);
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: opacity 0.3s ease;
 }
 
 .navButton {

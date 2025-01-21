@@ -1,5 +1,5 @@
 import type React from "react"
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import styles from "../styles/HorizontalGallery.module.css"
 
 interface Image {
@@ -14,7 +14,6 @@ interface HorizontalGalleryProps {
 const HorizontalGallery: React.FC<HorizontalGalleryProps> = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<Image | null>(null)
-  const galleryRef = useRef<HTMLDivElement>(null)
 
   const openPopup = (image: Image) => {
     setSelectedImage(image)
@@ -25,42 +24,31 @@ const HorizontalGallery: React.FC<HorizontalGalleryProps> = ({ images }) => {
   }
 
   const goToNextImage = () => {
-    setCurrentIndex((prevIndex) => Math.min(prevIndex + 4, images.length - 4))
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
   }
 
   const goToPreviousImage = () => {
-    setCurrentIndex((prevIndex) => Math.max(prevIndex - 4, 0))
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
   }
-
-  useEffect(() => {
-    if (galleryRef.current) {
-      galleryRef.current.style.transform = `translateX(-${currentIndex * 25}%)`
-    }
-  }, [currentIndex])
 
   return (
     <div className={styles.galleryContainer}>
-      <button className={styles.navButtonLeft} onClick={goToPreviousImage} disabled={currentIndex === 0}>
+      <button className={styles.navButtonLeft} onClick={goToPreviousImage}>
         &lt;
       </button>
       <div className={styles.gallery}>
-        <div className={styles.galleryInner} ref={galleryRef}>
-          {images.map((image, index) => (
-            <img
-              key={index}
-              src={image.src || "/placeholder.svg"}
-              alt={image.alt}
-              onClick={() => openPopup(image)}
-              className={styles.galleryImage}
-            />
-          ))}
-        </div>
+        <img
+          src={images[currentIndex].src || "/placeholder.svg"}
+          alt={images[currentIndex].alt}
+          onClick={() => openPopup(images[currentIndex])}
+          className={styles.galleryImage}
+        />
       </div>
-      <button className={styles.navButtonRight} onClick={goToNextImage} disabled={currentIndex >= images.length - 4}>
+      <button className={styles.navButtonRight} onClick={goToNextImage}>
         &gt;
       </button>
       <div className={styles.imageCounter}>
-        {currentIndex + 1}-{Math.min(currentIndex + 4, images.length)} / {images.length}
+        {currentIndex + 1} / {images.length}
       </div>
       {selectedImage && (
         <div className={styles.popupOverlay} onClick={closePopup}>
