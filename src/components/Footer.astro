@@ -1,9 +1,13 @@
 ---
+const whatsappNumber = "+59892781471";
+const whatsappMessage = encodeURIComponent("Hola, me gustaría obtener más información sobre las clases de tai-chi.");
+
+const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
 const socialLinks = [
   { name: 'YouTube', href: '#', icon: 'fa-brands fa-youtube' },
   { name: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61555820975594&mibextid=ZbWKwL', icon: 'fa-brands fa-facebook' },
   { name: 'Instagram', href: 'https://www.instagram.com/p/C_TltdQS-iI/?igsh=YTFrc3F5MHRtenN2', icon: 'fa-brands fa-instagram' },
-  { name: 'WhatsApp', href: '#', icon: 'whatsapp' },
 ];
 
 const classSchedule = [
@@ -28,6 +32,15 @@ const mapSrc = "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3271.942199
               <i class={`fab fa-${link.icon} text-2xl`} aria-hidden="true"></i>
             </a>
           ))}
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-400 hover:text-green-600 transition-colors duration-200"
+            >
+            <span class="sr-only">whatsapp</span>
+            <i class="fa-brands fa-whatsapp text-2xl" aria-hidden="true"></i>
+          </a>
         </div>
       </div>
       

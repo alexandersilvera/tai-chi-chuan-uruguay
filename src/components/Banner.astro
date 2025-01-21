@@ -1,0 +1,49 @@
+---
+const { title, subtitle } = Astro.props;
+---
+<div class="banner">
+    <img 
+        src="/public/banner.jpeg"
+        alt="Sun Taiji Quan Uruguay Banner"
+        class="banner-image"
+    />
+</div> 
+
+
+<style>
+  :global(body) .banner {
+    position: relative;
+    width: 100%;
+    /* Cambiamos la altura fija por una que mantenga el aspect ratio */
+    aspect-ratio: 21/9;
+    max-height: 500px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .banner-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ajustamos el punto de enfoque para mantener visible la parte importante */
+    object-position: center 30%;
+  }
+
+  @media (max-width: 768px) {
+    .banner {
+      aspect-ratio: 16/9;
+      max-height: 400px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .banner {
+      aspect-ratio: 3/2;
+      max-height: 300px;
+    }
+  }
+</style>
+

@@ -5,7 +5,9 @@ import tailwind from '@astrojs/tailwind';
 
 import alpinejs from '@astrojs/alpinejs';
 
+import react from '@astrojs/react';
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), alpinejs()]
+  integrations: [tailwind(), alpinejs(), react()]
 });
