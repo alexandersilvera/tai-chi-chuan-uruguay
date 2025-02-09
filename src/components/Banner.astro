@@ -1,49 +1,225 @@
 ---
-const { title, subtitle } = Astro.props;
+// components/FullCarousel.astro
+const images = [
+  "/images/banner-web-1.png",
+  "/images/banner-web-2.png",
+  "/images/banner-web-3.png",
+  "/images/banner-web-4.png"
+];
 ---
-<div class="banner">
-    <img 
-        src="/banner.jpeg"
-        alt="Sun Taiji Quan Uruguay Banner"
-        class="banner-image"
-    />
-</div> 
 
+<div class="carousel-container">
+  <div class="carousel-track">
+    {images.map((img, index) => (
+      <div class="carousel-slide">
+        <div class="image-wrapper">
+          <img 
+            src={img} 
+            alt={`Imagen ${index + 1}`} 
+            width="1920"
+            height="1080"
+            loading="lazy"
+            class="carousel-image"
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <button class="carousel-btn prev" aria-label="Slide anterior">‹</button>
+  <button class="carousel-btn next" aria-label="Slide siguiente">›</button>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let currentSlide = 0;
+    let autoPlayTimer;
+    const track = document.querySelector('.carousel-track');
+    const slides = document.querySelectorAll('.carousel-slide');
+    const totalSlides = slides.length;
+
+    // Función principal de desplazamiento
+    const moveSlide = (direction) => {
+      currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      resetAutoPlay();
+    };
+
+    // Configuración del auto-desplazamiento
+    const startAutoPlay = () => {
+      autoPlayTimer = setInterval(() => moveSlide(1), 5000);
+    };
+
+    const resetAutoPlay = () => {
+      clearInterval(autoPlayTimer);
+      startAutoPlay();
+    };
+
+    // Event listeners para controles
+    document.querySelector('.prev').addEventListener('click', () => moveSlide(-1));
+    document.querySelector('.next').addEventListener('click', () => moveSlide(1));
+
+    // Iniciar auto-play
+    startAutoPlay();
+
+    // Limpiar al desmontar
+    window.addEventListener('beforeunload', () => {
+      clearInterval(autoPlayTimer);
+    });
+
+    // Ajustar altura en resize
+    window.addEventListener('resize', () => {
+      track.style.height = `${document.querySelector('.image-wrapper').clientHeight}px`;
+    });
+  });
+</script>
 
 <style>
-  :global(body) .banner {
+  :root {
+    --carousel-height: 70vh;
+    --max-carousel-height: 800px;
+  }
+
+  .carousel-container {
     position: relative;
     width: 100%;
-    /* Cambiamos la altura fija por una que mantenga el aspect ratio */
-    aspect-ratio: 21/9;
-    max-height: 500px;
+    height: var(--carousel-height);
+    max-height: var(--max-carousel-height);
     overflow: hidden;
-    margin-bottom: 2rem;
+    margin: 2rem 0;
   }
 
-  .banner-image {
-    position: absolute;
-    top: 0;
-    left: 0;
+  .carousel-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-wrapper {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    /* Ajustamos el punto de enfoque para mantener visible la parte importante */
-    object-position: center 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
   }
 
+  .carousel-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 2.5rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .carousel-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .prev { left: 2%; }
+  .next { right: 2%; }
+
   @media (max-width: 768px) {
-    .banner {
-      aspect-ratio: 16/9;
-      max-height: 400px;
+    :root {
+      --carousel-height: 50vh;
+      --max-carousel-height: 500px;
+    }
+
+    .carousel-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 2rem;
+    }
+
+    .image-wrapper {
+      padding: 10px;
     }
   }
 
   @media (max-width: 480px) {
-    .banner {
-      aspect-ratio: 3/2;
-      max-height: 300px;
+    :root {
+      --carousel-height: 40vh;
+    }
+    .carousel-container {
+    height: 90vh !important;
+    aspect-ratio: unset;
+  }
+
+  .image-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .carousel-image {
+    object-fit: contain;
+    max-height: 100%;
+  }
+}
+
+  @media (max-width: 768px) {
+    .carousel-container {
+      aspect-ratio: 1/1; /* Cuadrado en móviles pequeños */
+    }
+
+    .carousel-image {
+      max-width: 100vw;
+      max-height: 80vh;
+      object-position: center top; /* Ajuste vertical */
+    }
+
+    .carousel-btn {
+      width: 35px;
+      height: 35px;
+      font-size: 1.5rem;
+      top: 45%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .carousel-container {
+      aspect-ratio: 3/4; /* Vertical para móviles muy pequeños */
+    }
+
+    .carousel-image {
+      object-fit: cover; /* Opcional: recorte inteligente */
+      object-position: center center;
     }
   }
 </style>
-

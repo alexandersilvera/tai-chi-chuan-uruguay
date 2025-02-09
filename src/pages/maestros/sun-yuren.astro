@@ -1,0 +1,100 @@
+---
+import Image from 'astro/components/Image.astro';
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="孫雨人 (Sūn Yùrén)">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Encabezado -->
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-800">孫雨人 (Sūn Yùrén)</h1>
+      <p class="text-lg text-gray-600 mt-2">Maestro de Artes Marciales y Promotor del Legado Sun</p>
+    </header>
+
+    <!-- Imagen principal -->
+    <div class="flex justify-center mb-8">
+        <Image 
+          src="/images/foto_linaje_3.webp" 
+          alt="孫祿堂" 
+          width={400}
+          height={200}
+          class="w-96 h-96 object-cover rounded-full shadow-lg" />
+      </div>
+
+    <!-- Sección: Inicios y Formación -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Inicios y Formación</h2>
+      <p class="text-gray-200 leading-relaxed">
+        Sun Yuren creció inmerso en las tradiciones familiares y fue muy apreciado por Sun Lutang, quien lo envió a estudiar con su hija Sun Jianyun. Durante su aprendizaje, trabajó de cerca con Sun Lutang y su tío Sun Cunzhou, recibiendo una enseñanza profunda y personalizada.
+      </p>
+    </section>
+
+    <!-- Sección: Carrera y Enseñanza -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Carrera y Enseñanza</h2>
+      <p class="text-gray-200 leading-relaxed">
+        En 1930, regresó a su ciudad natal, donde se dedicó a la enseñanza primaria mientras transmitía las artes marciales Sun de forma altruista. Formó a más de mil discípulos, entre los que destacan:
+      </p>
+      <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+        <li>Zhao Hongde</li>
+        <li>Sun Yukui</li>
+        <li>Sun Yufeng</li>
+        <li>Han Chunqi</li>
+        <li>Zhang Xinyuan</li>
+        <li>Lu Zemin</li>
+        <li>Wang Baoze</li>
+        <li>Zhang Zhenqi</li>
+        <li>Liu Gengyin</li>
+      </ul>
+      <p class="text-gray-200 leading-relaxed mt-2">
+        Su habilidad y carácter le ganaron respeto, venciendo a numerosos retadores y defendiendo con éxito el arte Sun.
+      </p>
+    </section>
+
+    <!-- Sección: Contribuciones durante la Guerra y Persecución Política -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Contribuciones durante la Guerra y Persecución Política</h2>
+      <p class="text-gray-200 leading-relaxed">
+        Durante la Segunda Guerra Mundial, Sun Yuren luchó contra soldados japoneses, demostrando valentía al derrotar a un atacante desarmado. Junto a Sun Jianyun construyó el mausoleo de Sun Lutang.
+      </p>
+    </section>
+
+    <!-- Sección: Reconocimientos y Promoción del Tai Chi Sun -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Reconocimientos y Promoción del Tai Chi Sun</h2>
+      <p class="text-gray-200 leading-relaxed">
+        En 1983, ayudó a fundar la Asociación de Investigación del Tai Chi Sun de Beijing, donde fue vicepresidente. También ocupó cargos destacados:
+      </p>
+      <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+        <li>Vicepresidente y árbitro de primera categoría en la Asociación de Artes Marciales de Baoding.</li>
+        <li>Miembro y asesor en la Asociación de Artes Marciales de Shijiazhuang.</li>
+        <li>Miembro del Comité de la Conferencia Consultiva Política del Condado.</li>
+      </ul>
+      <p class="text-gray-200 leading-relaxed mt-2">
+        Sun Yuren organizó múltiples seminarios sobre la relación entre la fisiología y las artes marciales, contribuyendo al desarrollo del Tai Chi Sun y al bienestar de sus practicantes.
+      </p>
+    </section>
+
+    <!-- Sección: Legado -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Legado</h2>
+      <p class="text-gray-200 leading-relaxed">
+        Sun Yuren dejó una profunda huella en el mundo de las artes marciales, no solo como un maestro consumado sino también como un defensor del legado Sun, inspirando a generaciones y promoviendo los valores del Tai Chi Sun en China y más allá.
+      </p>
+    </section>
+  </div>
+
+  <style>
+    /* Estilos generales */
+    h2 {
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+    }
+    p {
+      line-height: 1.6;
+    }
+    ul {
+      margin-left: 1.5rem;
+    }
+  </style>
+</Layout>

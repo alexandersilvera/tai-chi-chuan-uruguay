@@ -9,5 +9,11 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), alpinejs(), react()]
+  integrations: [tailwind(), alpinejs(), react()],
+  vite: {
+    optimizeDeps: {
+      include: ['swiper']
+    }
+  }
+
 });

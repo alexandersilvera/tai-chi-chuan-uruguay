@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 ---
@@ -8,6 +9,15 @@ import PageHeader from '../components/PageHeader.astro';
     title="Historia"
     description="Un viaje a través del tiempo: los orígenes y evolución del Tai Ji Quan estilo Sun."
   />
+  <div class="flex justify-center items-center min-h-screen mb-1">
+    <Image
+      src="/maestro_practica.jpeg"
+      alt="Demostración de Maestro"
+      width={700}
+      height={200}
+      class=""
+    />
+  </div>
   <div class="max-w-3xl mx-auto">
     <p class="mb-6 text-gray-500 leading-relaxed">
       El estilo Sun fue desarrollado a principios del siglo XX por el G.M. Sun Lutang (1861-1932), un reconocido artista marcial chino que dominó varios sistemas internos de artes marciales antes de crear su propio estilo.
