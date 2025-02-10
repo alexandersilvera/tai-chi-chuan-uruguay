@@ -1,20 +1,125 @@
 ---
 ---
 
-<div id="videoModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-    <div class="bg-white p-4 rounded-lg max-w-3xl w-full mx-4">
-      <div class="relative w-full" style="padding-top: 56.25%;">
-        <iframe
-          id="modalVideo"
-          src=""
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          class="absolute top-0 left-0 w-full h-full rounded-lg"
-        ></iframe>
-      </div>
-      <button id="closeVideoModal" class="mt-4 bg-celeste-500 text-white py-2 px-4 rounded hover:bg-celeste-600 transition duration-300">
-        Cerrar
-      </button>
+<style>
+  /* Animación de entrada y salida del modal */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Animación de escala para el contenido del modal */
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleOut {
+    from {
+      transform: scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+  }
+
+  /* Estilos del modal */
+  #videoModal {
+    animation: fadeIn 0.3s ease-in-out forwards;
+  }
+
+  #videoModal.hidden {
+    animation: fadeOut 0.3s ease-in-out forwards;
+  }
+
+  #videoModal .modal-content {
+    animation: scaleIn 0.3s ease-in-out forwards;
+  }
+
+  #videoModal.hidden .modal-content {
+    animation: scaleOut 0.3s ease-in-out forwards;
+  }
+</style>
+
+<div id="videoModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center hidden">
+  <div class="modal-content bg-gray-900 p-6 rounded-lg max-w-4xl w-full mx-4 relative overflow-hidden">
+    <button id="closeVideoModal" class="absolute top-4 right-4 text-white text-2xl font-bold focus:outline-none hover:text-red-500 transition-colors duration-300">&times;</button>
+    <div class="relative w-full" style="padding-top: 56.25%;">
+      <iframe
+        id="modalVideo"
+        src=""
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        class="absolute top-0 left-0 w-full h-full rounded-lg"
+      ></iframe>
     </div>
+  </div>
 </div>
+
+<script>
+  const videoThumbnails = document.querySelectorAll('.video-thumbnail');
+  const videoModal = document.getElementById('videoModal');
+  const modalVideo = document.getElementById('modalVideo');
+  const closeVideoModal = document.getElementById('closeVideoModal');
+
+  // Función para abrir el modal
+  function openModal(videoId) {
+    modalVideo.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    videoModal.classList.remove('hidden');
+    videoModal.classList.add('flex'); // Añade flex para centrar el modal
+  }
+
+  // Función para cerrar el modal
+  function closeModal() {
+    modalVideo.src = '';
+    videoModal.classList.add('hidden');
+    videoModal.classList.remove('flex');
+  }
+
+  // Abrir modal al hacer clic en una miniatura
+  videoThumbnails.forEach(thumbnail => {
+    thumbnail.addEventListener('click', () => {
+      const videoId = thumbnail.dataset.videoId;
+      openModal(videoId);
+    });
+  });
+
+  // Cerrar modal al hacer clic en el botón de cierre
+  closeVideoModal.addEventListener('click', closeModal);
+
+  // Cerrar modal al hacer clic fuera del contenido
+  videoModal.addEventListener('click', (e) => {
+    if (e.target === videoModal) {
+      closeModal();
+    }
+  });
+
+  // Cerrar modal al presionar la tecla Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !videoModal.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
+</script>
