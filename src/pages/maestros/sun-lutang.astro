@@ -11,14 +11,24 @@ import Layout from '../../layouts/Layout.astro';
       <p class="text-lg text-gray-200 mt-2">Maestro de las Artes Internas y Creador del Tai Chi de la Familia Sun</p>
     </header>
 
-    <!-- Imagen principal -->
+    <!-- Botón de Regresar -->
+    <div class="mb-6 text-left">
+      <a href="/linaje" class="inline-flex items-center text-green-300 hover:text-green-800 transition-colors duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        Regresar al Linaje
+      </a>
+    </div>
+
     <div class="flex justify-center mb-8">
       <Image 
         src="/images/foto_linaje_5.webp" 
-        alt="Sūn Lù Táng" 
-        width={400}
+        alt="Sun Lutang" 
+        width={200}
         height={200}
-        class="object-cover rounded-full shadow-lg" />
+        class="rounded-full w-40 h-40 object-cover shadow-lg border-2 border-white"
+      />
     </div>
 
     <!-- Sección: Orígenes y Formación -->
@@ -133,6 +143,17 @@ import Layout from '../../layouts/Layout.astro';
     }
     ul {
       margin-left: 1.5rem;
+    }
+
+    /* Estilo para el botón de regresar */
+    a {
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    a:hover svg {
+      transform: translateX(-4px);
+      transition: transform 0.3s ease-in-out;
     }
   </style>
 </Layout>

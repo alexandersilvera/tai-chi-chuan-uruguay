@@ -1,0 +1,130 @@
+---
+import Image from 'astro/components/Image.astro';
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Shifu Jorge Quiñones">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Encabezado -->
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-400">Shifu Jorge Quiñones</h1>
+      <p class="text-lg text-gray-200 mt-2">Introductor del Legado Sun Tai Ji Quan en Uruguay</p>
+    </header>
+
+    <!-- Botón de Regresar -->
+    <div class="mb-6 text-left">
+      <a href="/linaje" class="inline-flex items-center text-green-300 hover:text-green-800 transition-colors duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        Regresar al Linaje
+      </a>
+    </div>
+
+    <!-- Imagen redondeada con efecto hover -->
+    <div class="flex justify-center mb-8">
+      <div class="w-48 h-48 rounded-full overflow-hidden shadow-lg border-2 border-white hover:border-green-300 transition-all duration-300">
+        <Image 
+          src="/images/shifu_jorge.webp" 
+          alt="Shifu Jorge Quiñones" 
+          width={200}
+          height={200}
+          class="w-full h-full object-cover transform scale-105 hover:scale-100 transition-transform duration-300"
+        />
+      </div>
+    </div>
+
+    <!-- Sección: Representación Oficial -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Representante Oficial del Sun Tai Ji Quan</h2>
+      <p class="text-gray-200 leading-relaxed">
+        Como discípulo directo del Maestro Wang De Long (quinta generación de la familia Sun), Jorge Quiñones ostenta el reconocimiento como único representante occidental de la Asociación de Artes Marciales de Sun Lu Tang de Ding Xing, China. Su ceremonia Baishi, realizada en el corazón del Sun Tai Ji Quan, marca su vínculo formal con esta tradición milenaria.
+      </p>
+    </section>
+
+    <!-- Sección: Formación y Legado -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Formación y Transmisión del Legado</h2>
+      <p class="text-gray-200 leading-relaxed">
+        Bajo la tutela del Maestro Wang De Long, Jorge Quiñones ha internalizado no solo las técnicas marciales del estilo Sun, sino también su filosofía esencial. Su aprendizaje abarca:
+      </p>
+      <ul class="list-disc list-inside text-gray-200 leading-relaxed mt-2">
+        <li>Principios fundamentales del Tai Ji Quan</li>
+        <li>Teoría del Yin-Yang aplicada al movimiento</li>
+        <li>Métodos de enseñanza tradicionales</li>
+        <li>Arte del Tui Shou (empuje de manos)</li>
+      </ul>
+    </section>
+
+    <!-- Sección: Puente Cultural -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Puente entre Oriente y Occidente</h2>
+      <p class="text-gray-200 leading-relaxed">
+        Reconocido oficialmente por la Asociación China de Sun Lu Tang, Jorge Quiñones ha establecido un diálogo intercultural único. Sus contribuciones incluyen:
+      </p>
+      <ul class="list-disc list-inside text-gray-200 leading-relaxed mt-2">
+        <li>Traducción y adaptación de textos clásicos</li>
+        <li>Organización de intercambios culturales China-Uruguay</li>
+        <li>Preservación de rituales tradicionales en contextos modernos</li>
+      </ul>
+    </section>
+
+    <!-- Sección: Enseñanza en Uruguay -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Difusión en Uruguay</h2>
+      <p class="text-gray-200 leading-relaxed">
+        Desde su escuela en Montevideo, el Shifu Quiñones ha implementado un sistema de enseñanza que combina:
+      </p>
+      <ul class="list-disc list-inside text-gray-200 leading-relaxed mt-2">
+        <li>Clases regulares para todas las edades</li>
+        <li>Seminarios especializados en filosofía marcial</li>
+        <li>Programas de formación para instructores</li>
+        <li>Talleres de aplicación terapéutica del Tai Ji</li>
+      </ul>
+    </section>
+
+    <!-- Sección: Reconocimientos -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Reconocimientos Internacionales</h2>
+      <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+        <li>Certificado oficial de la 6ta generación del estilo Sun</li>
+        <li>Miembro del Comité Internacional de Sun Tai Ji Quan</li>
+        <li>Invitado especial en el Festival Anual de Ding Xing</li>
+        <li>Columnista en la Revista China de Artes Internas</li>
+      </ul>
+    </section>
+
+    <!-- Sección: Filosofía de Enseñanza -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Filosofía Pedagógica</h2>
+      <p class="text-gray-200 leading-relaxed">
+        "Mi enseñanza se basa en tres pilares: respeto por la tradición, adaptación contextual y desarrollo personal. Busco que cada estudiante encuentre su propio camino marcial manteniendo la esencia del estilo Sun."
+      </p>
+    </section>
+
+    <!-- Sección: Eventos Destacados -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Eventos Destacados</h2>
+      <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+        <li>Primer Seminario Internacional Sun Tai Ji Quan en Uruguay (2019)</li>
+        <li>Demostración en el Centro Cultural de China en Buenos Aires (2021)</li>
+        <li>Colaboración con la Universidad de la República en investigación sobre artes marciales (2022)</li>
+      </ul>
+    </section>
+
+    <style>
+      h2 {
+        border-bottom: 2px solid #2d3748;
+        padding-bottom: 0.5rem;
+        margin-top: 2rem;
+      }
+      ul {
+        margin-left: 1.5rem;
+        margin-top: 0.5rem;
+      }
+      .hover\:border-green-300:hover {
+        border-color: #68d391;
+      }
+    </style>
+  </div>
+</Layout>
