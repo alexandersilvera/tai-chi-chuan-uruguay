@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets';
+import { type CollectionEntry } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+type Props = CollectionEntry<"blog">["data"];
+
+const { title, heroImage, pubDate } = Astro.props;
+---
+
+<Layout title={title}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <!-- Navegación de regreso -->
+    <a
+      href="/blog"
+      class="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors mb-8 group"
+    >
+      <svg
+        class="w-4 h-4 group-hover:-translate-x-1 transition-transform"
+        viewBox="0 -960 960 960"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"
+          fill="currentColor"
+        ></path>
+      </svg>
+      Volver al blog
+    </a>
+
+    <!-- Artículo -->
+    <article class="bg-zinc-900/50 rounded-2xl overflow-hidden shadow-xl">
+      <!-- Imagen principal -->
+      <div class="w-full relative">
+        <Image
+          src={heroImage}
+          alt={title}
+          width={1200}
+          height={800}
+          class="w-full h-auto object-contain"
+          loading="eager"
+          quality="high"
+        />
+      </div>
+
+      <!-- Contenido -->
+      <div class="p-6 sm:p-8 md:p-10">
+        <!-- Fecha -->
+        <div class="mb-4">
+          <FormattedDate date={pubDate} />
+        </div>
+
+        <!-- Título -->
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 text-white">{title}</h1>
+
+        <!-- Contenido del artículo -->
+        <div class="prose prose-invert prose-zinc max-w-none prose-headings:font-semibold prose-p:text-zinc-300 prose-a:text-emerald-400">
+          <slot />
+        </div>
+      </div>
+    </article>
+  </div>
+</Layout>

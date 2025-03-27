@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState } from "react"
-import styles from "../styles/HorizontalGallery.module.css"
+import styles from "@/styles/HorizontalGallery.module.css"
 
 interface Image {
   src: string

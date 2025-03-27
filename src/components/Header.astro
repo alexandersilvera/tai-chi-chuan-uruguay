@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 const menuItems = [
   { name: 'Quienes somos', href: '/quienes-somos' },
   { name: 'Historia', href: '/historia' },
+  { name: 'Blog', href: '/blog' },
   { name: 'Características', href: '/caracteristicas' },
   { name: 'Principios', href: '/principios' },
   { name: 'Filosofia', href: '/filosofia' },
@@ -14,7 +15,6 @@ const menuItems = [
 ];
 
 ---
-
 
 <header class="bg-slate-800 shadow-sm">
   <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,22 +31,50 @@ const menuItems = [
           <span class="ml-2 text-xl font-bold text-green-500">Sun Taiji Quan</span>
         </a>
       </div>
-      <div class="hidden md:block">
-        <div class="ml-10 flex items-baseline space-x-4">
+      
+      <!-- Menú de escritorio - visible en pantallas grandes -->
+      <div class="hidden lg:block">
+        <div class="ml-10 flex items-center flex-wrap gap-1">
           {menuItems.map((item) => (
             <a
               href={item.href}
-              class="text-gray-500 hover:text-slate-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              class="text-gray-300 hover:text-white hover:bg-slate-700 px-2 py-1 rounded-md text-sm font-medium transition-colors duration-200"
             >
               {item.name}
             </a>
           ))}
         </div>
       </div>
-      <div class="-mr-2 flex md:hidden">
+      
+      <!-- Menú de tabletas - visible en pantallas medianas -->
+      <div class="hidden md:block lg:hidden">
+        <div class="ml-4 flex items-center">
+          <div class="dropdown relative">
+            <button id="nav-dropdown-btn" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center">
+              Menú
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <div id="nav-dropdown-menu" class="dropdown-menu hidden absolute right-0 mt-2 bg-white rounded-md shadow-lg py-1 z-50 w-48">
+              {menuItems.map((item) => (
+                <a
+                  href={item.href}
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón de menú móvil - visible en pantallas pequeñas -->
+      <div class="flex md:hidden">
         <button
           id="menu-toggle"
-          class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-slate-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-slate-600 transition-colors duration-200"
+          class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-colors duration-200"
         >
           <span class="sr-only">Open main menu</span>
           <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,12 +85,13 @@ const menuItems = [
     </div>
   </nav>
 
-  <div id="mobile-menu" class="hidden md:hidden bg-white">
+  <!-- Menú móvil expandible -->
+  <div id="mobile-menu" class="hidden md:hidden bg-slate-700">
     <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
       {menuItems.map((item) => (
         <a
           href={item.href}
-          class="text-gray-500 hover:text-slate-600 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+          class="text-gray-300 hover:text-white hover:bg-slate-600 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
         >
           {item.name}
         </a>
@@ -72,7 +101,7 @@ const menuItems = [
 </header>
 
 <script is:inline>
-  // Mobile menu toggle
+  // Menú móvil toggle
   const menuToggle = document.getElementById('menu-toggle');
   const mobileMenu = document.getElementById('mobile-menu');
 
@@ -83,5 +112,38 @@ const menuItems = [
       ? '<span class="sr-only">Close main menu</span><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>'
       : '<span class="sr-only">Open main menu</span><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>';
   });
+
+  // Manejo del menú desplegable para tabletas
+  const navDropdownBtn = document.getElementById('nav-dropdown-btn');
+  const navDropdownMenu = document.getElementById('nav-dropdown-menu');
+
+  if (navDropdownBtn && navDropdownMenu) {
+    navDropdownBtn.addEventListener('click', () => {
+      navDropdownMenu.classList.toggle('hidden');
+    });
+
+    // Cerrar el menú al hacer clic fuera de él
+    document.addEventListener('click', (event) => {
+      if (!navDropdownBtn.contains(event.target) && !navDropdownMenu.contains(event.target)) {
+        navDropdownMenu.classList.add('hidden');
+      }
+    });
+  }
 </script>
+
+<style>
+  /* Estilos para el menú desplegable */
+  .dropdown-menu {
+    min-width: 200px;
+    transform-origin: top right;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Ajustes adicionales para dispositivos grandes */
+  @media (min-width: 1280px) {
+    .ml-10 {
+      margin-left: 1rem;
+    }
+  }
+</style>
 
