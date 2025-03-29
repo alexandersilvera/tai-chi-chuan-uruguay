@@ -13,11 +13,21 @@ import Layout from '@/layouts/Layout.astro';
 
     <!-- Botón de Regresar -->
     <div class="mb-6 text-left">
-      <a href="/linaje" class="inline-flex items-center text-green-300 hover:text-green-800 transition-colors duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+      <a
+        href="/linaje"
+        class="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors mb-8 group"
+      >
+        <svg
+          class="w-4 h-4 group-hover:-translate-x-1 transition-transform"
+          viewBox="0 -960 960 960"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"
+            fill="currentColor"
+          ></path>
         </svg>
-        Regresar al Linaje
+        Volver al Linaje
       </a>
     </div>
 
