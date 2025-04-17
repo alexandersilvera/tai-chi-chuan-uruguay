@@ -20,6 +20,6 @@ export default defineConfig({
     }
   },
   adapter: vercel({
-    webAnalytics: { enabled: true }
+    webAnalytics: { enabled: false }
   })
 });
