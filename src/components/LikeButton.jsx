@@ -8,6 +8,12 @@ const functions = getFunctions(app);
 const callHandleLike = httpsCallable(functions, 'handleLike');
 
 export default function LikeButton({ slug, initialLikes }) {
+  // LOG TEMPORAL: Verifica el valor de slug al montar
+  useEffect(() => {
+    if (typeof slug !== "string" || !slug) {
+      console.error("[LikeButton] Prop 'slug' inválido al montar:", slug);
+    }
+  }, [slug]);
 
 
   const [likes, setLikes] = useState(initialLikes);
@@ -58,7 +64,13 @@ export default function LikeButton({ slug, initialLikes }) {
     setError('');
 
     try {
-
+      // LOG TEMPORAL: Verifica los valores antes de llamar a la función
+      if (typeof slug !== "string" || !slug) {
+        console.error("[LikeButton] Prop 'slug' inválido antes de llamar a handleLike:", slug);
+      }
+      if (typeof userId !== "string" || !userId) {
+        console.error("[LikeButton] userId inválido antes de llamar a handleLike:", userId);
+      }
       const result = await callHandleLike({ slug: slug, userId: userId });
 
       if (result.data.success) {
