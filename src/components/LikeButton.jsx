@@ -7,9 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 const functions = getFunctions(app);
 const callHandleLike = httpsCallable(functions, 'handleLike');
 
-export default function LikeButton({ slug: originalSlug, initialLikes }) {
-  const slug = "test-hardcoded-slug"; // <-- VALOR FIJO TEMPORAL
-  console.log("[LikeButton] RENDER - Using hardcoded slug:", slug, "Original slug was:", originalSlug, "initialLikes:", initialLikes);
+export default function LikeButton({ slug, initialLikes }) {
+  console.log("[LikeButton] RENDER - slug:", slug, "initialLikes:", initialLikes);
 
   const [likes, setLikes] = useState(initialLikes);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +22,6 @@ export default function LikeButton({ slug: originalSlug, initialLikes }) {
       localStorage.setItem('userId', storedUserId);
     }
     setUserId(storedUserId);
-    console.log("[LikeButton] useEffect userId - Set userId to:", storedUserId);
 
     async function fetchLikes() {
       if (!slug) return;
