@@ -7,6 +7,7 @@ const blog = defineCollection({
     title: z.string(),
     pubDate: z.coerce.date(),
     tags: z.string().array(),
+    initialLikes: z.number().default(0),
   }),
 });
 

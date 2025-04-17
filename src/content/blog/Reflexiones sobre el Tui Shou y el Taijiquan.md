@@ -2,7 +2,8 @@
 title: 'Reflexiones sobre el Tui Shou y el Taijiquan'
 pubDate: 'Jul 03 2024'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fmonumento_tai_chi_sun.webp?alt=media&token=ef0c8a5b-8805-4aa8-ae3f-98f98acb3585'
-tags: ["Tai Chi", "Sun Taiji Quan", "Artes Marciales", "Reflexiones", "Tui Shou"]
+tags: ["Tai Chi", "Sun Taiji Quan", "Artes Marciales", "Reflexiones", "Tui Shou"] 
+initialLikes: 0   
 ---
 
 # Reflexiones sobre el Tui Shou y el Taijiquan

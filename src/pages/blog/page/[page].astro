@@ -1,0 +1,27 @@
+---
+import ArticleList from "@/layouts/ArticleList.astro";
+import Article from "@/components/Article.astro";
+import { getSortedPosts, getPagination, POSTS_PER_PAGE } from "@/utils/getPosts";
+
+export const getStaticPaths = async () => {
+  const allPosts = await getSortedPosts();
+  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+  
+  return Array.from({ length: totalPages }, (_, i) => ({
+    params: { page: (i + 1).toString() },
+  }));
+};
+
+const currentPage = parseInt(Astro.params.page);
+const allPosts = await getSortedPosts();
+const { posts, totalPages } = getPagination(allPosts, currentPage);
+
+// Redirección mejorada
+if (currentPage < 1 || currentPage > totalPages || isNaN(currentPage)) {
+  return Response.redirect(new URL('/blog', Astro.url), 302);
+}
+---
+
+<ArticleList currentPage={currentPage} totalPages={totalPages}>
+  {posts.map((post) => <Article {...post.data} slug={post.slug} />)}
+</ArticleList>

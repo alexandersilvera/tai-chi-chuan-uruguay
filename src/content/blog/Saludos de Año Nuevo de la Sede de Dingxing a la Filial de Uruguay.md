@@ -3,6 +3,7 @@ title: 'Saludos de Año Nuevo de la Sede de Dingxing a la Filial de Uruguay'
 pubDate: 'Feb 04 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fsaludo_maestros_tai_chi_sun.webp?alt=media&token=d9ac446f-c57c-404f-b5a8-d4a76186562e'
 tags: ['Sun Taiji Quan', 'Comunidad', 'Noticias', 'Año Nuevo']
+initialLikes: 0    
 ---
 
 # Saludos de Año Nuevo de la Sede de Dingxing de la Asociación de Artes Marciales de Sun Lutang a la Filial de Uruguay

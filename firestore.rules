@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Likes: solo lectura pública, escritura solo por funciones autenticadas
+    match /likes/{slug} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    // LikesLog: solo escritura por funciones, no lectura pública
+    match /likesLog/{docId} {
+      allow read: if false;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    // Por defecto, denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

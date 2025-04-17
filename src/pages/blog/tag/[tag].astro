@@ -6,18 +6,24 @@ import ArticleList from "@/layouts/ArticleList.astro";
 import Article from "@/components/Article.astro";
 
 export const getStaticPaths = (async () => {
-    const tags = (await getAllTags()).map((tag) => tag.toLowerCase());
+    const tags = (await getAllTags())
+        .filter((tag) => typeof tag === 'string')
+        .map((tag) => tag.toLowerCase());
     return tags.map((tag) => ({ params: { tag }, props: { tag } }));
 }) satisfies GetStaticPaths;
 
 const { tag } = Astro.props;
 
-const posts = await getCollection("blog", ({ data }) =>
-    data.tags.map((data) => data.toLowerCase()).includes(tag)
-);
+const posts = await getCollection("blog", ({ data }) => {
+    if (!Array.isArray(data.tags)) return false;
+    return data.tags
+        .filter((t) => typeof t === 'string')
+        .map((t) => t.toLowerCase())
+        .includes(tag);
+});
 
 ---
 
 <ArticleList>
-    {posts.map((post) => <Article {...post.data} slug={post.slug} />)}
+    {posts.map((post) => <Article {...post.data} slug={post.slug} initialLikes={post.data.initialLikes} />)}
 </ArticleList>

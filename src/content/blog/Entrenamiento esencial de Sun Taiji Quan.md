@@ -3,6 +3,7 @@ title: "Entrenamiento esencial de Sun Taiji Quan"
 pubDate: "Noviembre 17, 2024"
 heroImage: "https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Ftaichi_sun_practica_maestros.webp?alt=media&token=a72a5008-0cef-466b-bf0f-42fa19edd2f7"
 tags: ["Tai Chi", "Sun Taiji Quan", "Artes Marciales", "Entrenamiento"]
+initialLikes: 0 
 ---
 
 # Entrenamiento esencial de Sun Taiji Quan

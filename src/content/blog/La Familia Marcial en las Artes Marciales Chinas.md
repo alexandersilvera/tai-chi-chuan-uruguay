@@ -3,6 +3,7 @@ title: 'La Familia Marcial en las Artes Marciales Chinas'
 pubDate: 'Jul 01 2024'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Ffamilia_marchial.webp?alt=media&token=e1b36867-475a-440b-a74f-6415358c1eb2'
 tags: ["Tai Chi", "Sun Taiji Quan", "Artes Marciales", "Tradición", "Filosofía"]
+initialLikes: 0  
 ---
 
 # La Familia Marcial en las Artes Marciales Chinas
