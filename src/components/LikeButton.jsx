@@ -11,6 +11,7 @@ export default function LikeButton({ slug, initialLikes }) {
   // LOG TEMPORAL: Verifica el valor de slug al montar
   useEffect(() => {
     if (typeof slug !== "string" || !slug) {
+      console.error("[LikeButton] TEST LOG EN PRODUCCION:", slug);
       console.error("[LikeButton] Prop 'slug' inválido al montar:", slug);
     }
   }, [slug]);
