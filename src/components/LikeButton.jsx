@@ -8,11 +8,16 @@ const functions = getFunctions(app);
 const callHandleLike = httpsCallable(functions, 'handleLike');
 
 export default function LikeButton({ slug, initialLikes }) {
+  // LOG IMPLACABLE: SIEMPRE se ejecuta al renderizar
+  console.log("[LikeButton] RENDER - slug:", slug, "initialLikes:", initialLikes);
+
   // LOG TEMPORAL: Verifica el valor de slug al montar
   useEffect(() => {
     if (typeof slug !== "string" || !slug) {
       console.error("[LikeButton] TEST LOG EN PRODUCCION:", slug);
       console.error("[LikeButton] Prop 'slug' inválido al montar:", slug);
+    } else {
+      console.log("[LikeButton] useEffect mount OK - slug:", slug);
     }
   }, [slug]);
 
@@ -50,6 +55,8 @@ export default function LikeButton({ slug, initialLikes }) {
   }, [slug]);
 
   const handleLike = async () => {
+    console.log("[LikeButton] handleLike - slug:", slug, "userId:", userId);
+
     if (!slug) {
       console.error('Intentando dar like sin slug disponible.');
       setError('No se pudo identificar el artículo.');
