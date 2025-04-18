@@ -15,7 +15,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
-let functions = getFunctions(app);
+let functions = getFunctions(app, "us-central1");
 
 // Solo conecta a los emuladores si está en entorno local
 if (typeof window !== 'undefined' && window.location.hostname === "localhost") {
