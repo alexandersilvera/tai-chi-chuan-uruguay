@@ -1,17 +1,18 @@
 // src/components/LikeButton.jsx
 import { useState, useEffect } from 'react';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import { app, db } from '../utils/firebase.client';
-
-// SNIPPET DE DEPURACIÓN (elimina esto después de verificar la config en producción)
-if (typeof window !== 'undefined') {
-  window.firebaseAppOptions = app.options;
-  console.log('CONFIG FIREBASE:', app.options);
-}
 import { v4 as uuidv4 } from 'uuid';
 
-const functions = getFunctions(app);
-const callHandleLike = httpsCallable(functions, 'handleLike');
+// Llamada directa a la función cloud en producción
+const callHandleLike = async ({ slug, userId }) => {
+  const response = await fetch('https://handlelike-3hjph2wfea-uc.a.run.app', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug, userId }),
+    credentials: 'omit',
+  });
+  return await response.json();
+};
 
 export default function LikeButton({ slug, initialLikes }) {
   console.log("[LikeButton] RENDER - slug:", slug, "initialLikes:", initialLikes);
@@ -20,14 +21,18 @@ export default function LikeButton({ slug, initialLikes }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [userId, setUserId] = useState(null);
+  const [hasLiked, setHasLiked] = useState(false);
 
   useEffect(() => {
-    let storedUserId = localStorage.getItem('userId');
-    if (!storedUserId) {
-      storedUserId = uuidv4();
-      localStorage.setItem('userId', storedUserId);
+    if (typeof window !== 'undefined') {
+      let storedUserId = localStorage.getItem('userId');
+      if (!storedUserId) {
+        storedUserId = uuidv4();
+        localStorage.setItem('userId', storedUserId);
+      }
+      setUserId(storedUserId);
+      setHasLiked(localStorage.getItem(`liked-${slug}-${storedUserId}`) === 'true');
     }
-    setUserId(storedUserId);
 
     async function fetchLikes() {
       if (!slug) return;
@@ -70,7 +75,10 @@ export default function LikeButton({ slug, initialLikes }) {
 
       if (result.data.success) {
         setLikes(result.data.newLikes);
-        localStorage.setItem(`liked-${slug}-${userId}`, 'true');
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(`liked-${slug}-${userId}`, 'true');
+          setHasLiked(true);
+        }
       } else {
         setError(result.data.message || 'Error al dar like');
       }
@@ -81,9 +89,6 @@ export default function LikeButton({ slug, initialLikes }) {
       setIsLoading(false);
     }
   };
-
-  // DEPURACIÓN: forzamos hasLiked a false para permitir siempre el like
-const hasLiked = false; // <-- Solo para depuración, recuerda restaurar luego
 
   return (
     <div>

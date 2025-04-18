@@ -9,11 +9,19 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 exports.handleLike = functions.https.onRequest(async (req, res) => {
-  res.set("Access-Control-Allow-Origin", "https://taichisun.com");
+  // Permitir CORS solo para taichisun.com y www.taichisun.com
+  const allowedOrigins = ["https://taichisun.com", "https://www.taichisun.com"];
+  const origin = req.get("origin");
+  if (allowedOrigins.includes(origin)) {
+    res.set("Access-Control-Allow-Origin", origin);
+  }
   res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.set("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") {
     return res.status(204).send("");
+  }
+  if (!allowedOrigins.includes(origin)) {
+    return res.status(403).json({success: false, message: "Dominio no autorizado."});
   }
 
   let slug;
