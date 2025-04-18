@@ -71,7 +71,7 @@ exports.handleLike = functions.https.onRequest(async (req, res) => {
       return res.status(409).json(resultData); // 409 Conflict si ya existe
     }
   } catch (error) {
-    console.error("Error processing like:", error);
+    // Error processing like, logging removido para producción
     return res.status(500).json({
       success: false,
       message: "Ocurrió un error al procesar el like.",

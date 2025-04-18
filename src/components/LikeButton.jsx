@@ -1,6 +1,6 @@
 // src/components/LikeButton.jsx
 import { useState, useEffect } from 'react';
-import { app, db } from '../utils/firebase.client';
+
 import { v4 as uuidv4 } from 'uuid';
 
 // Llamada directa a la función cloud en producción
@@ -20,7 +20,7 @@ const callHandleLike = async ({ slug, userId }) => {
 };
 
 export default function LikeButton({ slug, initialLikes }) {
-  console.log("[LikeButton] RENDER - slug:", slug, "initialLikes:", initialLikes);
+
 
   const [likes, setLikes] = useState(initialLikes);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,34 +38,17 @@ export default function LikeButton({ slug, initialLikes }) {
       setUserId(storedUserId);
       setHasLiked(localStorage.getItem(`liked-${slug}-${storedUserId}`) === 'true');
     }
-
-    async function fetchLikes() {
-      if (!slug) return;
-      try {
-        const { doc, getDoc } = await import('firebase/firestore');
-        const likesRef = doc(db, 'likes', slug);
-        const likesSnap = await getDoc(likesRef);
-        if (likesSnap.exists()) {
-          const data = likesSnap.data();
-          setLikes(data.count || 0);
-        }
-      } catch (err) {
-        console.error('Error consultando likes en Firestore:', err);
-      }
-    }
-    fetchLikes();
   }, [slug]);
 
   const handleLike = async () => {
-    console.log("[LikeButton] handleLike - slug:", slug, "userId:", userId);
+
 
     if (!slug) {
-      console.error('Intentando dar like sin slug disponible.');
       setError('No se pudo identificar el artículo.');
       return;
     }
     if (!userId) {
-      console.error("Intentando dar like sin userId disponible.");
+
       setError("Espera un momento e inténtalo de nuevo.");
       return;
     }
@@ -74,9 +57,9 @@ export default function LikeButton({ slug, initialLikes }) {
     setError('');
 
     try {
-      console.log('[LikeButton] handleLike - Calling function with:', { slug, userId });
+
       const result = await callHandleLike({ slug, userId });
-      console.log('[LikeButton] handleLike - Function result:', result);
+
 
       if (result && result.success) {
         setLikes(result.newLikes);
@@ -88,7 +71,6 @@ export default function LikeButton({ slug, initialLikes }) {
         setError(result?.message || 'Error al dar like');
       }
     } catch (err) {
-      console.error("Error calling handleLike function:", err);
       setError(err.message || 'Ocurrió un error');
     } finally {
       setIsLoading(false);
