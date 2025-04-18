@@ -6,10 +6,11 @@ import { v4 as uuidv4 } from 'uuid';
 // Llamada directa a la función cloud en producción
 const callHandleLike = async ({ slug, userId }) => {
   try {
+    const body = userId ? { slug, userId } : { slug };
     const response = await fetch('https://handlelike-3hjph2wfea-uc.a.run.app', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug, userId }),
+      body: JSON.stringify(body),
       credentials: 'omit',
     });
     const data = await response.json();
@@ -29,6 +30,15 @@ export default function LikeButton({ slug, initialLikes }) {
   const [hasLiked, setHasLiked] = useState(false);
 
   useEffect(() => {
+    let ignore = false;
+    async function fetchLikesCloud() {
+      try {
+        const result = await callHandleLike({ slug }); // solo slug, sin userId
+        if (!ignore && result && typeof result.newLikes === 'number') {
+          setLikes(result.newLikes);
+        }
+      } catch {}
+    }
     if (typeof window !== 'undefined') {
       let storedUserId = localStorage.getItem('userId');
       if (!storedUserId) {
@@ -37,7 +47,9 @@ export default function LikeButton({ slug, initialLikes }) {
       }
       setUserId(storedUserId);
       setHasLiked(localStorage.getItem(`liked-${slug}-${storedUserId}`) === 'true');
+      fetchLikesCloud();
     }
+    return () => { ignore = true; };
   }, [slug]);
 
   const handleLike = async () => {
