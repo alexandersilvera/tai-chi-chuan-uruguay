@@ -1,119 +1,78 @@
 // functions/index.js
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const {Timestamp, FieldValue} = require("firebase-admin/firestore");
 
-// Inicializa Firebase Admin SDK (se ejecuta una sola vez)
-admin.initializeApp();
-
-// Obtén una referencia a Firestore desde el SDK de Admin
+// Inicializa Firebase Admin solo si no está inicializado
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 const db = admin.firestore();
 
-// Solo conecta al emulador de Firestore si está en desarrollo
-if (process.env.FUNCTIONS_EMULATOR === "true" || process.env.FIRESTORE_EMULATOR_HOST) {
-  db.settings({
-    host: "localhost:8080",
-    ssl: false,
-  });
-}
-
-/**
- * Cloud Function para manejar los "likes".
- * Se espera que reciba 'slug' y 'userId' en el cuerpo de la solicitud.
- * Verifica si el usuario ya dio like y, si no, incrementa el contador
- * y registra el like del usuario.
- */
-exports.handleLike = functions.https.onCall(async (data, context) => {
-  functions.logger.info("handleLike INICIO - LLAMADA RECIBIDA");
-  // --- LOGGING --- Añadido para depurar
-  // Log properties separately to be extra safe
-  functions.logger.info("handleLike received slug:", data.slug);
-  functions.logger.info("handleLike received userId:", data.userId);
-  // Log de tipos y valores recibidos
-  functions.logger.info("handleLike received types:", {
-    slugType: typeof data.slug,
-    userIdType: typeof data.userId,
-    slugValue: data.slug,
-    userIdValue: data.userId,
-    dataRaw: data,
-  });
-  // --- FIN LOGGING ---
-
-  const slug = data.slug;
-  const userId = data.userId;
-
-  // Asegurarse de que slug y userId son strings
-  if (typeof slug !== "string" || typeof userId !== "string" || !slug || !userId) {
-    functions.logger.error(
-        "Validation Failed: Invalid arguments",
-        {
-          receivedSlug: slug,
-          receivedUserId: userId,
-        },
-    );
-    throw new functions.https.HttpsError("invalid-argument", "El slug y el userId son requeridos y deben ser strings.");
+exports.handleLike = functions.https.onRequest(async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "https://taichisun.com");
+  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    return res.status(204).send("");
   }
 
-  // Referencia al documento que registra si un usuario ya dio like a un slug
+  let slug;
+  let userId;
+  if (req.body) {
+    if (req.body.slug && req.body.userId) {
+      slug = req.body.slug;
+      userId = req.body.userId;
+    } else if (req.body.data && req.body.data.slug && req.body.data.userId) {
+      slug = req.body.data.slug;
+      userId = req.body.data.userId;
+    }
+  }
+
+  if (typeof slug !== "string" || typeof userId !== "string" || !slug || !userId) {
+    return res.status(400).json({success: false, message: "El slug y el userId son requeridos y deben ser strings."});
+  }
+
+  // --- Lógica Firestore protegida ---
   const likeLogRef = db.collection("likesLog").doc(`${slug}_${userId}`);
-  // Referencia al documento que lleva la cuenta total de likes para un slug
   const likesRef = db.collection("likes").doc(slug);
 
   try {
-    // Ejecutamos la lógica dentro de una transacción para asegurar atomicidad
     const resultData = await db.runTransaction(async (transaction) => {
-      // Realiza ambas lecturas antes de cualquier escritura
       const likeLogDoc = await transaction.get(likeLogRef);
       const likesDoc = await transaction.get(likesRef);
 
       if (likeLogDoc.exists) {
-        // El usuario ya dio like, lanzamos error
-
-        throw new functions.https.HttpsError(
-            "already-exists",
-            "Ya has dado like a este artículo.",
-        );
+        return {success: false, message: "Ya has dado like a este artículo."};
       }
 
-      // Si no existe el log, procedemos
-
-
-      // 1. Registra el like del usuario en likesLog
-      transaction.set(likeLogRef, {
-        timestamp: Timestamp.now(),
-      });
-
-      // 2. Incrementa o inicializa el contador en la colección likes
+      transaction.set(likeLogRef, {timestamp: admin.firestore.Timestamp.now()});
       let newLikesCount;
       if (likesDoc.exists) {
-        // Si existe, incrementamos
-        transaction.update(likesRef, {
-          count: FieldValue.increment(1),
-        });
-        newLikesCount = (likesDoc.data().count || 0) + 1; // Calcula el nuevo contador
+        transaction.update(likesRef, {count: admin.firestore.FieldValue.increment(1)});
+        newLikesCount = (likesDoc.data().count || 0) + 1;
       } else {
-        // Si no existe, lo creamos con contador 1
         transaction.set(likesRef, {count: 1});
-        newLikesCount = 1; // El nuevo contador es 1
+        newLikesCount = 1;
       }
+      return {success: true, newLikes: newLikesCount};
+    });
 
-      // Devolver éxito y el nuevo contador desde la transacción
-      return {
-        success: true,
-        newLikes: newLikesCount,
-      };
-    }); // Fin de runTransaction
-
-    // La transacción devolvió los datos, así que los retornamos directamente
-
-    return resultData; // Retornar el resultado de la transacción
-  } catch (error) {
-    functions.logger.error("Error processing like:", error);
-    // Si el error es uno que ya lanzamos (como 'already-exists'), relanzarlo
-    if (error instanceof functions.https.HttpsError) {
-      throw error;
+    if (resultData.success) {
+      return res.status(200).json(resultData);
+    } else {
+      return res.status(409).json(resultData); // 409 Conflict si ya existe
     }
-    // Para otros errores inesperados, lanzar un error interno
-    throw new functions.https.HttpsError("internal", "Ocurrió un error al procesar el like.", error.message);
+  } catch (error) {
+    console.error("Error processing like:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Ocurrió un error al procesar el like.",
+      error: error.message,
+    });
   }
 });
+
+exports.helloWorld = functions.https.onRequest((req, res) => {
+  res.status(200).send("Hello from Firebase!");
+});
+
