@@ -36,8 +36,28 @@ exports.handleLike = functions.https.onRequest(async (req, res) => {
     }
   }
 
-  if (typeof slug !== "string" || typeof userId !== "string" || !slug || !userId) {
-    return res.status(400).json({success: false, message: "El slug y el userId son requeridos y deben ser strings."});
+  if (typeof slug !== "string" || !slug) {
+    return res.status(400).json({success: false, message: "El slug es requerido y debe ser string."});
+  }
+
+  // Si solo se recibe slug, devolver el contador de likes
+  if (!userId) {
+    try {
+      const likesDoc = await db.collection("likes").doc(slug).get();
+      const count = likesDoc.exists ? (likesDoc.data().count || 0) : 0;
+      return res.status(200).json({success: true, newLikes: count});
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error al consultar el contador de likes.",
+        error: error.message,
+      });
+    }
+  }
+
+  // Si hay userId, sigue la lógica normal de like
+  if (typeof userId !== "string" || !userId) {
+    return res.status(400).json({success: false, message: "El userId es requerido y debe ser string."});
   }
 
   // --- Lógica Firestore protegida ---
