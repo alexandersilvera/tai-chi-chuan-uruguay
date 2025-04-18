@@ -82,7 +82,8 @@ export default function LikeButton({ slug, initialLikes }) {
     }
   };
 
-  const hasLiked = typeof window !== 'undefined' && localStorage.getItem(`liked-${slug}-${userId}`) === 'true';
+  // DEPURACIÓN: forzamos hasLiked a false para permitir siempre el like
+const hasLiked = false; // <-- Solo para depuración, recuerda restaurar luego
 
   return (
     <div>

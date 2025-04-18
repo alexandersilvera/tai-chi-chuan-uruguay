@@ -24,10 +24,19 @@ if (process.env.FUNCTIONS_EMULATOR === "true" || process.env.FIRESTORE_EMULATOR_
  * y registra el like del usuario.
  */
 exports.handleLike = functions.https.onCall(async (data, context) => {
+  functions.logger.info("handleLike INICIO - LLAMADA RECIBIDA");
   // --- LOGGING --- Añadido para depurar
   // Log properties separately to be extra safe
   functions.logger.info("handleLike received slug:", data.slug);
   functions.logger.info("handleLike received userId:", data.userId);
+  // Log de tipos y valores recibidos
+  functions.logger.info("handleLike received types:", {
+    slugType: typeof data.slug,
+    userIdType: typeof data.userId,
+    slugValue: data.slug,
+    userIdValue: data.userId,
+    dataRaw: data,
+  });
   // --- FIN LOGGING ---
 
   const slug = data.slug;
