@@ -5,13 +5,18 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Llamada directa a la función cloud en producción
 const callHandleLike = async ({ slug, userId }) => {
-  const response = await fetch('https://handlelike-3hjph2wfea-uc.a.run.app', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ slug, userId }),
-    credentials: 'omit',
-  });
-  return await response.json();
+  try {
+    const response = await fetch('https://handlelike-3hjph2wfea-uc.a.run.app', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug, userId }),
+      credentials: 'omit',
+    });
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    return { success: false, message: err.message || 'Error de red o formato de respuesta' };
+  }
 };
 
 export default function LikeButton({ slug, initialLikes }) {
@@ -73,14 +78,14 @@ export default function LikeButton({ slug, initialLikes }) {
       const result = await callHandleLike({ slug, userId });
       console.log('[LikeButton] handleLike - Function result:', result);
 
-      if (result.data.success) {
-        setLikes(result.data.newLikes);
+      if (result && result.success) {
+        setLikes(result.newLikes);
         if (typeof window !== 'undefined') {
           localStorage.setItem(`liked-${slug}-${userId}`, 'true');
           setHasLiked(true);
         }
       } else {
-        setError(result.data.message || 'Error al dar like');
+        setError(result?.message || 'Error al dar like');
       }
     } catch (err) {
       console.error("Error calling handleLike function:", err);
