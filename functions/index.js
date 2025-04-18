@@ -1,7 +1,7 @@
 // functions/index.js
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const { Timestamp, FieldValue } = require('firebase-admin/firestore');
+const {Timestamp, FieldValue} = require("firebase-admin/firestore");
 
 // Inicializa Firebase Admin SDK (se ejecuta una sola vez)
 admin.initializeApp();
@@ -10,9 +10,11 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // Solo conecta al emulador de Firestore si está en desarrollo
-if (process.env.FUNCTIONS_EMULATOR === 'true' || process.env.FIRESTORE_EMULATOR_HOST) {
-  db.settings({ host: "localhost:8080", ssl: false });
-
+if (process.env.FUNCTIONS_EMULATOR === "true" || process.env.FIRESTORE_EMULATOR_HOST) {
+  db.settings({
+    host: "localhost:8080",
+    ssl: false,
+  });
 }
 
 /**
@@ -23,16 +25,17 @@ if (process.env.FUNCTIONS_EMULATOR === 'true' || process.env.FIRESTORE_EMULATOR_
  */
 exports.handleLike = functions.https.onCall(async (data, context) => {
   // --- LOGGING --- Añadido para depurar
-
+  // Log properties separately to be extra safe
+  functions.logger.info("handleLike received slug:", data.slug);
+  functions.logger.info("handleLike received userId:", data.userId);
   // --- FIN LOGGING ---
 
-  // Compatibilidad: acepta datos en data.slug o data.data.slug
-  const slug = data.slug || (data.data && data.data.slug);
-  const userId = data.userId || (data.data && data.data.userId); // El userId generado en el cliente
+  const slug = data.slug;
+  const userId = data.userId;
 
   // Asegurarse de que slug y userId son strings
   if (typeof slug !== "string" || typeof userId !== "string" || !slug || !userId) {
-    console.error("Validation Failed: Invalid arguments", {slug, userId});
+    functions.logger.error("Validation Failed: Invalid arguments");
     throw new functions.https.HttpsError("invalid-argument", "El slug y el userId son requeridos y deben ser strings.");
   }
 
@@ -80,19 +83,22 @@ exports.handleLike = functions.https.onCall(async (data, context) => {
       }
 
       // Devolver éxito y el nuevo contador desde la transacción
-      return {success: true, newLikes: newLikesCount};
+      return {
+        success: true,
+        newLikes: newLikesCount,
+      };
     }); // Fin de runTransaction
 
     // La transacción devolvió los datos, así que los retornamos directamente
 
     return resultData; // Retornar el resultado de la transacción
   } catch (error) {
-    console.error("Error processing like:", error);
+    functions.logger.error("Error processing like:", error);
     // Si el error es uno que ya lanzamos (como 'already-exists'), relanzarlo
     if (error instanceof functions.https.HttpsError) {
       throw error;
     }
     // Para otros errores inesperados, lanzar un error interno
-    throw new functions.https.HttpsError("internal", "Ocurrió un error al procesar el like.");
+    throw new functions.https.HttpsError("internal", "Ocurrió un error al procesar el like.", error.message);
   }
 });
