@@ -2,6 +2,12 @@
 import { useState, useEffect } from 'react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { app, db } from '../utils/firebase.client';
+
+// SNIPPET DE DEPURACIÓN (elimina esto después de verificar la config en producción)
+if (typeof window !== 'undefined') {
+  window.firebaseAppOptions = app.options;
+  console.log('CONFIG FIREBASE:', app.options);
+}
 import { v4 as uuidv4 } from 'uuid';
 
 const functions = getFunctions(app);

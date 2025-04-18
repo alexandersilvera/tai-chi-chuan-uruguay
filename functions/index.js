@@ -35,7 +35,13 @@ exports.handleLike = functions.https.onCall(async (data, context) => {
 
   // Asegurarse de que slug y userId son strings
   if (typeof slug !== "string" || typeof userId !== "string" || !slug || !userId) {
-    functions.logger.error("Validation Failed: Invalid arguments");
+    functions.logger.error(
+        "Validation Failed: Invalid arguments",
+        {
+          receivedSlug: slug,
+          receivedUserId: userId,
+        },
+    );
     throw new functions.https.HttpsError("invalid-argument", "El slug y el userId son requeridos y deben ser strings.");
   }
 
