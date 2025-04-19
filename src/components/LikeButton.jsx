@@ -37,7 +37,9 @@ export default function LikeButton({ slug, initialLikes }) {
         if (!ignore && result && typeof result.newLikes === 'number') {
           setLikes(result.newLikes);
         }
-      } catch {}
+      } catch (err) {
+        console.error('Error fetching initial likes:', err);
+      }
     }
     if (typeof window !== 'undefined') {
       let storedUserId = localStorage.getItem('userId');

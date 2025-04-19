@@ -9,8 +9,12 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 exports.handleLike = functions.https.onRequest(async (req, res) => {
-  // Permitir CORS solo para taichisun.com y www.taichisun.com
-  const allowedOrigins = ["https://taichisun.com", "https://www.taichisun.com"];
+  // Permitir CORS para producción y desarrollo local
+  const allowedOrigins = [
+    "https://taichisun.com",
+    "https://www.taichisun.com",
+    "http://localhost:4321", // Añadir origen de desarrollo
+  ];
   const origin = req.get("origin");
   if (allowedOrigins.includes(origin)) {
     res.set("Access-Control-Allow-Origin", origin);
@@ -108,4 +112,3 @@ exports.handleLike = functions.https.onRequest(async (req, res) => {
 exports.helloWorld = functions.https.onRequest((req, res) => {
   res.status(200).send("Hello from Firebase!");
 });
-

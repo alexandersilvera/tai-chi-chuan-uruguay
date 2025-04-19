@@ -1,15 +1,42 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Likes: solo lectura pública, escritura solo por funciones autenticadas
+    // Likes: solo lectura pública, escritura solo por funciones admin
     match /likes/{slug} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.token.admin == true;
     }
-    // LikesLog: solo escritura por funciones, no lectura pública
+    // LikesLog: solo escritura por funciones admin, no lectura pública
     match /likesLog/{docId} {
       allow read: if false;
       allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    // Artículos y comentarios
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+      // Subcolección de comentarios
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if request.auth != null
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 2000
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.timestamp == request.time;
+        allow update, delete: if false;
+      }
+    }
+    // Reglas para artículos y comentarios
+    match /articles/{articleId} {
+      allow read: if true; // Cualquiera puede leer artículos
+      
+      // Subcolección de comentarios
+      match /comments/{commentId} {
+        allow read: if true; // Cualquiera puede leer comentarios
+        allow create: if request.auth != null; // Solo usuarios autenticados pueden comentar
+        allow update, delete: if false; // Nadie puede editar o borrar comentarios
+      }
     }
     // Por defecto, denegar todo lo demás
     match /{document=**} {
