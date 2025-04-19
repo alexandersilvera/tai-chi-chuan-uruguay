@@ -27,12 +27,17 @@ exports.handleLike = functions.https.onRequest(async (req, res) => {
   let slug;
   let userId;
   if (req.body) {
-    if (req.body.slug && req.body.userId) {
+    // Permitir ambos formatos: {slug}, {slug, userId}, {data: {slug}}, {data: {slug, userId}}
+    if (typeof req.body.slug === "string") {
       slug = req.body.slug;
-      userId = req.body.userId;
-    } else if (req.body.data && req.body.data.slug && req.body.data.userId) {
+      if (typeof req.body.userId === "string") {
+        userId = req.body.userId;
+      }
+    } else if (req.body.data && typeof req.body.data.slug === "string") {
       slug = req.body.data.slug;
-      userId = req.body.data.userId;
+      if (typeof req.body.data.userId === "string") {
+        userId = req.body.data.userId;
+      }
     }
   }
 
