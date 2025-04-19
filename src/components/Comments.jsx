@@ -10,6 +10,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+import AuthButton from './AuthButton.jsx';
+
 export default function Comments({ slug }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -106,28 +108,31 @@ export default function Comments({ slug }) {
 
       {/* Formulario para Nuevo Comentario */}
       {user ? (
-        <form onSubmit={handleCommentSubmit} className="mt-6">
+        <form onSubmit={handleCommentSubmit} className="flex flex-col gap-2 mb-8">
           <textarea
+            className="bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-zinc-200 focus:outline-none focus:border-emerald-500 resize-none min-h-[60px]"
+            placeholder="Escribe tu comentario..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Escribe tu comentario aquí..."
-            rows="4"
-            className="w-full p-3 rounded bg-zinc-800 border border-zinc-700 text-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder-zinc-500"
-            required
+            disabled={isLoading || loadingAuth}
+            maxLength={2000}
           />
-          <button 
-            type="submit"
-            className="mt-3 px-5 py-2 rounded bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            // disabled={!newComment.trim() || loadingAuth } // Deshabilitar mientras carga auth o si está vacío
-          >
-            Enviar Comentario
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="submit"
+              className="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors disabled:opacity-60"
+              disabled={isLoading || loadingAuth || !newComment.trim()}
+            >
+              Enviar
+            </button>
+            {error && <span className="text-red-500 text-sm ml-2">{error}</span>}
+          </div>
         </form>
       ) : (
-        <p className="text-zinc-400 mt-6 bg-zinc-800 p-4 rounded text-center">
-          Necesitas <a href="/login" className="text-emerald-500 hover:underline font-semibold">iniciar sesión</a> para dejar un comentario.
-          {/* O mostrar el botón de login directamente si prefieres */}
-        </p>
+        <div className="mb-8 flex flex-col items-start gap-2">
+          <span className="text-zinc-400 text-sm">Necesitas iniciar sesión para comentar.</span>
+          <AuthButton />
+        </div>
       )}
     </div>
   );
