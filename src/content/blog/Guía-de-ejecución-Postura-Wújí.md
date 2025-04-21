@@ -2,7 +2,7 @@
 title: 'Guía de Ejecución: Postura Wújí 無極'
 pubDate: 'Feb 01 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fpostura_wuji.webp?alt=media&token=2b78776b-e3c2-4a37-908c-f1e2ef5cd06c'
-tags: ["Wuji", "Práctica Interna", "Alineación Corporal", "Taiji Quan"]
+tags: ["wuji", "practica-interna", "alineacion-corporal", "taiji-quan"]
 initialLikes: 0  
 ---
 

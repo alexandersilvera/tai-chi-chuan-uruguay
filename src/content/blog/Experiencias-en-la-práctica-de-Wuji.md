@@ -2,7 +2,7 @@
 title: 'Experiencias en la Práctica de Wuji 無極'
 pubDate: 'Jan 28 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fwuji_experiencia_personal.webp?alt=media&token=40746d5d-cc88-4bb8-8545-e225012ef6f0'
-tags: ["Wuji", "Práctica Interna", "Taiji Quan", "Meditación", "Bienestar"] 
+tags: ["wuji", "practica-interna", "taiji-quan", "meditacion", "bienestar"] 
 initialLikes: 0 
 ---
 

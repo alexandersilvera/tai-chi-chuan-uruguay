@@ -1,6 +1,6 @@
 // src/utils/firebase.client.js
 import { initializeApp, getApps } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+// import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,

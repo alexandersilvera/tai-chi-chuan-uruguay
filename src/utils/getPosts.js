@@ -1,7 +1,7 @@
 // src/utils/getPosts.js
 import { getCollection } from "astro:content";
 
-export const POSTS_PER_PAGE = 6;
+export const POSTS_PER_PAGE = 9;
 
 export async function getSortedPosts() {
   const posts = await getCollection("blog");

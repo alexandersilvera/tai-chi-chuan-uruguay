@@ -5,10 +5,16 @@ import { getCollection } from "astro:content";
 import ArticleList from "@/layouts/ArticleList.astro";
 import Article from "@/components/Article.astro";
 
+function slugify(str) {
+  return str
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // elimina tildes
+    .replace(/\s+/g, '-') // espacios a guiones
+    .replace(/[^\w-]+/g, ''); // elimina caracteres especiales
+}
+
 export const getStaticPaths = (async () => {
-    const tags = (await getAllTags())
-        .filter((tag) => typeof tag === 'string')
-        .map((tag) => tag.toLowerCase());
+    const tags = (await getAllTags()).map(([tag]) => tag);
     return tags.map((tag) => ({ params: { tag }, props: { tag } }));
 }) satisfies GetStaticPaths;
 
@@ -18,12 +24,16 @@ const posts = await getCollection("blog", ({ data }) => {
     if (!Array.isArray(data.tags)) return false;
     return data.tags
         .filter((t) => typeof t === 'string')
-        .map((t) => t.toLowerCase())
+        .map((t) => slugify(t))
         .includes(tag);
 });
 
 ---
 
 <ArticleList>
-    {posts.map((post) => <Article {...post.data} slug={post.slug} initialLikes={post.data.initialLikes} />)}
+    {posts.length > 0 ? (
+        posts.map((post) => <Article {...post.data} slug={post.slug} initialLikes={post.data.initialLikes} />)
+    ) : (
+        <p class="text-zinc-400 text-center py-12">No hay artículos para esta categoría.</p>
+    )}
 </ArticleList>

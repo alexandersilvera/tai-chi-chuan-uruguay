@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { useAuth } from "../context/AuthContext";
-import AuthModal from "./AuthModal";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../utils/firebase.client";
 import { updateProfile, getAuth } from "firebase/auth";
+
+const AuthModal = lazy(() => import("./AuthModal"));
 
 export default function AuthButton() {
   const { user, logout, refreshUser } = useAuth();
@@ -144,7 +145,11 @@ export default function AuthButton() {
       <button className="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors" onClick={() => setShowModal(true)}>
         Iniciar sesión
       </button>
-      <AuthModal open={showModal} onClose={() => setShowModal(false)} />
+      {showModal && (
+        <Suspense fallback={<div className="fixed inset-0 z-40 bg-black/30 flex items-center justify-center"><p className='text-white'>Cargando...</p></div>}> 
+          <AuthModal open={showModal} onClose={() => setShowModal(false)} />
+        </Suspense>
+      )}
     </>
   );
 }

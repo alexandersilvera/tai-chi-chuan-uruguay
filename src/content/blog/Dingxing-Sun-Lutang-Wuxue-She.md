@@ -2,7 +2,7 @@
 title: 'Dingxing Sun Lutang Wuxue She'
 pubDate: 'Jul 01 2024'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fshifus_juntos.webp?alt=media&token=9dc07726-11bd-4ae6-9153-3a65b7cee02b'
-tags: ["Sun Taiji Quan", "Historia", "Tradición", "Artes Marciales", "Dingxing"]
+tags: ["sun-taiji-quan", "historia", "tradicion", "artes-marciales", "dingxing"]
 initialLikes: 0 
 ---
 

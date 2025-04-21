@@ -44,7 +44,7 @@ const { currentPage = 1, totalPages = 1, currentTag, slug, initialLikes} = Astro
     </section>
 
     {totalPages > 1 && (
-      <div class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-zinc-400">
+      <nav class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-zinc-400" aria-label="Paginación">
         <div class="flex gap-2">
           {currentPage > 1 && (
             <a
@@ -57,7 +57,8 @@ const { currentPage = 1, totalPages = 1, currentTag, slug, initialLikes} = Astro
                   ? "/blog"
                   : `/blog/page/${currentPage - 1}`
               }
-              class="px-4 py-2 hover:text-white transition-colors rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center gap-1"
+              class="px-4 py-2 hover:text-white transition-colors rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center gap-1 font-semibold"
+              aria-label="Página anterior"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -67,27 +68,29 @@ const { currentPage = 1, totalPages = 1, currentTag, slug, initialLikes} = Astro
           )}
         </div>
 
-        <div class="flex gap-2 items-center">
+        <ul class="flex gap-1 items-center" role="list">
           {Array.from({ length: totalPages }, (_, i) => {
             const pageNumber = i + 1;
             const isActive = pageNumber === currentPage;
             const basePath = currentTag ? `/blog/tag/${currentTag}` : "/blog";
             const pagePath = pageNumber === 1 ? basePath : `${basePath}/page/${pageNumber}`;
-            
             return (
-              <a
-                href={pagePath}
-                class={`px-3 py-1 rounded-lg ${
-                  isActive
-                    ? 'bg-emerald-600 text-white'
-                    : 'hover:bg-zinc-800 hover:text-white'
-                }`}
-              >
-                {pageNumber}
-              </a>
+              <li key={pageNumber}>
+                <a
+                  href={pagePath}
+                  aria-current={isActive ? "page" : undefined}
+                  class={`px-3 py-1 rounded-lg text-sm font-semibold border border-transparent transition-colors ${
+                    isActive
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow'
+                      : 'hover:bg-zinc-800 hover:text-white'
+                  }`}
+                >
+                  {pageNumber}
+                </a>
+              </li>
             );
           })}
-        </div>
+        </ul>
 
         <div class="flex gap-2">
           {currentPage < totalPages && (
@@ -97,7 +100,8 @@ const { currentPage = 1, totalPages = 1, currentTag, slug, initialLikes} = Astro
                   ? `/blog/tag/${currentTag}/page/${currentPage + 1}`
                   : `/blog/page/${currentPage + 1}`
               }
-              class="px-4 py-2 hover:text-white transition-colors rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center gap-1"
+              class="px-4 py-2 hover:text-white transition-colors rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center gap-1 font-semibold"
+              aria-label="Página siguiente"
             >
               Siguiente
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +110,7 @@ const { currentPage = 1, totalPages = 1, currentTag, slug, initialLikes} = Astro
             </a>
           )}
         </div>
-      </div>
+      </nav>
     )}
   </div>
 </Layout>

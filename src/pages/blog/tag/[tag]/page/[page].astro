@@ -1,0 +1,55 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getAllTags } from "@/utils/getAllTags";
+import { getCollection } from "astro:content";
+import ArticleList from "@/layouts/ArticleList.astro";
+import Article from "@/components/Article.astro";
+import { slugify } from "@/utils/slugify";
+
+export const getStaticPaths = (async () => {
+  const POSTS_PER_PAGE = 9; // Ajustado para mostrar 3 artículos por página
+  const tags = (await getAllTags()).map(([tag]) => tag);
+  const allPosts = await getCollection("blog");
+  let paths = [];
+  for (const tag of tags) {
+    const filtered = allPosts.filter(post =>
+      Array.isArray(post.data.tags) &&
+      post.data.tags.map(t => slugify(t)).includes(tag)
+    );
+    const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
+    for (let page = 1; page <= totalPages; page++) {
+      paths.push({ params: { tag, page: page.toString() }, props: { tag, page } });
+    }
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+const { tag, page } = Astro.props;
+const currentPage = parseInt(page);
+
+const POSTS_PER_PAGE = 3; // Ajustado para mostrar 3 artículos por página
+
+const allPosts = await getCollection("blog", ({ data }) => {
+  if (!Array.isArray(data.tags)) return false;
+  return data.tags
+    .filter((t) => typeof t === 'string')
+    .map((t) => slugify(t))
+    .includes(tag);
+});
+
+const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+const paginatedPosts = allPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+
+// Redirección si la página está fuera de rango
+if (currentPage < 1 || currentPage > totalPages || isNaN(currentPage)) {
+  return Response.redirect(new URL(`/blog/tag/${tag}`, Astro.url), 302);
+}
+---
+
+<ArticleList currentPage={currentPage} totalPages={totalPages} currentTag={tag}>
+    {paginatedPosts.length > 0 ? (
+        paginatedPosts.map((post) => <Article {...post.data} slug={post.slug} initialLikes={post.data.initialLikes} />)
+    ) : (
+        <p class="text-zinc-400 text-center py-12">No hay artículos para esta categoría.</p>
+    )}
+</ArticleList>
