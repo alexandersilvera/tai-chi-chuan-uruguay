@@ -31,26 +31,67 @@ export default function AuthModal({ open, onClose }) {
   };
 
   const handleGoogle = async () => {
-    setError("");
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+  setError("");
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    // Si hay un pending Facebook credential, vincúlalo
+    if (window.__pendingFacebookCredential) {
+      try {
+        await result.user.linkWithCredential(window.__pendingFacebookCredential);
+        setError("");
+        delete window.__pendingFacebookCredential;
+        onClose();
+      } catch (linkErr) {
+        setError("No se pudo vincular Facebook: " + linkErr.message);
+      }
+    } else {
       onClose();
-    } catch (err) {
-      setError(err.message);
     }
-  };
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
   const handleFacebook = async () => {
-    setError("");
-    try {
-      const provider = new FacebookAuthProvider();
-      await signInWithPopup(auth, provider);
-      onClose();
-    } catch (err) {
+  setError("");
+  try {
+    const provider = new FacebookAuthProvider();
+    await signInWithPopup(auth, provider);
+    onClose();
+  } catch (err) {
+    if (err.code === "auth/account-exists-with-different-credential") {
+      // Guardar el credential de Facebook
+      const pendingCred = FacebookAuthProvider.credentialFromError(err);
+      // Obtener email asociado
+      const email = err.customData?.email;
+      setError("Ya existe una cuenta con este correo electrónico, pero fue creada usando otro método de acceso.\n\nPara continuar, inicia sesión con ese método. Luego podrás vincular tu cuenta de Facebook automáticamente. Si necesitas ayuda, contáctanos.");
+      // Intentar obtener el proveedor original
+      if (email) {
+        try {
+          const methods = await auth.fetchSignInMethodsForEmail(email);
+          // Si es Google
+          if (methods.includes("google.com")) {
+            setError("Este correo electrónico ya está registrado con Google.\n\nPor favor, haz clic en 'Google' para iniciar sesión. Una vez que hayas iniciado sesión, tu cuenta de Facebook se vinculará automáticamente y podrás usar ambos métodos para acceder.");
+            // Esperar a que el usuario haga login con Google
+            // Aquí podrías mostrar un botón especial o instrucción
+            // Vinculación automática después del login con Google
+            // Se implementa en handleGoogle
+            window.__pendingFacebookCredential = pendingCred;
+          } else if (methods.includes("password")) {
+            setError("Este correo electrónico ya está registrado con email y contraseña.\n\nInicia sesión con tu email y contraseña. Luego, desde tu perfil, podrás vincular tu cuenta de Facebook en la sección de configuración de cuenta.");
+          } else {
+            setError("Este correo electrónico ya está registrado con otro método de acceso: " + methods.join(", ") + ".\n\nPor favor, inicia sesión con ese método y luego podrás vincular tu cuenta de Facebook desde la configuración de tu perfil.");
+          }
+        } catch(fetchErr) {
+          setError("Error al obtener el método de acceso original: " + fetchErr.message);
+        }
+      }
+    } else {
       setError(err.message);
     }
-  };
+  }
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
