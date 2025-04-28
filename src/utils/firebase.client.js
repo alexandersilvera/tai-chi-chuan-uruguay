@@ -2,6 +2,7 @@
 import { initializeApp, getApps } from "firebase/app";
 // import { getFirestore } from "firebase/firestore";
 
+// Configuración de Firebase usando variables de entorno públicas
 const firebaseConfig = {
   apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
   authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -12,5 +13,12 @@ const firebaseConfig = {
   measurementId: import.meta.env.PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-export const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-// Este archivo solo exporta 'app' para uso en Auth y providers sociales.
+// Inicializar solo si hay API key válida
+let appInstance;
+if (firebaseConfig.apiKey) {
+  appInstance = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+} else {
+  console.warn("Falta PUBLIC_FIREBASE_API_KEY, Firebase no se inicializará.");
+}
+export const app = appInstance;  // undefined si no se inicializa
+// Este archivo exporta 'app' para uso en AuthContext y providers sociales.

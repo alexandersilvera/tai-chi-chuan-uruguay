@@ -2,7 +2,7 @@
 title: 'Los 24 Períodos Solares: Definición, Características y Actividades Tradicionales'
 pubDate: 'Feb 13 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fperiodos_solares_chino.webp?alt=media&token=fedce2ad-64e7-4d55-95a5-2e912d04d796'
-tags: ["cultura-china", "ciclos-estacionales"]
+tags: ["cultura", "ciclos-estacionales"]
 initialLikes: 0   
 ---
 

@@ -5,16 +5,32 @@ import { app } from "../utils/firebase.client";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  // Si Firebase no inicializado, proveemos contexto vacío
+  if (!app) {
+    console.warn("AuthProvider: Firebase no inicializado, se omite autenticación.");
+    return (
+      <AuthContext.Provider value={{ user: null, loading: false, logout: async () => {}, refreshUser: async () => {} }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const auth = getAuth(app);
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
+    try {
+      const auth = getAuth(app);
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        setUser(firebaseUser);
+        setLoading(false);
+      });
+      return () => unsubscribe();
+    } catch (err) {
+      console.error('Firebase auth init error:', err);
       setLoading(false);
-    });
-    return () => unsubscribe();
+      return;  // Sincrónicamente devolvemos para limpiar efecto
+    }
   }, []);
 
   const refreshUser = async () => {

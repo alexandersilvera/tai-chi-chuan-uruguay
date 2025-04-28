@@ -2,7 +2,7 @@
 title: 'Dào (Tao) 道: El Camino de la Naturaleza y la Armonía'
 pubDate: 'Feb 19 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fdao_tao.webp?alt=media&token=985697f6-4a8f-47f6-a0d2-5cb3e2fcca3a'
-tags: ["taoismo", "filosofia-china", "historia"]
+tags: ["taoismo", "filosofia", "historia"]
 initialLikes: 0 
 ---
 
