@@ -23,5 +23,5 @@ if (currentPage < 1 || currentPage > totalPages || isNaN(currentPage)) {
 ---
 
 <ArticleList currentPage={currentPage} totalPages={totalPages}>
-  {posts.map((post) => <Article {...post.data} slug={post.slug} />)}
+  {posts.map((post: any) => <Article {...post.data} slug={post.slug} />)}
 </ArticleList>

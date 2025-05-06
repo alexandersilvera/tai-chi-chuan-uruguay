@@ -1,4 +1,7 @@
 ---
+// Asegura que esta página se renderice en el servidor para evitar warnings de headers
+export const prerender = false;
+
 import Layout from '@/layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import HorizontalGalleryWrapper from '@/components/HorizontalGalleryWrapper.astro';
@@ -61,5 +64,3 @@ import LatestBlogPost from '@/components/LatestBlogPost.astro';
 	</main>
   <!-- Hero Section -->
 </Layout>
-
-

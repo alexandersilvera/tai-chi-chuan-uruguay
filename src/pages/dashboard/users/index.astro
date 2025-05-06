@@ -1,0 +1,72 @@
+---
+// src/pages/dashboard/users/index.astro
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import UserDashboardIsland from '@/components/dashboard/UserDashboardIsland.jsx';
+import { adminDB } from '@/lib/firebase/admin.js';
+
+// Aseguramos renderizado en servidor
+export const prerender = false;
+
+let usersData = [];
+let error = null;
+
+try {
+  if (!adminDB) {
+    throw new Error("La conexión con la base de datos (adminDB) no está disponible. Revisa la configuración de Firebase Admin y las variables de entorno.");
+  }
+
+  const usersSnapshot = await adminDB.collection('users').get();
+  const promises = usersSnapshot.docs.map(async (userDoc) => {
+    const userData = userDoc.data();
+    const userId = userDoc.id;
+
+    // Obtenemos los likes del usuario desde la subcollección 'likes' dentro del documento del usuario
+    const userLikesRef = adminDB.collection('users').doc(userId).collection('likes');
+    const likesSnapshot = await userLikesRef.get();
+    const userLikes = [];
+    likesSnapshot.forEach(likeDoc => {
+      const likeData = likeDoc.data();
+      userLikes.push({
+        articleId: likeDoc.id || 'ID Desconocido', // El ID del documento es el slug del artículo
+        timestamp: likeData.timestamp?.toDate ? likeData.timestamp.toDate().toLocaleString() : 'Fecha desconocida',
+      });
+    });
+
+    const commentsQuery = adminDB.collectionGroup('comments')
+                                 .where('userId', '==', userId)
+                                 .orderBy('timestamp', 'desc');
+    const commentsSnapshot = await commentsQuery.get();
+    const userComments = [];
+    commentsSnapshot.forEach(commentDoc => {
+      const commentData = commentDoc.data();
+      userComments.push({
+        text: commentData.text || 'Sin texto',
+        articleId: commentData.articleId || 'ID Desconocido',
+        timestamp: commentData.timestamp?.toDate ? commentData.timestamp.toDate().toLocaleString() : 'Fecha desconocida'
+      });
+    });
+
+    return {
+      id: userId,
+      email: userData.email || 'No email',
+      displayName: userData.displayName || '', 
+      isAdmin: userData.isAdmin || false,
+      photoURL: userData.photoURL || null, 
+      comments: userComments,
+      likes: userLikes,
+    };
+  });
+
+  usersData = await Promise.all(promises);
+
+} catch (err) {
+  console.error("Error fetching users data:", err);
+  error = err.message || "Ocurrió un error al cargar los datos de usuarios.";
+}
+---
+
+<DashboardLayout title="Gestión de Usuarios">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">Gestión de Usuarios</h1>
+  {error && <p class="text-red-500 bg-red-100 border border-red-400 p-4 rounded mb-4">{error}</p>}
+  {!error && <UserDashboardIsland users={usersData} client:load />}
+</DashboardLayout>

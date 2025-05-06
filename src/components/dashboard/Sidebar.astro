@@ -1,0 +1,289 @@
+---
+// src/components/dashboard/Sidebar.astro
+import { Icon } from 'astro-icon/components';
+
+const menuItems = [
+  { name: "Inicio", href: "/dashboard", icon: "layout-dashboard" }, 
+  { name: "Usuarios", href: "/dashboard/users", icon: "users" },
+  { name: "Artículos", href: "/dashboard/articles", icon: "file-text" },
+  { name: "Configuración", href: "/dashboard/settings", icon: "settings" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<!-- Header móvil -->
+<header class="mobile-header md:hidden">
+  <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Abrir menú">
+    <Icon name="lucide:menu" size={24} class="icon" />
+  </button>
+  <div class="mobile-logo">
+    <Icon name="lucide:shield-check" size={22} />
+    <span>Panel Admin</span>
+  </div>
+  <a href="/" class="mobile-home-link">
+    <Icon name="lucide:home" size={20} class="icon" />
+  </a>
+</header>
+
+<!-- Overlay para cerrar el sidebar en móvil -->
+<div id="sidebar-overlay" class="sidebar-overlay hidden md:hidden"></div>
+
+<!-- Sidebar principal -->  
+<aside id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <button id="sidebar-close" class="sidebar-close md:hidden" aria-label="Cerrar menú">
+      <Icon name="lucide:x" size={20} class="icon" />
+    </button>
+    <a href="/dashboard" class="logo">
+      <Icon name="lucide:shield-check" size={24} /> 
+      <span>Panel de Administración</span>
+    </a>
+  </div>
+  <nav class="sidebar-nav">
+    <ul>
+      {menuItems.map(item => (
+        <li>
+          <a href={item.href} class:list={[ { active: currentPath.startsWith(item.href) } ]}>
+            <Icon name={`lucide:${item.icon}`} size={20} class="icon" />
+            <span>{item.name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/" class="logout-link">
+      <Icon name="lucide:log-out" size={20} class="icon" />
+      <span>Volver al sitio</span>
+    </a>
+  </div>
+</aside>
+
+<script>
+  // Funcionalidad para el sidebar móvil
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    
+    // Abrir sidebar
+    sidebarToggle?.addEventListener('click', () => {
+      sidebar?.classList.add('open');
+      sidebarOverlay?.classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // Prevenir scroll
+    });
+    
+    // Cerrar sidebar (botón X)
+    sidebarClose?.addEventListener('click', () => {
+      sidebar?.classList.remove('open');
+      sidebarOverlay?.classList.add('hidden');
+      document.body.style.overflow = ''; // Restaurar scroll
+    });
+    
+    // Cerrar sidebar (overlay)
+    sidebarOverlay?.addEventListener('click', () => {
+      sidebar?.classList.remove('open');
+      sidebarOverlay?.classList.add('hidden');
+      document.body.style.overflow = ''; // Restaurar scroll
+    });
+  });
+</script>
+
+<style is:global>
+  /* Estilos para el header móvil */
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1f2937; /* gray-800 */
+    color: #ffffff;
+    padding: 0.75rem 1rem;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .sidebar-toggle, .sidebar-close, .mobile-home-link {
+    background: none;
+    border: none;
+    color: #d1d5db; /* gray-300 */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+  }
+
+  .sidebar-toggle:hover, .sidebar-close:hover, .mobile-home-link:hover {
+    color: #ffffff;
+  }
+
+  /* Overlay para cerrar el sidebar en móvil */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    transition: opacity 0.3s ease;
+  }
+
+  /* Estilos responsivos para el sidebar */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 240px;
+    background-color: #1f2937; /* gray-800 */
+    color: #d1d5db; /* gray-300 */
+    display: flex;
+    flex-direction: column;
+    z-index: 1000; 
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+
+  /* En móviles, el sidebar está oculto por defecto */
+  @media (max-width: 767px) {
+    .sidebar {
+      transform: translateX(-100%);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    /* Ajustar el contenido principal para dejar espacio al header móvil */
+    body {
+      padding-top: 60px;
+    }
+  }
+
+  /* En desktop, el sidebar siempre está visible */
+  @media (min-width: 768px) {
+    .sidebar {
+      transform: translateX(0);
+    }
+  }
+
+  .sidebar-header {
+    padding: 1.25rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #374151; /* gray-700 */
+    position: relative;
+  }
+
+  .sidebar-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .logo {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .sidebar-nav {
+    flex-grow: 1; 
+    margin-top: 0.5rem;
+    overflow-y: auto;
+  }
+
+  .sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.5rem;
+    color: #d1d5db; /* gray-300 */
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 0.95rem;
+    gap: 0.9rem;
+    border-left: 4px solid transparent;
+    margin-left: -4px;
+    padding-left: calc(1.5rem + 4px);
+  }
+
+  .sidebar-nav li a:hover {
+    background-color: #374151; /* gray-700 */
+    color: #ffffff;
+  }
+  
+  .sidebar-nav li a.active {
+    background-color: #0ea5e9; /* celeste-500 */
+    color: #ffffff;
+    font-weight: 500;
+    border-left-color: #7dd3fc; /* celeste-300 */
+  }
+
+  .sidebar-nav li a .icon,
+  .logout-link .icon {
+    color: #9ca3af; /* gray-400 */
+    transition: color 0.2s ease;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .sidebar-nav li a:hover .icon,
+  .sidebar-nav li a.active .icon,
+  .logout-link:hover .icon {
+    color: #ffffff;
+  }
+
+  .sidebar-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #374151; /* gray-700 */
+    margin-top: auto; 
+  }
+
+  .logout-link {
+    display: flex;
+    align-items: center;
+    color: #9ca3af; /* gray-400 */
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+    gap: 0.9rem;
+  }
+
+  .logout-link:hover {
+    color: #ffffff;
+  }
+
+  .logout-link .icon {
+    transition: color 0.2s ease;
+  }
+</style>

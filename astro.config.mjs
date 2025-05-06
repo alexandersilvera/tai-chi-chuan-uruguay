@@ -5,6 +5,7 @@ import alpinejs from '@astrojs/alpinejs';
 import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
+import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,11 +14,13 @@ export default defineConfig({
     tailwind(),
     alpinejs(),
     react(),
-    sitemap()
+    sitemap(),
+    icon()
   ],
   vite: {
     optimizeDeps: {
-      include: ['swiper']
+      // Eliminamos lucide-astro de aquí
+      include: ['swiper'] 
     }
   },
   adapter: vercel({

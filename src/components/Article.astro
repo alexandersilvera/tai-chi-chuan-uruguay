@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import type { CollectionEntry } from "astro:content";
 import FormattedDate from "@/components/FormattedDate.astro";
 import LikeButton from "@/components/LikeButton.jsx";
+import { AuthProvider } from '@/context/AuthContext.jsx';
 type Props = CollectionEntry<"blog">["data"] & { slug: string };
 const {heroImage,title,tags,pubDate, slug, initialLikes} = Astro.props;
 
@@ -35,7 +36,9 @@ const {heroImage,title,tags,pubDate, slug, initialLikes} = Astro.props;
                     </div>
                 )}
             </div>
-            <LikeButton slug={Astro.props.slug} initialLikes={Astro.props.initialLikes} client:load />
+            <AuthProvider client:load>
+              <LikeButton slug={slug} initialLikes={initialLikes || 0} />
+            </AuthProvider>
         </article>
     </a>
 </li>

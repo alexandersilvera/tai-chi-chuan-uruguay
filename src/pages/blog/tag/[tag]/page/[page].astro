@@ -47,9 +47,9 @@ if (currentPage < 1 || currentPage > totalPages || isNaN(currentPage)) {
 ---
 
 <ArticleList currentPage={currentPage} totalPages={totalPages} currentTag={tag}>
-    {paginatedPosts.length > 0 ? (
-        paginatedPosts.map((post) => <Article {...post.data} slug={post.slug} initialLikes={post.data.initialLikes} />)
-    ) : (
-        <p class="text-zinc-400 text-center py-12">No hay artículos para esta categoría.</p>
-    )}
+  {paginatedPosts.length > 0 ? (
+      paginatedPosts.map((post: any) => <Article {...post.data} slug={post.slug} initialLikes={post.data.initialLikes} />)
+  ) : (
+      <p class="text-zinc-400 text-center py-12">No hay artículos para esta categoría.</p>
+  )}
 </ArticleList>

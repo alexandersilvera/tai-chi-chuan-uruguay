@@ -1,7 +1,7 @@
-import React, { useState, lazy, Suspense } from "react";
-import { useAuth } from "../context/AuthContext";
+import React, { useState, lazy, Suspense, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { app } from "../utils/firebase.client";
+import { app } from "@/lib/firebase/client.js";
 import { updateProfile, getAuth } from "firebase/auth";
 
 const AuthModal = lazy(() => import("./AuthModal"));
@@ -16,6 +16,12 @@ export default function AuthButton() {
   const [showTooltip, setShowTooltip] = useState(false);
 
   const defaultAvatar = "https://ui-avatars.com/api/?name=User&background=22c55e&color=fff&size=128";
+
+  useEffect(() => {
+    if (user) {
+    } else {
+    }
+  }, [user]);
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
@@ -132,6 +138,14 @@ export default function AuthButton() {
           )}
         </div>
         {error && <span className="ml-2 text-xs text-red-500">{error}</span>}
+
+        {/* --- NUEVO: Enlace condicional al Dashboard --- */}
+        {user.isAdmin && (
+           <a href="/dashboard" className="ml-2 px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors" title="Panel de Administración">
+              Dashboard
+           </a>
+        )}
+        {/* --- FIN NUEVO --- */}
 
         <button className="ml-2 px-3 py-1 rounded bg-zinc-200 dark:bg-zinc-700 hover:bg-emerald-600 hover:text-white font-semibold text-sm transition-colors" onClick={logout}>
           Cerrar sesión

@@ -5,7 +5,7 @@ import { getCollection } from "astro:content";
 import ArticleList from "@/layouts/ArticleList.astro";
 import Article from "@/components/Article.astro";
 
-function slugify(str) {
+function slugify(str: any) {
   return str
     .toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // elimina tildes
@@ -31,9 +31,9 @@ const posts = await getCollection("blog", ({ data }) => {
 ---
 
 <ArticleList>
-    {posts.length > 0 ? (
-        posts.map((post) => <Article {...post.data} slug={post.slug} initialLikes={post.data.initialLikes} />)
-    ) : (
-        <p class="text-zinc-400 text-center py-12">No hay artículos para esta categoría.</p>
-    )}
+  {posts.length > 0 ? (
+    posts.map((post: any) => <Article {...post.data} slug={post.slug} initialLikes={post.data.initialLikes} />)
+  ) : (
+    <p class="text-zinc-400 text-center py-12">No hay artículos para esta categoría.</p>
+  )}
 </ArticleList>

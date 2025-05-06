@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
-// Importar la app de Firebase inicializada
-import { app } from '../utils/firebase.client.js';
+// Importar la app de Firebase inicializada desde la nueva ubicación
+import { app } from '@/lib/firebase/client.js';
 // Importar funciones de Firebase Firestore y Auth
 import { getFirestore, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useAuth } from '@/context/AuthContext.jsx';
 
-// Obtener instancias de Firestore y Auth
+// Obtener instancia de Firestore
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 import AuthButton from './AuthButton.jsx';
 
@@ -19,17 +18,17 @@ export default function Comments({ slug }) {
   const [error, setError] = useState('');
 
   // Estado de autenticación
-  const [user, loadingAuth, errorAuth] = useAuthState(auth);
+  const { user, loading: loadingAuth } = useAuth();
 
   useEffect(() => {
     if (!slug) return;
     setIsLoading(true);
     setError('');
 
-    console.log(`Setting up Firestore listener for comments on slug: ${slug}`);
+    // console.log(`Setting up Firestore listener for comments on slug: ${slug}`);
 
     // Listener de Firestore para obtener comentarios en tiempo real
-    const commentsRef = collection(db, 'articles', slug, 'comments');
+    const commentsRef = collection(db, 'posts', slug, 'comments');
     const q = query(commentsRef, orderBy('timestamp', 'asc'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const commentsData = [];
@@ -40,14 +39,17 @@ export default function Comments({ slug }) {
       setComments(commentsData);
       setIsLoading(false);
     }, (err) => {
-      console.error("Error fetching comments: ", err);
+      // console.error("Error fetching comments: ", err);
       setError('Error al cargar comentarios.');
       setIsLoading(false);
     });
     // Limpiar listener al desmontar
     return () => unsubscribe();
-
   }, [slug]);
+
+  if (loadingAuth) {
+    return <p className="text-zinc-400">Cargando autenticación...</p>;
+  }
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -59,7 +61,7 @@ export default function Comments({ slug }) {
 
     setError('');
     try {
-      const commentsRef = collection(db, 'articles', slug, 'comments');
+      const commentsRef = collection(db, 'posts', slug, 'comments');
       await addDoc(commentsRef, {
         text: newComment,
         userId: user.uid,
@@ -69,7 +71,7 @@ export default function Comments({ slug }) {
       });
       setNewComment(''); // Limpiar el campo
     } catch (err) {
-      console.error("Error adding comment: ", err);
+      // console.error("Error adding comment: ", err);
       setError('Error al enviar el comentario.');
     }
   };

@@ -1,0 +1,23 @@
+---
+// Asegura que esta página se renderice en el servidor
+export const prerender = false;
+
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+---
+
+<DashboardLayout title="Panel de Administración">
+  <div class="container mx-auto px-4 py-8"> 
+    <h1 class="text-3xl font-bold mb-4 text-green-600">Panel de Administración</h1> 
+    <p class="mb-6">Bienvenido al panel de administración.</p> 
+
+    <h2 class="text-2xl font-semibold mb-3 text-green-600">Secciones</h2> 
+    <ul class="list-disc list-inside space-y-2"> 
+      <li><a href="/dashboard/articulos" class="text-green-600 hover:underline">Gestionar Artículos</a></li>
+      <li><a href="/dashboard/usuarios" class="text-green-600 hover:underline">Ver Usuarios</a></li>
+      <li><a href="/dashboard/comentarios" class="text-green-600 hover:underline">Moderar Comentarios</a></li>
+      <li><a href="/dashboard/likes" class="text-green-600 hover:underline">Ver Likes</a></li>
+    </ul>
+
+    <!-- Aquí añadiremos los componentes del dashboard -->
+  </div>
+</DashboardLayout>

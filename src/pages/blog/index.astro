@@ -12,7 +12,7 @@ const { posts, totalPages } = getPagination(allPosts, 1);
 ---
 
 <ArticleList currentPage={1} totalPages={totalPages}>
-  {posts.map((post) => {
+  {posts.map((post: any) => {
 
     return (
       <Article 
