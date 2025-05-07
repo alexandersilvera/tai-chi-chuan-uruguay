@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.D_zvdyIk.js";import"./index.BJfUAbRs.js";import{A as r}from"./preload-helper.CpCMFT4X.js";import{A as o}from"./AuthButton.BwjGbqqB.js";function n(){return t.jsx(r,{children:t.jsx(o,{})})}export{n as default};
