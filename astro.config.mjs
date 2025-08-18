@@ -17,6 +17,11 @@ export default defineConfig({
     sitemap(),
     icon()
   ],
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+    }
+  },
   vite: {
     optimizeDeps: {
       // Eliminamos lucide-astro de aquí

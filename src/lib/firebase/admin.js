@@ -14,7 +14,7 @@ const serviceAccount = {
 
 // Verifica si las credenciales están completas
 if (!serviceAccount.projectId || !serviceAccount.clientEmail || !serviceAccount.privateKey) {
-  // console.error('Firebase Admin SDK: Faltan credenciales en las variables de entorno (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY).');
+  console.error('Firebase Admin SDK: Faltan credenciales en las variables de entorno (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY).');
   // Podrías lanzar un error aquí o manejarlo de otra forma si es crítico
   // throw new Error('Missing Firebase Admin credentials');
 }

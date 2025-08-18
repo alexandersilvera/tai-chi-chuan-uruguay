@@ -1,228 +1,129 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { getAuth, onAuthStateChanged, signOut as firebaseSignOut, getIdToken } from "firebase/auth"; 
-// Actualizar la ruta de importación para usar el alias y la nueva ubicación
-import { app } from "@/lib/firebase/client.js"; 
-// Import Firestore functions
+import { getAuth, onAuthStateChanged, signOut as firebaseSignOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { app } from "@/lib/firebase/client.js";
 
-// Create the context
+// Creamos el contexto
 const AuthContext = createContext();
 
-// AuthProvider component
+// Componente proveedor
 export function AuthProvider({ children }) {
-  // Handle case where Firebase might not be initialized (e.g., during SSR or build)
-  if (!app) {
-    console.warn("AuthProvider: Firebase app not initialized, providing default empty context.");
-    // Provide a default context value matching the structure when Firebase is active
-    return (
-      <AuthContext.Provider value={{ user: null, loading: false, logout: async () => {}, refreshUser: async () => {} }}>
-        {children}
-      </AuthContext.Provider>
-    );
-  }
-
-  // State for the user object (will include auth data + Firestore data) and loading status
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Start as loading
+  const [loading, setLoading] = useState(true);
 
-  // Effect to subscribe to Firebase Auth state changes
-  useEffect(() => {
-    let unsubscribeAuth = () => {}; // Initialize unsubscribe function
-
-    try {
-      const auth = getAuth(app);
-      const db = getFirestore(app); // Get Firestore instance
-
-      // Subscribe to authentication state changes
-      unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
-        setLoading(true);
-        // console.log('[AuthProvider] onAuthStateChanged triggered. firebaseUser:', firebaseUser);
-        if (firebaseUser) {
-          try {
-            // console.log('[AuthProvider] Antes de getIdToken');
-            const idToken = await getIdToken(firebaseUser);
-            // console.log('[AuthProvider] getIdToken OK, idToken:', idToken);
-
-            // console.log('[AuthProvider] Antes de fetch /api/auth/session');
-            const response = await fetch('/api/auth/session', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json', 
-              },
-              body: JSON.stringify({ idToken }) 
-            });
-            // console.log('[AuthProvider] fetch /api/auth/session OK, response:', response.status);
-
-            if (!response.ok) {
-              const errorText = await response.text();
-              let errorData = { message: `API Error ${response.status}: ${errorText || 'Failed to create session'}` };
-              try {
-                errorData = JSON.parse(errorText);
-              } catch (e) {}
-              // console.error('API Error creating session:', response.status, errorData);
-              setUser(null);
-              setLoading(false);
-              // console.log('[AuthProvider] API error, set user to null');
-              return;
-            }
-
-            // console.log('[AuthProvider] Antes de getDoc Firestore');
-            const userDocRef = doc(db, "users", firebaseUser.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            // console.log('[AuthProvider] getDoc Firestore OK:', userDocSnap.exists());
-
-            let userData = { ...firebaseUser };
-
-            if (userDocSnap.exists()) {
-              // console.log("User document found in Firestore:", userDocSnap.data());
-              const firestoreData = userDocSnap.data();
-              userData = {
-                ...userData,
-                ...firestoreData,
-                isAdmin: firestoreData.isAdmin === true
-              };
-            } else {
-              // console.log("No user document found in Firestore for UID:", firebaseUser.uid, "Creating one...");
-              try {
-                await setDoc(userDocRef, { 
-                  email: firebaseUser.email, 
-                  displayName: firebaseUser.displayName || '',
-                  photoURL: firebaseUser.photoURL || '',
-                  isAdmin: false
-                });
-                userData = { ...userData, isAdmin: false };
-              } catch (createError) {
-                // console.error("Error creating user document:", createError);
-              }
-            }
-            // console.log('[AuthProvider] userData antes de setUser:', JSON.stringify(userData, null, 2));
-            setUser({ ...userData });
-            // console.log('[AuthProvider] Usuario autenticado y datos cargados:', { ...userData });
-            setLoading(false);
-            // console.log('[AuthProvider] Finished processing auth state change.');
-          } catch (e) {
-            setUser(null);
-            setLoading(false);
-            if (e && e.stack) {
-              // console.error('[AuthProvider] Error en try/catch, set user to null', e, e.stack);
-            } else {
-              // console.error('[AuthProvider] Error en try/catch, set user to null', e);
-            }
-          }
-
-        } else {
-          setUser(null);
-          setLoading(false);
-          // console.log('[AuthProvider] Usuario NO autenticado, set user to null, loading to false');
-        }
-      });
-
-    } catch (authError) {
-      // console.error("Error initializing Firebase Auth listener:", authError);
-      setUser(null); // Ensure user is null if setup fails
-      setLoading(false); // Finish loading even if there's an error
-    }
-
-    // Cleanup function: Unsubscribe from the auth listener when the component unmounts
-    return () => {
-      if (unsubscribeAuth) {
-        unsubscribeAuth();
-      }
-    };
-  }, []); // Empty dependency array ensures this runs only once on mount
-
-  // Function to manually refresh user data (both Auth and Firestore)
-  const refreshUser = async () => {
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const currentUser = auth.currentUser;
-
-    if (currentUser) {
-      setLoading(true); // Indicate loading state
-      try {
-        // 1. Reload Firebase Auth user data
-        await currentUser.reload();
-        // Make a fresh copy after reload
-        const reloadedFirebaseUser = { ...auth.currentUser };
-
-        // --- Opcional: Refrescar cookie de sesión si es necesario --- 
-        // Podrías añadir lógica aquí para obtener un nuevo ID Token y llamar a POST /api/auth/session
-        // si quieres extender la sesión del servidor activamente. Por simplicidad, no lo hacemos ahora.
-
-        // 2. Fetch Firestore data again
-        const userDocRef = doc(db, "users", currentUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-
-        let combinedUserData = reloadedFirebaseUser; // Start with reloaded Auth data
-
-        if (userDocSnap.exists()) {
-          const firestoreData = userDocSnap.data();
-          combinedUserData = { ...combinedUserData, ...firestoreData };
-           if (combinedUserData.isAdmin === undefined) {
-             combinedUserData.isAdmin = false;
-           }
-        } else {
-          combinedUserData.isAdmin = false; // Default if Firestore doc missing
-        }
-
-        // Update state with freshly combined data
-        setUser(combinedUserData);
-
-      } catch (refreshError) {
-        // console.error("Error refreshing user data:", refreshError);
-        // Optional: Decide how to handle refresh errors. Maybe revert to previous state?
-        // For now, we just log the error. The user state might be partially updated (Auth only).
-      } finally {
-        setLoading(false); // Finish loading regardless of outcome
-      }
-    } else {
-      // console.log("refreshUser called but no user is currently signed in.");
-    }
-  };
-
-  // Logout function
-  const logout = useCallback(async () => {
-    setLoading(true);
-    try {
-      const authInstance = getAuth(app); // <-- Obtener la instancia de auth
-      await firebaseSignOut(authInstance); // <-- Usar la instancia obtenida
-      // La lógica de onAuthStateChanged se encargará de poner user a null
-      // Limpiar sesión en el backend (opcional pero recomendado)
-      await fetch('/api/auth/session', { method: 'DELETE' });
-      // console.log("Logout successful");
-    } catch (error) {
-      // console.error("Error during logout process:", error);
-      // Intentar asegurar que el usuario se desloguea localmente incluso si la API falla
+  const fetchExtendedUserData = async (firebaseUser) => {
+    if (!firebaseUser) {
       setUser(null);
       setLoading(false);
+      return;
     }
-    // setLoading(false) es manejado por onAuthStateChanged usualmente, pero podemos ponerlo aquí
-    // al final del try/catch por seguridad si algo más falla.
-    // Sin embargo, es mejor dejar que onAuthStateChanged sea la fuente de verdad.
+
+    const db = getFirestore(app);
+    const userDocRef = doc(db, "users", firebaseUser.uid);
+    
+    let extendedUser = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName: firebaseUser.displayName,
+      photoURL: firebaseUser.photoURL,
+      isAdmin: false, // Default value
+    };
+
+    try {
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        const firestoreData = userDocSnap.data();
+        extendedUser.isAdmin = firestoreData.isAdmin === true;
+      } else {
+        // Si el usuario no existe en Firestore, lo creamos
+        await setDoc(userDocRef, { 
+          email: firebaseUser.email, 
+          displayName: firebaseUser.displayName || '',
+          photoURL: firebaseUser.photoURL || '',
+          isAdmin: false
+        });
+      }
+    } catch (error) {
+      console.error("Error de permisos de Firestore al obtener datos del usuario:", error);
+      // La app continuará con el usuario logueado pero sin permisos de admin.
+    }
+    
+    setUser(extendedUser);
+    setLoading(false);
+  };
+
+  // El useEffect ahora es mucho más simple. Solo escucha el estado de auth.
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // Crear cookie de sesión cuando el usuario se autentica
+        try {
+          const idToken = await firebaseUser.getIdToken();
+          const response = await fetch('/api/auth/session', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ idToken }),
+          });
+
+          if (!response.ok) {
+            console.error('Error creating session cookie:', await response.text());
+          } else {
+            console.log('Session cookie created successfully');
+          }
+        } catch (error) {
+          console.error('Error creating session cookie:', error);
+        }
+      }
+      
+      // Continuar con el flujo normal de fetchExtendedUserData
+      await fetchExtendedUserData(firebaseUser);
+    });
+    return () => unsubscribe();
   }, []);
 
-  // Log para depuración de contexto
-  // console.log('[AuthProvider] user:', user, 'loading:', loading);
-  // Provide the context value to children
-  // console.log('[AuthProvider] user:', user, 'loading:', loading);
-  return (
-    <AuthContext.Provider value={{ user, loading, logout, refreshUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const refreshUser = useCallback(async () => {
+    const auth = getAuth(app);
+    if (auth.currentUser) {
+      await auth.currentUser.reload();
+      await fetchExtendedUserData(auth.currentUser);
+    }
+  }, []);
+
+  // Función para iniciar sesión con Google
+  const handleGoogleLogin = useCallback(async () => {
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log("Login con Google exitoso:", result.user.email);
+      // La cookie de sesión se creará automáticamente en el useEffect por onAuthStateChanged
+    } catch (error) {
+      console.error("Error durante el login con Google:", error);
+    }
+  }, []);
+
+  // Función para cerrar sesión
+  const handleLogout = useCallback(async () => {
+    const auth = getAuth(app);
+    try {
+      await firebaseSignOut(auth);
+      // Opcional: Limpiar la cookie de sesión del backend
+      await fetch('/api/auth/session', { method: 'DELETE' });
+    } catch (error) {
+      console.error("Error durante el logout:", error);
+    }
+  }, []);
+
+  // Pasamos los valores al proveedor de contexto
+  const value = { user, loading, handleGoogleLogin, handleLogout, refreshUser };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// Custom hook to easily consume the AuthContext
+// Hook personalizado para consumir el contexto
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    // Devuelve valores seguros por defecto si no hay provider
-    return {
-      user: null,
-      loading: true,
-      logout: async () => {},
-      refreshUser: async () => {}
-    };
-  }
-  return context;
+  return useContext(AuthContext);
 };

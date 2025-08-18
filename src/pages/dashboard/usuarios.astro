@@ -1,11 +1,211 @@
 ---
+// Asegura que esta página se renderice en el servidor
+export const prerender = false;
+
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import UserDashboardIsland from '@/components/dashboard/UserDashboardIsland.jsx';
+import { adminDB } from '@/lib/firebase/admin.js';
+
+// Tipos para TypeScript
+interface UserLike {
+  id: string;
+  articleId: string;
+  timestamp: string;
+}
+
+interface UserComment {
+  id: string;
+  text: string;
+  articleId: string;
+  timestamp: string;
+}
+
+interface UserData {
+  id: string;
+  displayName: string;
+  email: string;
+  photoURL: string;
+  isAdmin: boolean;
+  comments: UserComment[];
+  likes: UserLike[];
+}
+
+let usersData: UserData[] = [];
+let error: string | null = null;
+
+try {
+  if (!adminDB) {
+    throw new Error("La conexión con la base de datos (adminDB) no está disponible. Revisa la configuración de Firebase Admin y las variables de entorno.");
+  }
+
+  console.log('🔄 Iniciando obtención de datos de usuarios...');
+
+  // Obtener todos los usuarios de la colección 'users'
+  const usersSnapshot = await adminDB.collection('users').get();
+  console.log(`✅ Usuarios obtenidos: ${usersSnapshot.size}`);
+  
+  // Usar collection groups (sabemos que funcionan)
+  console.log('🔄 Obteniendo comentarios y likes via collection groups...');
+  const commentsByUser = new Map<string, UserComment[]>();
+  const likesByUser = new Map<string, UserLike[]>();
+  
+  try {
+    // Obtener todos los comentarios via collection group
+    console.log('🔄 Obteniendo comentarios...');
+    const allCommentsSnapshot = await adminDB.collectionGroup('comments').get();
+    console.log(`✅ Comentarios encontrados: ${allCommentsSnapshot.size}`);
+    
+    allCommentsSnapshot.forEach(commentDoc => {
+      const commentData = commentDoc.data();
+      const userId = commentData.userId;
+      const path = commentDoc.ref.path;
+      
+      if (userId) {
+        if (!commentsByUser.has(userId)) {
+          commentsByUser.set(userId, []);
+        }
+        
+        // Extraer postId del path: posts/{postId}/comments/{commentId}
+        const pathParts = path.split('/');
+        const postId = pathParts[1] || 'post-desconocido';
+        
+        commentsByUser.get(userId)!.push({
+          id: commentDoc.id,
+          text: commentData.text || 'Sin texto',
+          articleId: postId,
+          timestamp: commentData.timestamp?.toDate ? commentData.timestamp.toDate().toISOString() : new Date().toISOString(),
+        });
+      }
+    });
+    
+    console.log(`   📝 Usuarios con comentarios: ${commentsByUser.size}`);
+  } catch (commentsError) {
+    console.error('❌ Error obteniendo comentarios:', commentsError.message);
+  }
+  
+  try {
+    // Obtener todos los likes via collection group
+    console.log('🔄 Obteniendo likes...');
+    const allLikesSnapshot = await adminDB.collectionGroup('likes').get();
+    console.log(`✅ Likes encontrados: ${allLikesSnapshot.size}`);
+    
+    allLikesSnapshot.forEach(likeDoc => {
+      const likeData = likeDoc.data();
+      const userId = likeDoc.id; // En esta estructura, el ID del documento es el userId
+      const path = likeDoc.ref.path;
+      
+      if (userId && userId !== 'anonymous') {
+        if (!likesByUser.has(userId)) {
+          likesByUser.set(userId, []);
+        }
+        
+        // Extraer postId del path: posts/{postId}/likes/{userId}
+        const pathParts = path.split('/');
+        const postId = pathParts[1] || 'post-desconocido';
+        
+        likesByUser.get(userId)!.push({
+          id: likeDoc.id,
+          articleId: postId,
+          timestamp: likeData.timestamp?.toDate ? likeData.timestamp.toDate().toISOString() : new Date().toISOString(),
+        });
+      }
+    });
+    
+    console.log(`   ❤️ Usuarios con likes: ${likesByUser.size}`);
+  } catch (likesError) {
+    console.error('❌ Error obteniendo likes:', likesError.message);
+  }
+  
+  console.log(`✅ Procesamiento completado vía collection groups:`);
+  console.log(`   📝 Usuarios con comentarios: ${commentsByUser.size}`);
+  console.log(`   ❤️ Usuarios con likes: ${likesByUser.size}`);
+
+  // Procesar cada usuario con los datos ya agrupados
+  console.log('🔄 Procesando datos de usuarios...');
+  usersData = usersSnapshot.docs.map((userDoc) => {
+    const userData = userDoc.data();
+    const userId = userDoc.id;
+
+    // Obtener comentarios y likes del usuario desde los mapas
+    const userComments = commentsByUser.get(userId) || [];
+    const userLikes = likesByUser.get(userId) || [];
+
+    return {
+      id: userId,
+      displayName: userData.displayName || userData.email?.split('@')[0] || 'Usuario sin nombre',
+      email: userData.email || 'No email',
+      photoURL: userData.photoURL || '/default-avatar.svg',
+      isAdmin: userData.isAdmin || false,
+      comments: userComments,
+      likes: userLikes,
+    } as UserData;
+  });
+  
+  // Ordenar usuarios: primero administradores, luego por nombre
+  usersData.sort((a, b) => {
+    if (a.isAdmin && !b.isAdmin) return -1;
+    if (!a.isAdmin && b.isAdmin) return 1;
+    return (a.displayName || '').localeCompare(b.displayName || '');
+  });
+
+  console.log(`✅ Procesamiento completado: ${usersData.length} usuarios`);
+  console.log(`📊 Usuarios con comentarios: ${usersData.filter(u => u.comments.length > 0).length}`);
+  console.log(`📊 Usuarios con likes: ${usersData.filter(u => u.likes.length > 0).length}`);
+
+} catch (err: unknown) {
+  console.error("❌ Error obteniendo datos de usuarios desde Firebase:", err);
+  error = (err as Error).message || "Ocurrió un error al cargar los datos de usuarios.";
+}
 ---
 
 <DashboardLayout title="Gestión de Usuarios - Panel de Administración">
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-4 text-green-600">Gestión de Usuarios</h1>
-    <p class="mb-6">Aquí podrás ver la lista de usuarios registrados.</p>
-    <!-- Componente para visualizar usuarios irá aquí -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Gestión de Usuarios</h1>
+      <p class="text-gray-600">Administra usuarios registrados, visualiza su actividad y gestiona permisos de administrador.</p>
+      
+      {error && (
+        <div class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm">
+                <strong>Error:</strong> {error}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {!error && usersData.length > 0 && (
+        <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-blue-700">
+                <strong>Usuarios cargados:</strong> {usersData.length} usuario{usersData.length !== 1 ? 's' : ''} encontrado{usersData.length !== 1 ? 's' : ''} 
+                ({usersData.filter(u => u.isAdmin).length} administrador{usersData.filter(u => u.isAdmin).length !== 1 ? 'es' : ''})
+              </p>
+              <p class="text-sm text-blue-600 mt-1">
+                <strong>Actividad:</strong> {usersData.filter(u => u.comments.length > 0).length} usuarios con comentarios, 
+                {usersData.filter(u => u.likes.length > 0).length} usuarios con likes
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {!error && (
+      <UserDashboardIsland users={usersData} client:load />
+    )}
   </div>
 </DashboardLayout>

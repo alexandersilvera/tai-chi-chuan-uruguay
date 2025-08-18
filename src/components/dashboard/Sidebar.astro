@@ -4,9 +4,10 @@ import { Icon } from 'astro-icon/components';
 
 const menuItems = [
   { name: "Inicio", href: "/dashboard", icon: "layout-dashboard" }, 
-  { name: "Usuarios", href: "/dashboard/users", icon: "users" },
-  { name: "Artículos", href: "/dashboard/articles", icon: "file-text" },
-  { name: "Configuración", href: "/dashboard/settings", icon: "settings" },
+  { name: "Usuarios", href: "/dashboard/usuarios", icon: "users" },
+  { name: "Artículos", href: "/dashboard/articulos", icon: "file-text" },
+  { name: "Comentarios", href: "/dashboard/comentarios", icon: "message-circle" },
+  { name: "Likes", href: "/dashboard/likes", icon: "heart" },
 ];
 
 const currentPath = Astro.url.pathname;

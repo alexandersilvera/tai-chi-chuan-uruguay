@@ -4,6 +4,7 @@ import { app } from "@/lib/firebase/client.js";
 import { useAuth } from "@/context/AuthContext";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
+import { debugFirebaseConfig, checkFirebaseAuthDomain, handleFirebaseAuthError } from "@/utils/firebaseDebug";
 
 export default function AuthModal({ open, onClose }) {
   const [tab, setTab] = useState("login");
@@ -13,6 +14,12 @@ export default function AuthModal({ open, onClose }) {
   const { user } = useAuth();
 
   if (!open) return null;
+
+  // Debug en desarrollo
+  if (import.meta.env.DEV) {
+    debugFirebaseConfig();
+    checkFirebaseAuthDomain();
+  }
 
   const auth = getAuth(app);
   const handleEmailAuth = async (e) => {
@@ -31,27 +38,55 @@ export default function AuthModal({ open, onClose }) {
   };
 
   const handleGoogle = async () => {
-  setError("");
-  try {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    // Si hay un pending Facebook credential, vincúlalo
-    if (window.__pendingFacebookCredential) {
-      try {
-        await result.user.linkWithCredential(window.__pendingFacebookCredential);
-        setError("");
-        delete window.__pendingFacebookCredential;
+    setError("");
+    try {
+      const provider = new GoogleAuthProvider();
+      
+      // Configurar parámetros adicionales para evitar errores
+      provider.addScope('profile');
+      provider.addScope('email');
+      
+      // Configurar parámetros personalizados si es necesario
+      provider.setCustomParameters({
+        'prompt': 'select_account'
+      });
+
+      const result = await signInWithPopup(auth, provider);
+      
+      // Si hay un pending Facebook credential, vincúlalo
+      if (window.__pendingFacebookCredential) {
+        try {
+          await result.user.linkWithCredential(window.__pendingFacebookCredential);
+          setError("");
+          delete window.__pendingFacebookCredential;
+          onClose();
+        } catch (linkErr) {
+          console.error("Error vinculando Facebook:", linkErr);
+          setError("No se pudo vincular Facebook: " + linkErr.message);
+        }
+      } else {
         onClose();
-      } catch (linkErr) {
-        setError("No se pudo vincular Facebook: " + linkErr.message);
       }
-    } else {
-      onClose();
+    } catch (err) {
+      console.error("Error en autenticación con Google:", err);
+      
+      // Usar la utilidad de debug para mejor diagnóstico
+      handleFirebaseAuthError(err);
+      
+      // Manejo específico de errores
+      if (err.code === 'auth/popup-blocked') {
+        setError("El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio.");
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError("Autenticación cancelada por el usuario.");
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setError("Dominio no autorizado. Contacta al administrador.");
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setError("Autenticación con Google no está habilitada. Contacta al administrador.");
+      } else {
+        setError("Error al iniciar sesión con Google: " + err.message);
+      }
     }
-  } catch (err) {
-    setError(err.message);
-  }
-};
+  };
 
   const handleFacebook = async () => {
   setError("");
