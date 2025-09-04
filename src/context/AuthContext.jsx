@@ -21,8 +21,13 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     try {
       const auth = getAuth(app);
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-        setUser(firebaseUser);
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+          const idTokenResult = await firebaseUser.getIdTokenResult(true); // forceRefresh = true
+          setUser({ ...firebaseUser, isAdmin: idTokenResult.claims.admin || false });
+        } else {
+          setUser(null);
+        }
         setLoading(false);
       });
       return () => unsubscribe();

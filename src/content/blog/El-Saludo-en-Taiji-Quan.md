@@ -2,7 +2,7 @@
 title: 'El Saludo en Taiji Quan (Tai Chi Chuan)'
 pubDate: 'Jan 15 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fel_saludo_en_el_tai_chi.webp?alt=media&token=39791377-4cae-4c91-8727-fd72284b1356'
-tags: ["tai-chi", "artes-marciales"]
+tags: ["Taiji Quan"]
 initialLikes: 0  
 ---
 

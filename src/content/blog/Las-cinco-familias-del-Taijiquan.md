@@ -2,7 +2,7 @@
 title: 'Las Cinco Familias del Tàijíquán (太極拳)'
 pubDate: 'Apr 23 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fcinco_familias.webp?alt=media&token=efc515bd-fe38-4055-805a-0eee0374f2e1'
-tags: ["tai-chi", "historia"]
+tags: ["Taiji Quan", "Filosofía y Cultura"]
 initialLikes: 0
 author: '秦灃 (Qín Fēng) / Jorge Quiñones'
 generation: '6ª Generación de la familia Sun'

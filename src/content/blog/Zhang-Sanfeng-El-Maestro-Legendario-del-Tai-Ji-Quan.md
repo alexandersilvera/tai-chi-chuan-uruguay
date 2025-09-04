@@ -2,7 +2,7 @@
 title: 'Zhang Sanfeng: El Maestro Legendario del Tai Ji Quan'
 pubDate: 'Apr 12 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2FZhang_Sanfeng.webp?alt=media&token=cbaadcd4-e45a-4ee8-9783-8d2be47c0bef'
-tags: ["filosofia","historia"]
+tags: ["Filosofía y Cultura"]
 initialLikes: 0
 author: ''
 ---

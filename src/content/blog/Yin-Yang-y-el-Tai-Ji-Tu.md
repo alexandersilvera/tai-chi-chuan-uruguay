@@ -2,7 +2,7 @@
 title: 'Yīn Yáng (阴阳): Origen, Significado y Relación con el Símbolo Tài Jí Tú (太极图) y la Filosofía Tài Jí Zhéxué (太极哲学)'
 pubDate: 'Apr 10 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Ftai_ji.webp?alt=media&token=061ba334-09fe-4f5f-8216-3d1cdb9b6292'
-tags: ["filosofía"]
+tags: ["Filosofía y Cultura"]
 initialLikes: 0
 author: ''
 ---

@@ -2,7 +2,7 @@
 title: 'Conociendo a Sun Lutang'
 pubDate: 'Jan 01 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fsun_lutang%20(1).webp?alt=media&token=6b17e745-1b24-4500-9e6c-10a87a26d50b'
-tags: ["sun-taiji-quan", "historia", "biografia", "filosofia"]
+tags: ["Taiji Quan", "Filosofía y Cultura", "Biografías"]
 initialLikes: 0
 ---
 

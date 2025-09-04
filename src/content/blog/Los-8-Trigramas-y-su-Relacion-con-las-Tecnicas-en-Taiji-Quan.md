@@ -2,7 +2,7 @@
 title: 'Los 8 Trigramas y su Relación con las Técnicas en Taiji Quan'
 pubDate: 'Apr 7 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2F8_trigramas.webp?alt=media&token=e16e57c5-86a4-4123-b1bb-d716d8ea349e'
-tags: ["tai-chi", "sun-taiji-quan"]
+tags: ["Taiji Quan"]
 initialLikes: 0
 author: ''
 ---

@@ -2,7 +2,7 @@
 title: 'La importancia de las aplicaciones marciales 军事应用 en el Sun Taiji Quan'
 pubDate: 'Apr 2 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fmarcialidad_familia_sun_3.webp?alt=media&token=d5a20e42-ee79-45d5-846f-eaac220a6dc7'
-tags: ["tai-chi", "sun-taiji-quan"]
+tags: ["Taiji Quan"]
 initialLikes: 0
 author: 'Shifu Qín Fēng / Jorge Quiñones'
 photo_caption: 'Shifu Wáng Dé Lóng, Shifu Sūn Zhìgāng y Shifu Qín Fēng (Jorge Quiñones), 5ª y 6ª Generación de la Familia Sun. Baoding, China.'

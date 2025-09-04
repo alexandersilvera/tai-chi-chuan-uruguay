@@ -2,7 +2,7 @@
 title: 'Descubrí la magia escondida en tu uniforme de Tài Jí Quán'
 pubDate: 'Apr 3 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fshifu_jorge_entrenando.webp?alt=media&token=311cdf1f-f52a-4206-8a31-7f6be527f843'
-tags: ["tradición", "tai-chi"]
+tags: ["Filosofía y Cultura", "Taiji Quan"]
 initialLikes: 0
 author: '秦灃 (Qín Fēng) / Jorge Quiñones'
 generation: '6ª Generación de la Familia Sun'

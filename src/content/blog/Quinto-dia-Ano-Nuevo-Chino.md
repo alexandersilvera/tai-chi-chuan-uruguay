@@ -2,7 +2,7 @@
 title: 'El Quinto Día del Año Nuevo Chino: Bienvenida al Dios de la Riqueza (迎财神, Yíng Cáishén)'
 pubDate: 'Feb 2 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fquinto_dia_ano_chino.webp?alt=media&token=c0747202-4e50-437e-aca1-bf30946239e0'
-tags: ["tradición", "filosofia"]
+tags: ["Filosofía y Cultura"]
 initialLikes: 0
 author: ''
 ---

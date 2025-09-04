@@ -2,7 +2,7 @@
 title: 'Introducción a Wuji 無極'
 pubDate: 'Jan 29 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fwuji.webp?alt=media&token=200473c7-9570-41cf-af24-6027d0f789e7'
-tags: ["filosofia", "wuji", "yin-yang", "tai-chi"] 
+tags: ["Filosofía y Cultura", "Práctica y Técnica", "Taiji Quan"] 
 initialLikes: 0  
 ---
 

@@ -2,7 +2,7 @@
 title: 'Shifu Jorge Quiñones: Introductor del Legado Sun Tai Ji Quan en Uruguay'
 pubDate: 'Apr 5 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Ffamilia_sun_taijiquan.webp?alt=media&token=f790629a-055e-4f32-9cd2-1f7da751b55c'
-tags: ["sun-taiji-quan", "biografia"]
+tags: ["Taiji Quan", "Biografías"]
 initialLikes: 0
 author: 'Redacción / Tai Chi Chuan Uruguay'
 generation: '6ª Generación de la Familia Sun'

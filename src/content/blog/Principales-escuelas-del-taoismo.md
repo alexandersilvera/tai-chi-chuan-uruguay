@@ -2,7 +2,7 @@
 title: 'Principales Escuelas del Taoísmo'
 pubDate: 'Apr 11 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Ftaoismo.webp?alt=media&token=bec9029d-d153-491b-ac51-8799b1698009'
-tags: ["taoísmo", "filosofía"]
+tags: ["Filosofía y Cultura"]
 initialLikes: 0
 author: ''
 ---

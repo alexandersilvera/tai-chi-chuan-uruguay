@@ -1,8 +1,8 @@
 ---
 title: 'La importancia del linaje en el Sun Taiji Quan'
 pubDate: 'Apr 29 2025'
-heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/linaje_sun.webp?alt=media&token=8c70715b-0583-42f5-b5e8-6bde1ba01da2'
-tags: ["Sun Taiji Quan"]
+heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Flinaje_sun_familia.jpeg?alt=media&token=8ffd1c3f-f23f-445f-9801-10a20802e12f'
+tags: ["Taiji Quan"]
 initialLikes: 0
 author: '秦灃 (Qín Fēng) / Jorge Quiñones'
 generation: '6ª Generación de la Familia Sun'

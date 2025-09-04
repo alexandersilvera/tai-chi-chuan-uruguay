@@ -2,7 +2,7 @@
 title: 'La Forma Tradicional de Sun Taiji Quan (孙氏太极拳)'
 pubDate: 'Apr 28 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fforma_sun_shifu.webp?alt=media&token=fd0c6e7b-03bd-41a8-b3d4-0c7c612f97d7'
-tags: ["tai-chi", "sun-taiji-quan", "tradición"]
+tags: ["Taiji Quan", "Filosofía y Cultura"]
 initialLikes: 0
 author: ''
 ---

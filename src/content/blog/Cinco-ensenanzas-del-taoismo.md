@@ -2,7 +2,7 @@
 title: 'Cinco Principales Enseñanzas del Taoísmo'
 pubDate: 'Apr 27 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Ftaoismo_2.webp?alt=media&token=52eb9ac5-e863-40de-9fe7-45a34744ec92'
-tags: ["taoísmo", "filosofía"]
+tags: ["Filosofía y Cultura"]
 initialLikes: 0
 author: '秦灃 (Qín Fēng) / Jorge Quiñones'
 generation: '6ª Generación de la Familia Sun'

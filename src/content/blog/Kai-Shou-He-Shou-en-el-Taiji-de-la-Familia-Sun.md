@@ -2,7 +2,7 @@
 title: 'Las Técnicas Kāi Shǒu (开手) y Hé Shǒu (合手) en el Tàijí Quán de la Familia Sūn'
 pubDate: 'Apr 6 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fmaestra_sun.webp?alt=media&token=4484bfa0-edd0-4360-b543-d6159b3ee446'
-tags: ["tai-chi", "sun-taiji-quan"]
+tags: ["Taiji Quan"]
 initialLikes: 0
 author: '秦灃 (Qín Fēng) / Jorge Quiñones'
 generation: '6ª Generación de la familia Sun'

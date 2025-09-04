@@ -2,7 +2,7 @@
 title: 'La Postura San Ti Shi en el Sun Taiji Quan: Pilar de la Estructura, la Energía y la Regeneración Celular'
 pubDate: 'Apr 9 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fsan_ti_shi.webp?alt=media&token=c00df56b-0522-4350-98da-b057adb20f10'
-tags: ["tai-chi", "practica-interna"]
+tags: ["Taiji Quan", "Práctica y Técnica"]
 initialLikes: 0
 author: 'Shifu Jorge Quiñones'
 ---

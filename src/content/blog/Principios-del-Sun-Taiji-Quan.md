@@ -2,7 +2,7 @@
 title: 'Principios del Sun Taiji Quan'
 pubDate: 'Apr 8 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fprincipios_suntaiji.webp?alt=media&token=ec466974-4e63-4de4-9f81-9d35187a991a'
-tags: ["tai-chi", "sun-taiji-quan"]
+tags: ["Taiji Quan"]
 initialLikes: 0
 author: ''
 ---

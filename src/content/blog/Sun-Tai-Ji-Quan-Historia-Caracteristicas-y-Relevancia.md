@@ -2,7 +2,7 @@
 title: 'Sun Tai Ji Quan: Historia, Características y Relevancia'
 pubDate: 'Apr 1 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fsaludo_sunlutang.webp?alt=media&token=397eb731-b856-476c-96af-91c4e7806cce'
-tags: ["sun-taiji-quan", "historia"]
+tags: ["Taiji Quan", "Filosofía y Cultura"]
 initialLikes: 0
 author: ''
 ---

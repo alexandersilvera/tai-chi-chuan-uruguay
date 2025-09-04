@@ -2,7 +2,7 @@
 title: 'La Importancia de la Espada en el Taiji Quan'
 pubDate: 'Apr 24 2025'
 heroImage: 'https://firebasestorage.googleapis.com/v0/b/reino-da-mata-160a9.appspot.com/o/tai-chi-blog%2Fespada_taijiquan.webp?alt=media&token=07885b87-e133-4585-8514-0ec707c1d796'
-tags: ["tai-chi", "espada", "sun-taiji-quan"]
+tags: ["Taiji Quan", "Práctica y Técnica"]
 initialLikes: 0
 author: ''
 ---
