@@ -8,6 +8,7 @@ const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 const latestPost = posts.length > 0 ? posts[0] : null;
+const imageSrc = latestPost?.data.heroImage || '/images/banner-web-1.png';
 ---
 
 {latestPost && (
@@ -18,7 +19,7 @@ const latestPost = posts.length > 0 ? posts[0] : null;
         <div class="w-full md:w-1/4 flex-shrink-0 overflow-hidden rounded-lg">
           <a href={`/blog/${latestPost.slug}`} class="block group">
             <Image
-              src={latestPost.data.heroImage}
+              src={imageSrc}
               alt={latestPost.data.title}
               width={300}
               height={200}

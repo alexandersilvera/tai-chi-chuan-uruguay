@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ArticleEditorWrapper from './ArticleEditorWrapper.jsx';
+import { getAuth } from 'firebase/auth';
 
 export default function ArticleManager() {
   const [articles, setArticles] = useState([]);
@@ -89,31 +90,99 @@ export default function ArticleManager() {
   });
 
   const handleDeleteArticle = async (articleId) => {
+    if (!articleToDelete) return;
+
     try {
-      // Aquí iría la lógica real para eliminar el artículo
-      console.log('Deleting article:', articleId);
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error('No estás autenticado.');
+      }
+      const token = await currentUser.getIdToken();
+
+      const response = await fetch('/api/admin/articles/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ filename: `${articleId}.md` }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al eliminar el artículo');
+      }
+
+      alert('Artículo eliminado exitosamente.');
       setArticles(prev => prev.filter(article => article.id !== articleId));
-      setShowDeleteModal(false);
-      setArticleToDelete(null);
+      // También actualiza las estadísticas
+      setStats(prev => ({
+        ...prev,
+        total: prev.total - 1,
+        published: articleToDelete.status === 'published' ? prev.published - 1 : prev.published,
+        drafts: articleToDelete.status === 'draft' ? prev.drafts - 1 : prev.drafts,
+      }));
+
     } catch (error) {
       console.error('Error deleting article:', error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setShowDeleteModal(false);
+      setArticleToDelete(null);
     }
   };
 
   const handleToggleStatus = async (articleId) => {
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
     try {
-      // Aquí iría la lógica real para cambiar el estado del artículo
-      setArticles(prev => prev.map(article => 
-        article.id === articleId 
-          ? { 
-              ...article, 
-              status: article.status === 'published' ? 'draft' : 'published',
-              publishDate: article.status === 'draft' ? new Date().toISOString() : article.publishDate
-            }
-          : article
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error('No estás autenticado.');
+      }
+      const token = await currentUser.getIdToken();
+
+      const response = await fetch('/api/admin/articles/toggle-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          filename: `${article.slug}.md`,
+          currentStatus: article.status,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al cambiar el estado del artículo');
+      }
+
+      alert('Estado del artículo actualizado exitosamente.');
+      
+      // Actualizar el estado local con la respuesta de la API
+      setArticles(prev => prev.map(a => 
+        a.id === articleId 
+          ? { ...a, status: result.newStatus, publishDate: result.newStatus === 'published' ? new Date().toISOString() : null }
+          : a
       ));
+
+      // Actualizar estadísticas
+      if (result.newStatus === 'published') {
+        setStats(prev => ({ ...prev, published: prev.published + 1, drafts: prev.drafts - 1 }));
+      } else {
+        setStats(prev => ({ ...prev, published: prev.published - 1, drafts: prev.drafts + 1 }));
+      }
+
     } catch (error) {
       console.error('Error toggling article status:', error);
+      alert(`Error: ${error.message}`);
     }
   };
 

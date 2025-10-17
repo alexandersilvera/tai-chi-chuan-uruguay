@@ -1,8 +1,30 @@
+
+
 import { writeFile, readFile } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import { adminDB, adminAuth } from '@/lib/firebase/admin.js';
 
 export const prerender = false;
+
+// Función de seguridad para verificar que el solicitante es un administrador
+async function verifyAdminAuth(request) {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return { error: 'Token de autenticación requerido', status: 401 };
+  }
+  const token = authHeader.substring(7);
+  try {
+    const decodedToken = await adminAuth.verifyIdToken(token);
+    const userDoc = await adminDB.collection('users').doc(decodedToken.uid).get();
+    if (!userDoc.exists || !userDoc.data().isAdmin) {
+      return { error: 'Permisos de administrador requeridos', status: 403 };
+    }
+    return { user: decodedToken };
+  } catch (error) {
+    return { error: 'Token inválido o expirado', status: 401 };
+  }
+}
 
 function formatDate(date) {
   return date.toLocaleDateString('en-US', {
@@ -16,8 +38,8 @@ function createMarkdownContent(articleData, originalPubDate = null) {
   const { title, description, tags, heroImage, author, content } = articleData;
   const pubDate = originalPubDate || formatDate(new Date());
   
-  const frontmatter = `---
-title: '${title}'
+  const frontmatter = `---\ntitle: '${title}'
+description: '${description}'
 pubDate: '${pubDate}'
 heroImage: '${heroImage || ''}'
 tags: [${tags.map(tag => `"${tag}"`).join(', ')}]
@@ -45,18 +67,18 @@ function extractFrontmatter(markdownContent) {
 
 export async function POST({ request }) {
   try {
-    // Verify admin authentication
-    // const session = await verifyAdminSession(request);
-    // if (!session) {
-    //   return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-    //     status: 401,
-    //     headers: { 'Content-Type': 'application/json' }
-    //   });
-    // }
+    // **INICIO DEL PARCHE DE SEGURIDAD**
+    const authResult = await verifyAdminAuth(request);
+    if (authResult.error) {
+      return new Response(JSON.stringify({ error: authResult.error }), {
+        status: authResult.status,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    // **FIN DEL PARCHE DE SEGURIDAD**
 
     const { filename, articleData } = await request.json();
     
-    // Validate required fields
     const { title, description, tags, content } = articleData;
     if (!filename || !title || !description || !tags || !content) {
       return new Response(JSON.stringify({ 
@@ -70,7 +92,6 @@ export async function POST({ request }) {
     const blogDir = join(process.cwd(), 'src', 'content', 'blog');
     const filePath = join(blogDir, filename);
 
-    // Check if file exists
     if (!existsSync(filePath)) {
       return new Response(JSON.stringify({ 
         error: 'Article not found' 
@@ -80,7 +101,6 @@ export async function POST({ request }) {
       });
     }
 
-    // Read existing file to preserve original publication date
     let originalPubDate = null;
     try {
       const existingContent = await readFile(filePath, 'utf8');
@@ -89,13 +109,10 @@ export async function POST({ request }) {
       console.warn('Could not read existing file for pubDate preservation:', error);
     }
 
-    // Create updated markdown content
     const markdownContent = createMarkdownContent(articleData, originalPubDate);
 
-    // Write updated file
     await writeFile(filePath, markdownContent, 'utf8');
 
-    // Extract slug from filename for response
     const slug = filename.replace('.md', '');
 
     return new Response(JSON.stringify({ 

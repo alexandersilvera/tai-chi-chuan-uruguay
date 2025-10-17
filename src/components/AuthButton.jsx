@@ -78,12 +78,12 @@ export default function AuthButton() {
         </label>
         
         {user.isAdmin && (
-           <a href="/dashboard" className="ml-2 px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors">
+           <a href="/dashboard" className="ml-2 px-2 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors">
               Dashboard
            </a>
         )}
         
-        <button onClick={handleLogout} className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors">
+        <button onClick={handleLogout} className="bg-red-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-700 transition-colors">
           Logout
         </button>
       </div>

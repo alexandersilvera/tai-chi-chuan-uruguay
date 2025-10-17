@@ -26,6 +26,7 @@ if (getApps().length === 0 && serviceAccount.privateKey) { // Solo intentar inic
   try {
     app = initializeApp({
       credential: cert(serviceAccount),
+      storageBucket: `${serviceAccount.projectId}.appspot.com`
     });
     // console.log('Firebase Admin SDK inicializado correctamente (desde src/lib/firebase/admin.js).');
   } catch (error) {

@@ -6,6 +6,7 @@ import LikeButton from "@/components/LikeButton.jsx";
 import { AuthProvider } from '@/context/AuthContext.jsx';
 type Props = CollectionEntry<"blog">["data"] & { slug: string };
 const {heroImage,title,tags,pubDate, slug, initialLikes} = Astro.props;
+const imageSrc = heroImage || '/images/banner-web-1.png';
 
 ---
 
@@ -14,7 +15,7 @@ const {heroImage,title,tags,pubDate, slug, initialLikes} = Astro.props;
         <article class="bg-zinc-900/50 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full">
             <div class="w-full">
                 <Image
-                    src={heroImage}
+                    src={imageSrc}
                     alt={title}
                     width={800}
                     height={450}

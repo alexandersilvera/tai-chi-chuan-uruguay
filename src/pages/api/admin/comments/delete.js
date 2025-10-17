@@ -1,110 +1,76 @@
-// API para eliminar comentarios
 import { adminDB, adminAuth } from '@/lib/firebase/admin.js';
+
+export const prerender = false;
+
+// Función de seguridad para verificar que el solicitante es un administrador
+async function verifyAdminAuth(request) {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return { error: 'Token de autenticación requerido', status: 401 };
+  }
+  const token = authHeader.substring(7);
+  try {
+    const decodedToken = await adminAuth.verifyIdToken(token);
+    const userDoc = await adminDB.collection('users').doc(decodedToken.uid).get();
+    if (!userDoc.exists || !userDoc.data().isAdmin) {
+      return { error: 'Permisos de administrador requeridos', status: 403 };
+    }
+    return { user: decodedToken };
+  } catch (error) {
+    return { error: 'Token inválido o expirado', status: 401 };
+  }
+}
 
 export async function DELETE({ request }) {
   try {
-    // Verificar autenticación
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ 
-        error: 'Token de autorización requerido' 
-      }), { 
-        status: 401,
+    // 1. Verificar autenticación de administrador
+    const authResult = await verifyAdminAuth(request);
+    if (authResult.error) {
+      return new Response(JSON.stringify({ error: authResult.error }), {
+        status: authResult.status,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    const token = authHeader.substring(7);
-    let decodedToken;
-    
-    try {
-      decodedToken = await adminAuth.verifyIdToken(token);
-    } catch (error) {
-      console.error('Token inválido:', error);
-      return new Response(JSON.stringify({ 
-        error: 'Token de autorización inválido' 
-      }), { 
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Verificar permisos de administrador
-    const userDoc = await adminDB.collection('users').doc(decodedToken.uid).get();
-    const userData = userDoc.data();
-    
-    if (!userData?.isAdmin) {
-      return new Response(JSON.stringify({ 
-        error: 'Permisos de administrador requeridos' 
-      }), { 
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Obtener datos de la request
-    const { commentId, articleId } = await request.json();
-
-    if (!commentId || !articleId) {
-      return new Response(JSON.stringify({ 
-        error: 'commentId y articleId son requeridos' 
-      }), { 
+    // 2. Obtener IDs del cuerpo de la solicitud
+    const { articleId, commentId } = await request.json();
+    if (!articleId || !commentId) {
+      return new Response(JSON.stringify({ error: 'Se requiere articleId y commentId.' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Buscar el comentario
-    const commentRef = adminDB.collection('articles').doc(articleId).collection('comments').doc(commentId);
-    const commentDoc = await commentRef.get();
-
-    if (!commentDoc.exists) {
-      return new Response(JSON.stringify({ 
-        error: 'Comentario no encontrado' 
-      }), { 
-        status: 404,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    // 3. Construir la referencia al documento y eliminarlo
+    const commentRef = adminDB.collection('posts').doc(articleId).collection('comments').doc(commentId);
+    
+    // Opcional: verificar si el comentario existe antes de borrar
+    const doc = await commentRef.get();
+    if (!doc.exists) {
+        return new Response(JSON.stringify({ error: 'El comentario no existe.' }), {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 
-    const commentData = commentDoc.data();
-
-    // Eliminar el comentario
     await commentRef.delete();
 
-    // Log de auditoría
-    await adminDB.collection('audit_logs').add({
-      action: 'comment_delete',
-      adminId: decodedToken.uid,
-      adminEmail: decodedToken.email,
-      commentId: commentId,
-      articleId: articleId,
-      deletedCommentData: {
-        text: commentData.text,
-        userId: commentData.userId,
-        timestamp: commentData.timestamp
-      },
-      timestamp: adminDB.FieldValue.serverTimestamp()
-    });
-
-    console.log(`✅ Comentario ${commentId} eliminado por ${decodedToken.email}`);
-
     return new Response(JSON.stringify({ 
-      success: true,
-      message: 'Comentario eliminado exitosamente',
-      commentId
-    }), { 
+      success: true, 
+      message: `Comentario '${commentId}' eliminado exitosamente del artículo '${articleId}'.`
+    }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
-    console.error('Error eliminando comentario:', error);
+    console.error('Error eliminando el comentario:', error);
     return new Response(JSON.stringify({ 
-      error: 'Error interno del servidor al eliminar el comentario' 
-    }), { 
+      error: 'Error en el servidor al eliminar el comentario.',
+      details: error.message 
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
   }
-} 
+}
