@@ -6,7 +6,7 @@ import { getSortedPosts, getPagination, POSTS_PER_PAGE } from "@/utils/getPosts"
 export const getStaticPaths = async () => {
   const allPosts = await getSortedPosts();
   const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
-  
+
   return Array.from({ length: totalPages }, (_, i) => ({
     params: { page: (i + 1).toString() },
   }));

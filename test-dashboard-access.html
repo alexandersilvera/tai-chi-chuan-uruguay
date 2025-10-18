@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard Access</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Access Test</h1>
+    <div id="status"></div>
+    
+    <h2>Firebase Configuration Test</h2>
+    <button onclick="testFirebaseConfig()">Test Firebase Config</button>
+    
+    <h2>Authentication Test</h2>
+    <button onclick="testLogin()">Test Google Login</button>
+    <button onclick="testLogout()">Logout</button>
+    
+    <h2>Dashboard Access Test</h2>
+    <button onclick="testDashboardAccess()">Test Dashboard Access</button>
+    
+    <div id="results"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+
+        // Firebase config (using public env vars)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJCw6SF-NJIcfa3HNBc4kGA-1uSZTh0Hw",
+            projectId: "reino-da-mata-160a9",
+            authDomain: "reino-da-mata-160a9.firebaseapp.com",
+            storageBucket: "reino-da-mata-160a9.appspot.com",
+            messagingSenderId: "your-sender-id",
+            appId: "your-app-id"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        function addStatus(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            document.getElementById('results').appendChild(div);
+        }
+
+        window.testFirebaseConfig = function() {
+            addStatus('Firebase app initialized successfully', 'success');
+            addStatus(`Project ID: ${firebaseConfig.projectId}`, 'info');
+        }
+
+        window.testLogin = async function() {
+            try {
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                addStatus(`Login successful: ${result.user.email}`, 'success');
+                
+                // Check admin status
+                const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    addStatus(`Admin status: ${userData.isAdmin || false}`, userData.isAdmin ? 'success' : 'error');
+                } else {
+                    addStatus('User document not found in Firestore', 'error');
+                }
+            } catch (error) {
+                addStatus(`Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        window.testLogout = async function() {
+            try {
+                await signOut(auth);
+                addStatus('Logout successful', 'success');
+            } catch (error) {
+                addStatus(`Logout failed: ${error.message}`, 'error');
+            }
+        }
+
+        window.testDashboardAccess = async function() {
+            try {
+                const response = await fetch('/dashboard', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    addStatus('Dashboard access successful', 'success');
+                } else if (response.status === 302) {
+                    addStatus('Dashboard access denied - redirected (need admin privileges)', 'error');
+                } else {
+                    addStatus(`Dashboard access failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addStatus(`Dashboard access test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Monitor auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('status').innerHTML = `
+                    <div class="status success">
+                        Authenticated as: ${user.email}
+                    </div>
+                `;
+            } else {
+                document.getElementById('status').innerHTML = `
+                    <div class="status info">
+                        Not authenticated
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

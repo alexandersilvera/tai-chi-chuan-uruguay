@@ -1,0 +1,251 @@
+---
+// Asegura que esta página se renderice en el servidor
+export const prerender = false;
+
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import DashboardOverview from '@/components/dashboard/DashboardOverview.jsx';
+import { adminDB } from '@/lib/firebase/admin.js';
+
+// Tipos para TypeScript
+interface RecentActivity {
+  type: 'comment' | 'like' | 'user';
+  user: string;
+  article?: string;
+  action?: string;
+  time: string;
+}
+
+interface DashboardStats {
+  totalUsers: number;
+  totalArticles: number;
+  totalComments: number;
+  totalLikes: number;
+  adminUsers: number;
+  recentActivity: RecentActivity[];
+}
+
+let dashboardStats: DashboardStats = {
+  totalUsers: 0,
+  totalArticles: 0,
+  totalComments: 0,
+  totalLikes: 0,
+  adminUsers: 0,
+  recentActivity: []
+};
+let error: string | null = null;
+
+try {
+  if (!adminDB) {
+    throw new Error("La conexión con la base de datos (adminDB) no está disponible. Revisa la configuración de Firebase Admin y las variables de entorno.");
+  }
+
+  console.log('🔄 Cargando estadísticas básicas del dashboard...');
+
+  // Obtener estadísticas básicas
+  let usersSnapshot;
+  
+  try {
+    usersSnapshot = await adminDB.collection('users').get();
+    console.log(`✅ Usuarios obtenidos: ${usersSnapshot.size}`);
+  } catch (usersError) {
+    console.error('❌ Error obteniendo usuarios:', usersError);
+    throw new Error('No se pudieron obtener los usuarios');
+  }
+
+  // Usar collection groups para obtener comentarios y likes (sabemos que funcionan)
+  let totalComments = 0;
+  let totalLikes = 0;
+  let recentComments = [];
+  let recentLikes = [];
+
+  try {
+    console.log('🔄 Obteniendo comentarios via collection group...');
+    const allCommentsSnapshot = await adminDB.collectionGroup('comments').limit(10).get();
+    totalComments = allCommentsSnapshot.size;
+    console.log(`✅ Comentarios encontrados: ${totalComments}`);
+    
+    // Obtener comentarios recientes
+    allCommentsSnapshot.docs.forEach(commentDoc => {
+      const commentData = commentDoc.data();
+      const path = commentDoc.ref.path;
+      // Extraer postId del path: posts/{postId}/comments/{commentId}
+      const pathParts = path.split('/');
+      const postId = pathParts[1];
+      
+      recentComments.push({
+        ...commentData,
+        id: commentDoc.id,
+        postId: postId,
+        path: path
+      });
+    });
+    
+    console.log(`   📝 Comentarios procesados: ${recentComments.length}`);
+  } catch (commentsError) {
+    console.warn('⚠️ Error obteniendo comentarios:', commentsError.message);
+  }
+
+  try {
+    console.log('🔄 Obteniendo likes via collection group...');
+    const allLikesSnapshot = await adminDB.collectionGroup('likes').limit(10).get();
+    totalLikes = allLikesSnapshot.size;
+    console.log(`✅ Likes encontrados: ${totalLikes}`);
+    
+    // Obtener likes recientes
+    allLikesSnapshot.docs.forEach(likeDoc => {
+      const likeData = likeDoc.data();
+      const path = likeDoc.ref.path;
+      // Extraer postId del path: posts/{postId}/likes/{userId}
+      const pathParts = path.split('/');
+      const postId = pathParts[1];
+      const userId = likeDoc.id;
+      
+      recentLikes.push({
+        ...likeData,
+        id: likeDoc.id,
+        userId: userId,
+        postId: postId,
+        path: path
+      });
+    });
+    
+    console.log(`   ❤️ Likes procesados: ${recentLikes.length}`);
+  } catch (likesError) {
+    console.warn('⚠️ Error obteniendo likes:', likesError.message);
+  }
+
+  // Asignar estadísticas exactas
+  dashboardStats.totalUsers = usersSnapshot.size;
+  dashboardStats.totalArticles = totalComments > 0 || totalLikes > 0 ? Math.max(
+    [...new Set(recentComments.map(c => c.postId))].length,
+    [...new Set(recentLikes.map(l => l.postId))].length
+  ) : 0; // Conteo de artículos únicos que tienen interacciones
+  dashboardStats.totalComments = totalComments;
+  dashboardStats.totalLikes = totalLikes;
+  dashboardStats.adminUsers = usersSnapshot.docs.filter(doc => doc.data().isAdmin).length;
+
+  console.log('📊 Estadísticas calculadas:', {
+    usuarios: dashboardStats.totalUsers,
+    administradores: dashboardStats.adminUsers,
+    comentarios: dashboardStats.totalComments,
+    likes: dashboardStats.totalLikes
+  });
+
+  // Crear actividad reciente con datos reales
+  const recentActivity = [];
+  
+  // Agregar comentarios recientes
+  recentComments.slice(0, 3).forEach(comment => {
+    const userId = comment.userId;
+    const userDoc = usersSnapshot.docs.find(doc => doc.id === userId);
+    const userData = userDoc?.data();
+    
+    if (userData) {
+      recentActivity.push({
+        type: 'comment',
+        user: userData.displayName || userData.email?.split('@')[0] || 'Usuario',
+        article: comment.postId || 'Artículo',
+        time: getTimeAgo(comment.timestamp?.toDate?.()),
+        timestamp: comment.timestamp?.toDate?.() || new Date()
+      });
+    }
+  });
+
+  // Agregar likes recientes
+  recentLikes.slice(0, 3).forEach(like => {
+    const userId = like.userId;
+    if (userId && userId !== 'anonymous') {
+      const userDoc = usersSnapshot.docs.find(doc => doc.id === userId);
+      const userData = userDoc?.data();
+      
+      if (userData) {
+        recentActivity.push({
+          type: 'like',
+          user: userData.displayName || userData.email?.split('@')[0] || 'Usuario',
+          article: like.postId || 'Artículo',
+          time: getTimeAgo(like.timestamp?.toDate?.()),
+          timestamp: like.timestamp?.toDate?.() || new Date()
+        });
+      }
+    }
+  });
+
+  // Ordenar actividad reciente por timestamp
+  dashboardStats.recentActivity = recentActivity
+    .sort((a, b) => (b.timestamp?.getTime?.() || 0) - (a.timestamp?.getTime?.() || 0))
+    .slice(0, 8)
+    .map(({ timestamp, ...activity }) => activity);
+
+  console.log('✅ Dashboard cargado exitosamente:');
+  console.log(`   👥 Usuarios registrados: ${dashboardStats.totalUsers}`);
+  console.log(`   🔑 Administradores: ${dashboardStats.adminUsers}`);
+  console.log(`   📄 Artículos con interacciones: ${dashboardStats.totalArticles}`);
+  console.log(`   💬 Comentarios totales: ${dashboardStats.totalComments}`);
+  console.log(`   ❤️ Likes totales: ${dashboardStats.totalLikes}`);
+  
+  if (recentComments.length > 0) {
+    const uniquePostsFromComments = [...new Set(recentComments.map(c => c.postId))];
+    console.log(`   📝 Posts únicos con comentarios: ${uniquePostsFromComments.join(', ')}`);
+  }
+  
+  if (recentLikes.length > 0) {
+    const uniquePostsFromLikes = [...new Set(recentLikes.map(l => l.postId))];
+    console.log(`   ❤️ Posts únicos con likes: ${uniquePostsFromLikes.join(', ')}`);
+  }
+  
+  console.log(`   🔄 Actividad reciente generada: ${dashboardStats.recentActivity.length} elementos`);
+
+  console.log('✅ Estadísticas del dashboard cargadas:', dashboardStats);
+
+} catch (err: unknown) {
+  console.error("❌ Error cargando estadísticas del dashboard:", err);
+  error = (err as Error).message || "Ocurrió un error al cargar las estadísticas del dashboard.";
+}
+
+// Función helper para calcular tiempo transcurrido
+function getTimeAgo(date: Date | null): string {
+  if (!date) return 'hace un momento';
+  
+  const now = new Date();
+  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+  
+  if (diffInMinutes < 1) return 'hace un momento';
+  if (diffInMinutes < 60) return `hace ${diffInMinutes} min`;
+  
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `hace ${diffInHours}h`;
+  
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `hace ${diffInDays}d`;
+}
+---
+
+<DashboardLayout title="Panel de Administración">
+  <div class="container mx-auto px-4 py-8"> 
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Panel de Administración</h1> 
+      <p class="text-gray-600">Bienvenido al panel de administración de Tai Chi Uruguay. Gestiona usuarios, contenido y visualiza estadísticas desde aquí.</p> 
+      
+      {error && (
+        <div class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm">
+                <strong>Error:</strong> {error}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {!error && (
+      <DashboardOverview stats={dashboardStats} client:load />
+    )}
+  </div>
+</DashboardLayout>

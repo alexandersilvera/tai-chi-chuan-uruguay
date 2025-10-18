@@ -1,0 +1,96 @@
+---
+// src/pages/dashboard/users/[id]/index.astro
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import UserDetail from '@/components/dashboard/UserDetail.jsx';
+import { adminDB } from '@/lib/firebase/admin.js';
+
+// Aseguramos renderizado en servidor
+export const prerender = false;
+
+// Obtenemos el ID del usuario de los parámetros de la URL
+const { id } = Astro.params;
+
+let userData = null;
+let error = null;
+
+try {
+  if (!adminDB) {
+    throw new Error("La conexión con la base de datos (adminDB) no está disponible.");
+  }
+
+  if (!id) {
+    throw new Error("ID de usuario no proporcionado.");
+  }
+
+  // Obtenemos los datos del usuario
+  const userDoc = await adminDB.collection('users').doc(id).get();
+  
+  if (!userDoc.exists) {
+    throw new Error(`No se encontró ningún usuario con ID: ${id}`);
+  }
+
+  const userDocData = userDoc.data();
+
+  // Obtenemos los likes del usuario
+  const userLikesRef = adminDB.collection('users').doc(id).collection('likes');
+  const likesSnapshot = await userLikesRef.get();
+  const userLikes = [];
+  likesSnapshot.forEach(likeDoc => {
+    const likeData = likeDoc.data();
+    userLikes.push({
+      articleId: likeDoc.id || 'ID Desconocido', // El ID del documento es el slug del artículo
+      timestamp: likeData.timestamp?.toDate ? likeData.timestamp.toDate().toLocaleString() : 'Fecha desconocida',
+    });
+  });
+
+  // Obtenemos los comentarios del usuario
+  const commentsQuery = adminDB.collectionGroup('comments')
+                               .where('userId', '==', id)
+                               .orderBy('timestamp', 'desc');
+  const commentsSnapshot = await commentsQuery.get();
+  const userComments = [];
+  commentsSnapshot.forEach(commentDoc => {
+    const commentData = commentDoc.data();
+    userComments.push({
+      text: commentData.text || 'Sin texto',
+      articleId: commentData.articleId || 'ID Desconocido',
+      timestamp: commentData.timestamp?.toDate ? commentData.timestamp.toDate().toLocaleString() : 'Fecha desconocida'
+    });
+  });
+
+  // Construimos el objeto completo de usuario
+  userData = {
+    id: id,
+    email: userDocData.email || 'No email',
+    displayName: userDocData.displayName || '', 
+    isAdmin: userDocData.isAdmin || false,
+    photoURL: userDocData.photoURL || null, 
+    comments: userComments,
+    likes: userLikes,
+  };
+
+} catch (err) {
+  console.error("Error fetching user data:", err);
+  error = err.message || "Ocurrió un error al cargar los datos del usuario.";
+}
+---
+
+<DashboardLayout title={userData ? `Usuario: ${userData.displayName || userData.email}` : "Detalle de Usuario"}>
+  <div class="mb-4">
+    <a href="/dashboard/users" class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Volver a la lista de usuarios
+    </a>
+  </div>
+
+  {error && (
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+      <p class="font-bold">Error</p>
+      <p>{error}</p>
+    </div>
+  )}
+
+  {!error && userData && <UserDetail user={userData} client:load />}
+</DashboardLayout>

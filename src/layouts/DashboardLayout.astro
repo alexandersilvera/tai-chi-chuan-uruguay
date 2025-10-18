@@ -1,0 +1,79 @@
+---
+// Heredamos las importaciones esenciales y la interfaz de Props
+import '../styles/global.css';
+import SEO from '@/components/SEO.astro';
+import Sidebar from '@/components/dashboard/Sidebar.astro'; // Importamos el nuevo Sidebar
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+// Mantenemos los props con defaults razonables para el dashboard
+const {
+  title,
+  description = "Panel de Administración - Tai Ji Quan Uruguay", // Default description para el dashboard
+  image // Podríamos quitarlo o poner un default específico si lo necesitamos
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <SEO
+    title={title}
+    description={description}
+    image={image}
+  />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+  <title>{title}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="flex flex-col md:flex-row min-h-screen mt-0 text-gray-500 bg-gray-50"> 
+  {/* Sidebar responsivo */}
+  <Sidebar />
+
+  {/* Contenedor principal responsivo */}
+  <main class="flex-grow w-full px-3 py-4 sm:px-4 md:px-6 lg:px-8 md:py-6 dashboard-content">
+    <slot /> {/* Aquí se renderizará el contenido de cada página del dashboard */}
+  </main>
+</body>
+</html>
+
+<style is:global>
+  /* Estilos responsivos para el dashboard */
+  body {
+    background-color: #f7fafc;
+    overflow-x: hidden; /* Evita scroll horizontal */
+  }
+
+  .dashboard-content {
+    /* En móviles ocupa toda la pantalla */
+    width: 100%;
+    min-height: calc(100vh - 60px); /* Altura completa menos la altura del header móvil */
+    transition: all 0.3s ease;
+  }
+
+  /* Media query para tablets y desktop */
+  @media (min-width: 768px) {
+    .dashboard-content {
+      /* En desktop deja espacio para el sidebar */
+      margin-left: 240px;
+      min-height: 100vh;
+    }
+  }
+
+  /* Estilos para mejorar la experiencia en móviles */
+  @media (max-width: 767px) {
+    .container {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+      max-width: 100%;
+    }
+  }
+</style>

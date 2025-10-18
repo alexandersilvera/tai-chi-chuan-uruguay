@@ -1,14 +1,13 @@
 ---
-import { Image } from 'astro:assets';
 import { type CollectionEntry } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import LikeButton from "@/components/LikeButton.jsx";
 import CommentsWithProvider from "@/components/CommentsWithProvider.jsx";
 
-type Props = CollectionEntry<"blog">["data"] & { 
-  initialLikes: number, 
-  slug: string 
+type Props = CollectionEntry<"blog">["data"] & {
+  initialLikes: number,
+  slug: string
 };
 
 const { title, heroImage, pubDate, initialLikes = 0, slug } = Astro.props;
@@ -51,10 +50,10 @@ const { title, heroImage, pubDate, initialLikes = 0, slug } = Astro.props;
         <!-- Sección de likes y fecha -->
         <div class="flex justify-between items-center mb-4">
           <FormattedDate date={pubDate} />
-          <LikeButton 
+          <LikeButton
             client:only="react"
-            slug={slug} 
-            initialLikes={initialLikes} 
+            slug={slug}
+            initialLikes={initialLikes}
           />
         </div>
 

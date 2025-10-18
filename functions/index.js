@@ -8,12 +8,13 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+// --- NUEVA FUNCIÓN handleLike ---
 exports.handleLike = functions.https.onRequest(async (req, res) => {
-  // Permitir CORS para producción y desarrollo local
+  // --- Manejo de CORS (igual que antes) ---
   const allowedOrigins = [
     "https://taichisun.com",
     "https://www.taichisun.com",
-    "http://localhost:4321", // Añadir origen de desarrollo
+    "http://localhost:4321", // Origen de desarrollo
   ];
   const origin = req.get("origin");
   if (allowedOrigins.includes(origin)) {
@@ -27,11 +28,13 @@ exports.handleLike = functions.https.onRequest(async (req, res) => {
   if (!allowedOrigins.includes(origin)) {
     return res.status(403).json({success: false, message: "Dominio no autorizado."});
   }
+  // --- Fin Manejo de CORS ---
 
   let slug;
-  let userId;
+  let userId; // Este será el user.uid real de Firebase Auth
+
+  // Extraer slug y userId (igual que antes)
   if (req.body) {
-    // Permitir ambos formatos: {slug}, {slug, userId}, {data: {slug}}, {data: {slug, userId}}
     if (typeof req.body.slug === "string") {
       slug = req.body.slug;
       if (typeof req.body.userId === "string") {
@@ -45,17 +48,22 @@ exports.handleLike = functions.https.onRequest(async (req, res) => {
     }
   }
 
+  // Validar slug (igual que antes)
   if (typeof slug !== "string" || !slug) {
     return res.status(400).json({success: false, message: "El slug es requerido y debe ser string."});
   }
 
-  // Si solo se recibe slug, devolver el contador de likes
+  const likesCounterRef = db.collection("likes").doc(slug); // Referencia al contador
+  const userLikesCollectionRef = db.collection("userArticleLikes"); // NUEVA colección
+
+  // --- Lógica para obtener solo el contador (si no se envía userId) ---
   if (!userId) {
     try {
-      const likesDoc = await db.collection("likes").doc(slug).get();
+      const likesDoc = await likesCounterRef.get();
       const count = likesDoc.exists ? (likesDoc.data().count || 0) : 0;
       return res.status(200).json({success: true, newLikes: count});
     } catch (error) {
+      console.error("Error fetching like count:", error);
       return res.status(500).json({
         success: false,
         message: "Error al consultar el contador de likes.",
@@ -63,51 +71,80 @@ exports.handleLike = functions.https.onRequest(async (req, res) => {
       });
     }
   }
+  // --- Fin Lógica contador ---
 
-  // Si hay userId, sigue la lógica normal de like
+
+  // --- Lógica principal de Like/Unlike con userId real ---
   if (typeof userId !== "string" || !userId) {
-    return res.status(400).json({success: false, message: "El userId es requerido y debe ser string."});
+    // Ahora userId es requerido para la acción de like/unlike
+    return res.status(400).json({success: false, message: "Se requiere userId para dar o quitar like."});
   }
 
-  // --- Lógica Firestore protegida ---
-  const likeLogRef = db.collection("likesLog").doc(`${slug}_${userId}`);
-  const likesRef = db.collection("likes").doc(slug);
+  // Consulta para ver si este usuario ya dio like a este artículo
+  const likeQuery = userLikesCollectionRef
+      .where("userId", "==", userId)
+      .where("articleId", "==", slug)
+      .limit(1);
 
   try {
     const resultData = await db.runTransaction(async (transaction) => {
-      const likeLogDoc = await transaction.get(likeLogRef);
-      const likesDoc = await transaction.get(likesRef);
+      const likeSnapshot = await transaction.get(likeQuery);
+      const likesCounterDoc = await transaction.get(likesCounterRef); // Obtenemos el contador dentro de la transacción
 
-      if (likeLogDoc.exists) {
-        return {success: false, message: "Ya has dado like a este artículo."};
+      let existingLikeDoc = null;
+      if (!likeSnapshot.empty) {
+        existingLikeDoc = likeSnapshot.docs[0]; // El documento de like existente
       }
 
-      transaction.set(likeLogRef, {timestamp: admin.firestore.Timestamp.now()});
-      let newLikesCount;
-      if (likesDoc.exists) {
-        transaction.update(likesRef, {count: admin.firestore.FieldValue.increment(1)});
-        newLikesCount = (likesDoc.data().count || 0) + 1;
+      let finalLikesCount = likesCounterDoc.exists ? (likesCounterDoc.data().count || 0) : 0;
+      let liked = false; // Para la respuesta final
+
+      if (existingLikeDoc) {
+        // --- Usuario ya dio like -> QUITAR LIKE ---
+        transaction.delete(existingLikeDoc.ref); // Eliminar de userArticleLikes
+        // Decrementar contador (si existe)
+        if (likesCounterDoc.exists && finalLikesCount > 0) {
+          transaction.update(likesCounterRef, {count: admin.firestore.FieldValue.increment(-1)});
+          finalLikesCount--;
+        }
+        liked = false; // Se quitó el like
+        console.log(`User ${userId} unliked article ${slug}`);
       } else {
-        transaction.set(likesRef, {count: 1});
-        newLikesCount = 1;
+        // --- Usuario no ha dado like -> DAR LIKE ---
+        const newLikeRef = userLikesCollectionRef.doc(); // Generar nuevo ID para el like
+        transaction.set(newLikeRef, {
+          userId: userId,
+          articleId: slug,
+          timestamp: admin.firestore.Timestamp.now(),
+        });
+        // Incrementar contador
+        if (likesCounterDoc.exists) {
+          transaction.update(likesCounterRef, {count: admin.firestore.FieldValue.increment(1)});
+          finalLikesCount++;
+        } else {
+          transaction.set(likesCounterRef, {count: 1}); // Crear contador si no existe
+          finalLikesCount = 1;
+        }
+        liked = true; // Se dio el like
+        console.log(`User ${userId} liked article ${slug}`);
       }
-      return {success: true, newLikes: newLikesCount};
+
+      // Devolvemos el nuevo contador y el estado del like
+      return {success: true, newLikes: finalLikesCount, liked: liked};
     });
 
-    if (resultData.success) {
-      return res.status(200).json(resultData);
-    } else {
-      return res.status(409).json(resultData); // 409 Conflict si ya existe
-    }
+    // Enviar respuesta exitosa
+    return res.status(200).json(resultData);
   } catch (error) {
-    // Error processing like, logging removido para producción
+    console.error("Error processing like/unlike transaction:", error);
     return res.status(500).json({
       success: false,
-      message: "Ocurrió un error al procesar el like.",
+      message: "Ocurrió un error al procesar el like/unlike.",
       error: error.message,
     });
   }
 });
+// --- FIN NUEVA FUNCIÓN handleLike ---
 
 exports.helloWorld = functions.https.onRequest((req, res) => {
   res.status(200).send("Hello from Firebase!");

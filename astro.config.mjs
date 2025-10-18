@@ -5,6 +5,7 @@ import alpinejs from '@astrojs/alpinejs';
 import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
+import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,8 +14,14 @@ export default defineConfig({
     tailwind(),
     alpinejs(),
     react(),
-    sitemap()
+    sitemap(),
+    icon()
   ],
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+    }
+  },
   vite: {
     optimizeDeps: {
       include: ['swiper']

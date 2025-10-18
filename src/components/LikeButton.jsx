@@ -1,110 +1,106 @@
-// src/components/LikeButton.jsx
-import { useState, useEffect } from 'react';
-
+import React, { useState, useEffect, useCallback } from 'react';
+import { db } from '@/lib/firebase/client'; 
+import { doc, getDoc, setDoc, deleteDoc, collection, writeBatch } from 'firebase/firestore';
+import { useAuth } from '@/context/AuthContext.jsx';
 import { v4 as uuidv4 } from 'uuid';
 
-// Llamada directa a la función cloud en producción
-const callHandleLike = async ({ slug, userId }) => {
-  try {
-    const body = userId ? { slug, userId } : { slug };
-    const response = await fetch('https://handlelike-3hjph2wfea-uc.a.run.app', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      credentials: 'omit',
-    });
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    return { success: false, message: err.message || 'Error de red o formato de respuesta' };
-  }
-};
+const LikeButton = ({ slug, initialLikes }) => {
+  const [likes, setLikes] = useState(initialLikes || 0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-export default function LikeButton({ slug, initialLikes }) {
-
-
-  const [likes, setLikes] = useState(initialLikes);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [userId, setUserId] = useState(null);
-  const [hasLiked, setHasLiked] = useState(false);
+  const auth = useAuth(); 
+  const user = auth?.user; 
 
   useEffect(() => {
-    let ignore = false;
-    async function fetchLikesCloud() {
+    if (!user || !slug) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    let isSubscribed = true;
+
+    const checkLikeStatus = async () => {
       try {
-        const result = await callHandleLike({ slug }); // solo slug, sin userId
-        if (!ignore && result && typeof result.newLikes === 'number') {
-          setLikes(result.newLikes);
+        const likeRef = doc(db, 'posts', slug, 'likes', user.uid);
+        const likeSnap = await getDoc(likeRef);
+        if (isSubscribed) {
+          setIsLiked(likeSnap.exists());
+          setLoading(false);
         }
-      } catch (err) {
-        console.error('Error fetching initial likes:', err);
+      } catch (error) {
+        // console.error("Error checking like status: ", error);
+        if (isSubscribed) {
+          setLoading(false); 
+        }
       }
-    }
-    if (typeof window !== 'undefined') {
-      let storedUserId = localStorage.getItem('userId');
-      if (!storedUserId) {
-        storedUserId = uuidv4();
-        localStorage.setItem('userId', storedUserId);
-      }
-      setUserId(storedUserId);
-      setHasLiked(localStorage.getItem(`liked-${slug}-${storedUserId}`) === 'true');
-      fetchLikesCloud();
-    }
-    return () => { ignore = true; };
-  }, [slug]);
+    };
+    checkLikeStatus();
+    return () => {
+      isSubscribed = false;
+    };
+  }, [user, slug]);
 
-  const handleLike = async () => {
-
-
-    if (!slug) {
-      setError('No se pudo identificar el artículo.');
+  const handleLike = useCallback(async () => {
+    if (!user || !slug) {
+      setLoading(false);
       return;
     }
-    if (!userId) {
-
-      setError("Espera un momento e inténtalo de nuevo.");
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
+    setLoading(true);
+    const likeRef = doc(db, 'posts', slug, 'likes', user.uid);
+    const userLikesRef = doc(db, 'users', user.uid, 'likes', slug);
     try {
-
-      const result = await callHandleLike({ slug, userId });
-
-
-      if (result && result.success) {
-        setLikes(result.newLikes);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(`liked-${slug}-${userId}`, 'true');
-          setHasLiked(true);
-        }
+      const batch = writeBatch(db);
+      if (isLiked) {
+        batch.delete(likeRef);
+        batch.delete(userLikesRef);
+        await batch.commit();
+        setLikes((prevLikes) => Math.max(0, prevLikes - 1));
+        setIsLiked(false);
       } else {
-        setError(result?.message || 'Error al dar like');
+        const likeData = {
+          timestamp: new Date(),
+          userId: user.uid
+        };
+        batch.set(likeRef, likeData);
+        batch.set(userLikesRef, { timestamp: new Date(), postSlug: slug });
+        await batch.commit();
+        setLikes((prevLikes) => prevLikes + 1);
+        setIsLiked(true);
       }
-    } catch (err) {
-      setError(err.message || 'Ocurrió un error');
+    } catch (error) {
+      // console.error("Error updating like status: ", error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }, [isLiked, slug, user]); 
 
+  // console.log('[LikeButton] user:', user, 'loading:', loading);
+  if (loading) {
+    return <div className="text-xs text-zinc-400 mt-1">Cargando...</div>;
+  }
   return (
     <div>
       <button
-        className={`px-4 py-2 rounded font-semibold transition-colors duration-200 flex items-center gap-2 ${hasLiked
-            ? 'bg-emerald-700 text-emerald-100 cursor-not-allowed'
-            : 'bg-zinc-800 text-zinc-300 hover:bg-emerald-600 hover:text-white'
-          } ${isLoading ? 'opacity-50 cursor-wait' : ''}`}
         onClick={handleLike}
-        disabled={isLoading || hasLiked}
-        aria-label={hasLiked ? "Ya diste like" : "Dar like"}
+        disabled={loading || !slug || !user}
+        className={`flex items-center space-x-1 text-sm transition-colors duration-200 ease-in-out ${
+          isLiked ? 'text-red-500 hover:text-red-600' : 'text-zinc-400 hover:text-zinc-200'
+        } ${loading || !user ? 'opacity-50 cursor-not-allowed' : ''}`}
+        aria-pressed={isLiked}
+        aria-label={isLiked ? 'Quitar Me Gusta' : 'Me Gusta'}
+        title={!user ? 'Inicia sesión para dar Me Gusta' : ''}
       >
-        <span className="icon">❤️</span> {likes}
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+        </svg>
+        <span>{likes}</span>
       </button>
-      {error && <div className="error">{error}</div>}
+      {!user && (
+        <div className="text-xs text-zinc-400 mt-1">Inicia sesión para dar "Me Gusta"</div>
+      )}
     </div>
   );
-}
+};
+
+export default LikeButton;

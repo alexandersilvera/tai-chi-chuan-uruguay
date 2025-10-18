@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Firebase Auth</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #console { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Test Firebase Auth Configuration</h1>
+    
+    <div id="status"></div>
+    
+    <h2>Variables de Entorno</h2>
+    <div id="env-vars"></div>
+    
+    <h2>Pruebas de Conexión</h2>
+    <button onclick="testFirebaseConnection()">Test Conexión Firebase</button>
+    <button onclick="testGoogleAuth()">Test Google Auth</button>
+    <button onclick="clearConsole()">Limpiar Console</button>
+    
+    <h2>Console Output</h2>
+    <div id="console"></div>
+
+    <script type="module">
+        // Reemplaza esto con la configuración de tu proyecto de Firebase
+        // Puedes encontrarla en la consola de Firebase > Configuración del proyecto
+        const firebaseConfig = {
+            PUBLIC_FIREBASE_API_KEY: 'TU_API_KEY',
+            PUBLIC_FIREBASE_AUTH_DOMAIN: 'TU_PROJECT_ID_DE_FIREBASE.firebaseapp.com',
+            PUBLIC_FIREBASE_PROJECT_ID: 'TU_PROJECT_ID_DE_FIREBASE',
+            PUBLIC_FIREBASE_STORAGE_BUCKET: 'TU_PROJECT_ID_DE_FIREBASE.appspot.com',
+            PUBLIC_FIREBASE_MESSAGING_SENDER_ID: 'TU_SENDER_ID',
+            PUBLIC_FIREBASE_APP_ID: 'TU_APP_ID',
+            PUBLIC_FIREBASE_MEASUREMENT_ID: 'TU_MEASUREMENT_ID'
+        };
+
+        const env = firebaseConfig;
+
+        // Función para mostrar en console personalizada
+        function logToConsole(message, type = 'log') {
+            const consoleDiv = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : '✅';
+            consoleDiv.innerHTML += `[${timestamp}] ${prefix} ${message}\n`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        // Verificar variables de entorno
+        function checkEnvVars() {
+            const envDiv = document.getElementById('env-vars');
+            let html = '';
+            let allGood = true;
+
+            Object.entries(env).forEach(([key, value]) => {
+                const status = value ? 'success' : 'error';
+                const icon = value ? '✅' : '❌';
+                html += `<div class="${status}">${icon} ${key}: ${value ? 'Configurada' : 'Faltante'}</div>`;
+                if (!value) allGood = false;
+            });
+
+            envDiv.innerHTML = html;
+            return allGood;
+        }
+
+        // Test de conexión Firebase
+        window.testFirebaseConnection = async function() {
+            logToConsole('🔥 Iniciando test de conexión Firebase...');
+            
+            try {
+                // Importar Firebase
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+                
+                const firebaseConfig = {
+                    apiKey: env.PUBLIC_FIREBASE_API_KEY,
+                    authDomain: env.PUBLIC_FIREBASE_AUTH_DOMAIN,
+                    projectId: env.PUBLIC_FIREBASE_PROJECT_ID,
+                    storageBucket: env.PUBLIC_FIREBASE_STORAGE_BUCKET,
+                    messagingSenderId: env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+                    appId: env.PUBLIC_FIREBASE_APP_ID
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                
+                logToConsole('✅ Firebase inicializado correctamente');
+                logToConsole(`📱 App Name: ${app.name}`);
+                logToConsole(`🔐 Auth Domain: ${auth.config.authDomain}`);
+                
+                // Verificar dominio actual
+                logToConsole(`🌐 Dominio actual: ${window.location.origin}`);
+                logToConsole(`🔧 Hostname: ${window.location.hostname}`);
+                
+                document.getElementById('status').innerHTML = '<div class="success">✅ Firebase conectado correctamente</div>';
+                
+            } catch (error) {
+                logToConsole(`❌ Error conectando Firebase: ${error.message}`, 'error');
+                document.getElementById('status').innerHTML = '<div class="error">❌ Error de conexión Firebase</div>';
+            }
+        };
+
+        // Test de Google Auth
+        window.testGoogleAuth = async function() {
+            logToConsole('🔍 Iniciando test de Google Auth...');
+            
+            try {
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                const { getAuth, GoogleAuthProvider } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+                
+                const firebaseConfig = {
+                    apiKey: env.PUBLIC_FIREBASE_API_KEY,
+                    authDomain: env.PUBLIC_FIREBASE_AUTH_DOMAIN,
+                    projectId: env.PUBLIC_FIREBASE_PROJECT_ID,
+                    storageBucket: env.PUBLIC_FIREBASE_STORAGE_BUCKET,
+                    messagingSenderId: env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+                    appId: env.PUBLIC_FIREBASE_APP_ID
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const provider = new GoogleAuthProvider();
+                
+                logToConsole('✅ Google Auth Provider creado');
+                logToConsole(`🔑 Provider ID: ${provider.providerId}`);
+                
+                // Verificar si el dominio está autorizado
+                const currentDomain = window.location.hostname;
+                const authDomain = env.PUBLIC_FIREBASE_AUTH_DOMAIN;
+                
+                if (currentDomain === 'localhost' || currentDomain === '127.0.0.1') {
+                    logToConsole('✅ Dominio localhost - OK para desarrollo');
+                } else if (authDomain.includes(currentDomain)) {
+                    logToConsole('✅ Dominio autorizado en Firebase');
+                } else {
+                    logToConsole(`⚠️ Dominio ${currentDomain} podría no estar autorizado`, 'warn');
+                }
+                
+                logToConsole('ℹ️ Para probar el login completo, usa el botón en la aplicación real');
+                
+            } catch (error) {
+                logToConsole(`❌ Error en Google Auth: ${error.message}`, 'error');
+            }
+        };
+
+        // Limpiar console
+        window.clearConsole = function() {
+            document.getElementById('console').innerHTML = '';
+        };
+
+        // Inicializar al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            logToConsole('🚀 Página de test cargada');
+            checkEnvVars();
+        });
+    </script>
+</body>
+</html> 

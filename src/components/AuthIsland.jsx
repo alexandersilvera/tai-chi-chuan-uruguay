@@ -1,6 +1,6 @@
-import React from "react";
-import { AuthProvider } from "../context/AuthContext";
-import AuthButton from "./AuthButton";
+// Este es solo un componente contenedor
+import { AuthProvider } from '../context/AuthContext.jsx';
+import AuthButton from './AuthButton.jsx';
 
 export default function AuthIsland() {
   return (
@@ -8,4 +8,4 @@ export default function AuthIsland() {
       <AuthButton />
     </AuthProvider>
   );
-}
+} 
