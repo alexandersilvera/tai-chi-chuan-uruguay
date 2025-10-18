@@ -2,170 +2,597 @@
 import { Image } from 'astro:assets';
 import Layout from '@/layouts/Layout.astro';
 import PageHeader from '@/components/PageHeader.astro';
+
+// Datos originales del linaje (anidados)
+const lineageDataNested = [
+  {
+    name: "Sūn Lù Táng",
+    title: "Zǔshī: Patriarca",
+    image: "/images/m0.jpeg",
+    link: "/maestros/sun-lutang",
+    info: `
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Orígenes y Formación</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Lutang, nacido con el nombre Fu Quan y más tarde conocido como Han Zhai, nació en la aldea de Jiatong, Dongren, en el condado de Wan, provincia de Hebei. Desde joven, mostró un talento excepcional para las artes marciales, iniciando su formación en Xing Yi Quan bajo la tutela de Li Kui Yuan y posteriormente del legendario Guo Yun Shen. También recibió instrucción directa de grandes maestros como Song Shi Rong, Che Yi Zhai y Bai Xiyuan.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Dominio de las Artes Internas</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Movido por su búsqueda del conocimiento y la conexión entre el boxeo y el "Yi" (intención), Sun Lutang estudió Ba Gua Zhang con Cheng Tinghua, logrando una comprensión profunda de esta disciplina. En 1886, emprendió un extenso viaje por once provincias de China, visitando los centros más importantes de las artes marciales, incluidos Shaolin, Wudang y Emei. Dos años después, en 1888, regresó a su tierra natal y fundó el Puyang Boxing Club, un espacio dedicado a la enseñanza y difusión de las artes marciales.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Encuentro con Hao Weizhen y el Tai Chi Chuan</h2>
+        <p class="text-gray-200 leading-relaxed">
+          En 1912, en Beijing, conoció al maestro de Tai Chi Hao Weizhen, quien en ese momento se encontraba enfermo y en dificultades. Sun Lutang lo acogió en su hogar y se aseguró de que recibiera tratamiento médico. Tras su recuperación, Hao, en agradecimiento, le transmitió su conocimiento del Tai Chi de la familia Hao.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Creación del Tai Chi de la Familia Sun - 1918</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Después de décadas de práctica y estudio, en 1918, Sun Lutang logró unificar los principios esenciales de Xing Yi Quan, Ba Gua Zhang y Tai Chi Chuan, creando una nueva rama del Tai Chi: el Tai Chi de la Familia Sun (孙式太极拳). Este nuevo sistema integraba la fluidez del Ba Gua, la estructura del Xing Yi y la suavidad del Tai Chi, dando origen a un estilo único, eficiente y con una base teórica profunda.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Legado y Enseñanza en Dingxing</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Tras décadas de estudio y práctica, Sun Lutang pasó un período significativo enseñando en el condado de Dingxing, Baoding, provincia de Hebei, una región con una fuerte tradición en las artes marciales. Allí perfeccionó la integración de Xing Yi Quan, Ba Gua Zhang y Tai Chi Quan en un sistema unificado, sentando las bases del Tai Chi de la Familia Sun. Hoy en día, Dingxing sigue siendo un centro de referencia del Tai Chi de la Familia Sun y cuenta con la mayor concentración de practicantes de este estilo en toda China.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Reconocimiento y Cargos Importantes</h2>
+        <p class="text-gray-200 leading-relaxed">
+          En 1928, Sun Lutang fue nombrado Director del Clan Wudang en el Museo Central de Artes Marciales de Nanjing y Subdirector y decano del Museo Provincial de Artes Marciales de Jiangsu. No solo fue un Maestro de Artes Marciales, sino también un gran estudioso del Taoísmo, la Medicina Tradicional China y la Filosofía Clásica China.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Filosofía y Legado</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Desarrolló el concepto de "la combinación del Boxeo y el Tao", integrando la práctica marcial con la sabiduría filosófica. Su enfoque sentó las bases de un sistema de entrenamiento que sigue vigente hasta hoy. A pesar de su fama mundial, mantuvo siempre una vida sencilla y frugal, sin apego a la riqueza ni a los títulos. Su forma de vida reflejaba su enseñanza: "sinceridad en el interior y manifestación en el exterior".
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Obras Publicadas</h2>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Xing Yi Quan Xue (Estudio del Xing Yi Quan)</li>
+          <li>Ba Gua Quan Xue (Estudio del Ba Gua Quan)</li>
+          <li>Tai Ji Quan Xue (Estudio del Tai Ji Quan)</li>
+          <li>La intención y la verdad del boxeo</li>
+          <li>Espada de Ba Gua</li>
+          <li>Ba Gua Qiang Xue (Estudio de la lanza de Ba Gua, inédito)</li>
+          <li>La diferencia entre los maestros de boxeo internos y externos</li>
+          <li>Principios detallados de Xing Yi, Ba Gua y Tai Ji</li>
+        </ul>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Discípulos y Descendientes</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Lutang formó numerosos discípulos tanto en China como en el extranjero. Entre los más destacados se encuentran:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Sun Zhendai</li>
+          <li>Sun Zhenchuan</li>
+          <li>Qi Gongbo</li>
+          <li>Ren Yanzhi</li>
+          <li>Chen Shouli</li>
+          <li>Qiu Deyuan</li>
+          <li>Chen Weiming</li>
+          <li>Zhi Xietang</li>
+          <li>Liu Rutong</li>
+          <li>Sun Cunzhou</li>
+          <li>Sun Jianyun</li>
+        </ul>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Fallecimiento y Reconocimiento</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Lutang falleció en 1933 en un estado de serenidad total, dejando una gran impresión en su tiempo. Importantes periódicos como Shenbao, Republic of China Daily, Ta Kung Pao, Yi Shi Bao y World Journal informaron sobre su muerte y rindieron homenaje a su legado. Hoy, Sun Lutang es recordado como un visionario que integró la filosofía y las artes marciales, transformando ambas disciplinas. Su legado sigue vivo a través de sus descendientes y practicantes de todo el mundo, quienes continúan preservando y difundiendo su arte y pensamiento.
+        </p>
+      </section>
+    `,
+    children: [
+      {
+        name: "Sūn Zhèn Dài",
+        title: "Zōngshī: Tatarabuelo Gran Maestro",
+        image: "/images/m1.jpeg",
+        link: "/maestros/sun-zhendai",
+        info: `
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Biografía y Relación con Sun Lutang</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Zhendai fue uno de los discípulos más sobresalientes de Sun Lutang, quien lo valoró tanto que lo adoptó como su hijo. Junto a su hermano, estableció una escuela de artes marciales en la ciudad de Dingxing tras perfeccionar sus habilidades.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Contribuciones y Enseñanza</h2>
+        <p class="text-gray-200 leading-relaxed">
+          En 1908, Sun Lutang llevó a Sun Zhendai a Beijing para enseñar artes marciales. Más tarde, lo acompañó a otras ciudades importantes como:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Nanjing</li>
+          <li>Hangzhou</li>
+          <li>Zhenjiang</li>
+          <li>Shanghái</li>
+        </ul>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          En estos lugares, continuaron expandiendo la enseñanza y legado de las artes marciales chinas.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Reconocimientos en el Salón Nacional de Artes Marciales</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Zhendai y su hermano Sun Zhenchuan fueron reconocidos como dos de los "Ocho Grandes Vajras" del Salón Nacional de Artes Marciales de Jiangsu. Gozaron de gran prestigio en la región de Jiangnan.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Carrera como Instructor y Mentor</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Zhendai fue instructor de primer nivel en el Salón Nacional de Artes Marciales de Jiangsu, donde figuras prominentes como Gao Zhendong y los hermanos Zhu (Zhu Guofu, Zhu Guozhen, Zhu Guolu) buscaban constantemente su guía y consejo.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Etapa Final como Maestro</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Tras la disolución del Salón Guoshu, Sun Zhendai fue contratado como instructor de artes marciales por:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>El Comando de Seguridad de Shanghái</li>
+          <li>El Departamento de Xiong Shihui</li>
+        </ul>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          Sun Zhendai dejó un legado perdurable como maestro y representante de las artes marciales chinas tradicionales.
+        </p>
+      </section>
+    `,
+        children: [
+          {
+            name: "Sūn Yŭ Rén",
+            title: "Importante MAESTRO, Shī tàigōng: Bisabuelo",
+            image: "/images/m2.jpeg",
+            link: "/maestros/sun-yuren",
+            info: `
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Inicios y Formación</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Yuren creció inmerso en las tradiciones familiares y fue muy apreciado por Sun Lutang, quien lo envió a estudiar con su hija Sun Jianyun. Durante su aprendizaje, trabajó de cerca con Sun Lutang y su tío Sun Cunzhou, recibiendo una enseñanza profunda y personalizada.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Carrera y Enseñanza</h2>
+        <p class="text-gray-200 leading-relaxed">
+          En 1930, regresó a su ciudad natal, donde se dedicó a la enseñanza primaria mientras transmitía las artes marciales Sun de forma altruista. Formó a más de mil discípulos, entre los que destacan:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Zhao Hongde</li>
+          <li>Sun Yukui</li>
+          <li>Sun Yufeng</li>
+          <li>Han Chunqi</li>
+          <li>Zhang Xinyuan</li>
+          <li>Lu Zemin</li>
+          <li>Wang Baoze</li>
+          <li>Zhang Zhenqi</li>
+          <li>Liu Gengyin</li>
+        </ul>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          Su habilidad y carácter le ganaron respeto, venciendo a numerosos retadores y defendiendo con éxito el arte Sun.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Contribuciones durante la Guerra y Persecución Política</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Durante la Segunda Guerra Mundial, Sun Yuren luchó contra soldados japoneses, demostrando valentía al derrotar a un atacante desarmado. Junto a Sun Jianyun construyó el mausoleo de Sun Lutang.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Reconocimientos y Promoción del Tai Chi Sun</h2>
+        <p class="text-gray-200 leading-relaxed">
+          En 1983, ayudó a fundar la Asociación de Investigación del Tai Chi Sun de Beijing, donde fue vicepresidente. También ocupó cargos destacados:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Vicepresidente y árbitro de primera categoría en la Asociación de Artes Marciales de Baoding.</li>
+          <li>Miembro y asesor en la Asociación de Artes Marciales de Shijiazhuang.</li>
+          <li>Miembro del Comité de la Conferencia Consultiva Política del Condado.</li>
+        </ul>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          Sun Yuren organizó múltiples seminarios sobre la relación entre la fisiología y las artes marciales, contribuyendo al desarrollo del Tai Chi Sun y al bienestar de sus practicantes.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Legado</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Yuren dejó una profunda huella en el mundo de las artes marciales, no solo como un maestro consumado sino también como un defensor del legado Sun, inspirando a generaciones y promoviendo los valores del Tai Chi Sun en China y más allá.
+        </p>
+      </section>
+    `,
+            children: [
+              {
+                name: "Sūn Yù Kuí",
+                title: "MAESTRO, Shīgōng: Abuelo",
+                image: "/images/m3.jpeg",
+                link: "/maestros/sun-yukui",
+                info: `
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Biografía y Formación</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Yukuí (1939-2022), hijo del reconocido maestro Sun Yuren, nació en el condado de Dingxing, provincia de Hebei. Desde su infancia, practicó artes marciales bajo la guía de su padre, quien fue discípulo de Sun Lutang, su tío Sun Zhenchuan, y su tía Sun Jianyun. Sun Yukuí representa la tercera generación de la familia Sun en las artes marciales.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Carrera Profesional y Logros</h2>
+        <p class="text-gray-200 leading-relaxed">
+          A lo largo de su vida, Sun Yukuí ocupó varios cargos importantes:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Vicepresidente de la Asociación de Artes Marciales de Dingxing.</li>
+          <li>Presidente de la Sociedad de Artes Marciales Dingxing Sun Lutang.</li>
+        </ul>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          Fue un ferviente defensor de las artes marciales y un modelo a seguir, participando y organizando múltiples seminarios y actividades de intercambio en todo el país. Recibió numerosos títulos honoríficos, como "Artista Marcial Famoso" y "Cien Maestros del Alma Marcial".
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Contribuciones Literarias y Filosóficas</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Yukuí también se dedicó a la investigación de la cultura tradicional y la medicina moderna. Su profundo conocimiento de las técnicas de artes marciales le permitió integrar teoría y práctica en sus escritos. Entre sus obras más destacadas se encuentran:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Analectas de Artes Marciales de Sun Lutang</li>
+          <li>Pensamientos de Artes Marciales de Sun Lutang</li>
+          <li>Enciclopedia de Artes Marciales de Sun Lutang</li>
+        </ul>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          Su obra maestra, "Sun Lutang Martial Arts Encyclopedia", fue escrita en su vejez y es considerada un legado invaluable. Además, en sus últimos años, promovió activamente el "Taijiquan del Estilo Sun 38", un conjunto de enseñanzas que dejó una huella significativa en la comunidad marcial.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Legado y Contribuciones</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Sun Yukuí fue un pilar en la preservación y promoción de las artes marciales Sun Lutang, y desempeñó un papel crucial en la difusión de la cultura de las artes marciales chinas. Su dedicación y esfuerzo han dejado un legado perdurable para las futuras generaciones de practicantes.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Un Maestro Admirado</h2>
+        <p class="text-gray-200 leading-relaxed">
+          A lo largo de su vida, Sun Yukuí fue reconocido por su respeto a los maestros y su incansable trabajo en la promoción de las artes marciales. Su vida y obra continúan inspirando a generaciones de artistas marciales.
+        </p>
+      </section>
+    `,
+                children: [
+                  {
+                    name: "Wáng Dé Lóng",
+                    title: "MAESTRO, Shīfù: Maestro Padre",
+                    image: "/images/m4.jpeg",
+                    link: "/maestros/wang-delong",
+                    info: `
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Biografía y Formación</h2>
+        <p class="text-gray-200 leading-relaxed">
+          El Maestro Wang Delong, nacido el 14 de octubre de 1980 en el condado de Dingxing, China, es hijo del Gran Maestro 王振玉 (Wáng Zhènyù). Es un reconocido discípulo de Sun Yukuí, representante de la 5ª generación de la familia Sun en las artes marciales de Sun Lutang.
+        </p>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          Desde joven, Wang Delong fue atraído por la profunda filosofía y las técnicas marciales que caracterizan a la familia Sun, y decidió seguir los pasos de su padre Wáng Zhènyù y su Maestro Sun Yukuí, ambos representantes de la 4ª generación de la familia Sun.
+        </p>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          Se formó en los estilos Taiji Quan, Xing Yi Quan y Bagua Zhang, bajo la dirección directa de Sun Yukuí, quien lo acogió como discípulo en su escuela, transmitiéndole los conocimientos y secretos del arte.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Carrera y Logros</h2>
+        <p class="text-gray-200 leading-relaxed">
+          A lo largo de los años, el Maestro Wang Delong ha ganado reconocimiento por su habilidad excepcional y su capacidad para enseñar a nuevos discípulos. Su enfoque en la práctica de Sun Taiji y otros estilos de las artes marciales internas ha sido un modelo de dedicación y perseverancia.
+        </p>
+        <p class="text-gray-200 leading-relaxed mt-2">
+          Ha representado a la familia Sun en varios torneos y eventos de artes marciales, obteniendo numerosos títulos y honores. Además, ha sido invitado a enseñar en diversas partes de China y es el maestro del primer occidental en ser Representante de la Asociación de Artes Marciales de Sun Lutang de DingXing fuera de China, difundiendo el legado de Sun Lutang y su estilo de Taiji Quan.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Filosofía y Enseñanza</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Además de ser un experto en la técnica, el Maestro Wang Delong también se ha destacado por su profunda comprensión de la filosofía subyacente al arte marcial, que aboga por la armonía entre cuerpo y mente. Su enfoque pedagógico combina la tradición con la innovación, asegurando que las enseñanzas de sus antecesores se mantengan vivas y relevantes para las nuevas generaciones.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Legado y Contribuciones</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Como maestro de la 5ª generación de la familia Sun, el Maestro Wang Delong continúa su labor en la enseñanza y la preservación de la tradición marcial, guiando a sus discípulos en el camino de la disciplina, el respeto y la excelencia marcial. A lo largo de su carrera, ha mostrado un profundo compromiso con la autenticidad del arte y la transmisión fiel de las enseñanzas de sus antecesores.
+        </p>
+      </section>
+    `,
+                    children: [
+                      {
+                        name: "Qin Feng - Jorge Quiñones",
+                        title: "Discípulo, Dìzǐ: Bajo ceremonia Bàishī Yíshì 拜師仪式",
+                        image: "/images/m5.jpeg",
+                        link: "/maestros/qin-feng",
+                        info: `
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Representante Oficial del Sun Tai Ji Quan</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Como discípulo directo del Maestro Wang De Long (quinta generación de la familia Sun), Jorge Quiñones ostenta el reconocimiento como único representante occidental de la Asociación de Artes Marciales de Sun Lu Tang de Ding Xing, China. Su ceremonia Baishi, realizada en el corazón del Sun Tai Ji Quan, marca su vínculo formal con esta tradición milenaria.
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Formación y Transmisión del Legado</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Bajo la tutela del Maestro Wang De Long, Jorge Quiñones ha internalizado no solo las técnicas marciales del estilo Sun, sino también su filosofía esencial. Su aprendizaje abarca:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed mt-2">
+          <li>Principios fundamentales del Tai Ji Quan</li>
+          <li>Teoría del Yin-Yang aplicada al movimiento</li>
+          <li>Métodos de enseñanza tradicionales</li>
+          <li>Arte del Tui Shou (empuje de manos)</li>
+        </ul>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Puente entre Oriente y Occidente</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Reconocido oficialmente por la Asociación China de Sun Lu Tang, Jorge Quiñones ha establecido un diálogo intercultural único. Sus contribuciones incluyen:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed mt-2">
+          <li>Traducción y adaptación de textos clásicos</li>
+          <li>Organización de intercambios culturales China-Uruguay</li>
+          <li>Preservación de rituales tradicionales en contextos modernos</li>
+        </ul>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Difusión en Uruguay</h2>
+        <p class="text-gray-200 leading-relaxed">
+          Desde su escuela en Montevideo, el Shifu Quiñones ha implementado un sistema de enseñanza que combina:
+        </p>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed mt-2">
+          <li>Clases regulares para todas las edades</li>
+          <li>Seminarios especializados en filosofía marcial</li>
+          <li>Programas de formación para instructores</li>
+          <li>Talleres de aplicación terapéutica del Tai Ji</li>
+        </ul>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Reconocimientos Internacionales</h2>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Certificado oficial de la 6ta generación del estilo Sun</li>
+          <li>Miembro del Comité Internacional de Sun Tai Ji Quan</li>
+          <li>Invitado especial en el Festival Anual de Ding Xing</li>
+          <li>Columnista en la Revista China de Artes Internas</li>
+        </ul>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Filosofía Pedagógica</h2>
+        <p class="text-gray-200 leading-relaxed">
+          "Mi enseñanza se basa en tres pilares: respeto por la tradición, adaptación contextual y desarrollo personal. Busco que cada estudiante encuentre su propio camino marcial manteniendo la esencia del estilo Sun."
+        </p>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-400 mb-4">Eventos Destacados</h2>
+        <ul class="list-disc list-inside text-gray-200 leading-relaxed">
+          <li>Primer Seminario Internacional Sun Tai Ji Quan en Uruguay (2019)</li>
+          <li>Demostración en el Centro Cultural de China en Buenos Aires (2021)</li>
+          <li>Colaboración con la Universidad de la República en investigación sobre artes marciales (2022)</li>
+        </ul>
+      </section>
+    `,
+                        children: []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+
+// Función para aplanar la estructura de datos del linaje
+const flattenLineage = (arr) => {
+  let result = [];
+  arr.forEach(person => {
+    result.push(person);
+    if (person.children && person.children.length > 0) {
+      result = result.concat(flattenLineage(person.children));
+    }
+  });
+  return result;
+};
+
+// Obtener todas las personas en una lista plana
+const allPeople = flattenLineage(lineageDataNested);
+
+// Crear una lista de personas únicas para la galería
+const uniquePeopleNames = new Set();
+const uniquePeopleForGallery = allPeople.filter(person => {
+  if (uniquePeopleNames.has(person.name)) {
+    return false;
+  }
+  uniquePeopleNames.add(person.name);
+  return true;
+});
+
+// Datos para el acordeón (puede ser el mismo lineageDataNested o uno procesado si es necesario)
+// Por ahora, asumimos que el acordeón usará la estructura anidada directamente.
+const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa así.
+
 ---
 <Layout title="Linaje | Sun Taiji Quan Uruguay">
   <PageHeader
     title="Nuestro Linaje"
     description="Explora la rica herencia y el linaje de nuestra escuela Tai Ji Quan."
   />
-  <div class="max-w-3xl mx-auto justify-items-center">
-    <ol class="space-y-4 text-gray-500 relative pl-6"> <!-- Ajustamos el padding izquierdo -->
-      <!-- Item 1 -->
-      <li class="person flex items-start" data-image="/images/foto_linaje_5.webp" data-title="Sūn Lù Táng" data-info="Sūn Lù Táng, también conocido como el Patriarca, fue un destacado MAESTRO de artes marciales chinas. Fue el fundador del estilo Sun de Tai Chi Chuan." data-link="/maestros/sun-lutang">
-        <span class="bullet mr-2 mt-1">•</span> <!-- Punto personalizado -->
-        <div>
-          <h2 class="text-lg font-semibold">Sūn Lù Táng</h2>
-          <p><strong>Zǔshī:</strong> Patriarca</p>
-        </div>
-      </li>
-      <!-- Item 2 -->
-      <li class="person flex items-start" data-image="/images/foto_linaje_4.webp" data-title="Sūn Zhèn Dài" data-info="Sūn Zhèn Dài fue UN GRAN MAESTRO. Contribuyó significativamente a la transmisión del estilo Sun." data-link="/maestros/sun-zhendai">
-        <span class="bullet mr-2 mt-1">•</span>
-        <div>
-          <h2 class="text-lg font-semibold">Sūn Zhèn Dài</h2>
-          <p><strong>Zōngshī:</strong>Tatarabuelo Gran Maestro</p>
-        </div>
-      </li>
-      <!-- Item 3 -->
-      <li class="person flex items-start" data-image="/images/foto_linaje_3.webp" data-title="Sūn Yŭ Rén" data-info="Sūn Yŭ Rén fue un importante MAESTRO respetado en el linaje. Su sabiduría y disciplina inspiraron a generaciones futuras." data-link="/maestros/sun-yuren">
-        <span class="bullet mr-2 mt-1">•</span>
-        <div>
-          <h2 class="text-lg font-semibold">Sūn Yŭ Rén</h2>
-          <p><strong>Importante MAESTRO</strong></p>
-          <p><strong>Shī tàigōng:</strong>Bisabuelo</p>
-        </div>
-      </li>
-      <!-- Item 4 -->
-      <li class="person flex items-start" data-image="/images/foto_linaje_2.webp" data-title="Sūn Yù Kuí" data-info="Sūn Yù Kuí fue un MAESTRO clave en la transmisión del linaje. Mantuvo viva la tradición familiar del Tai Chi Chuan." data-link="/maestros/sun-yukui">
-        <span class="bullet mr-2 mt-1">•</span>
-        <div>
-          <h2 class="text-lg font-semibold">Sūn Yù Kuí</h2>
-          <p><strong>MAESTRO</strong></p>
-          <p><strong>Shīgōng:</strong>Abuelo</p>
-        </div>
-      </li>
-      <!-- Item 5 -->
-      <li class="person flex items-start" data-image="/images/foto_linaje_1.webp" data-title="Wáng Dé Lóng" data-info="Wáng Dé Lóng es un MAESTRO dedicado. Su enseñanza ha influido en muchos estudiantes." data-link="/maestros/wang-delong">
-        <span class="bullet mr-2 mt-1">•</span>
-        <div>
-          <h2 class="text-lg font-semibold">Wáng Dé Lóng</h2>
-          <p><strong>MAESTRO</strong></p>
-          <p><strong>Shīfù:</strong> Maestro Padre</p>
-        </div>
-      </li>
-      <!-- Item 6 (Comentado) -->
-      <!-- <li class="person flex items-start" data-image="/images/sun-zhigang.jpg" data-title="孫志刚 (Sūn Zhìgāng)" data-info="孫志刚 (Sūn Zhìgāng) es un tío mayor respetado en el linaje. Ha continuado la labor de sus ancestros." data-link="/maestros/sun-zhigang">
-        <span class="bullet mr-2 mt-1">•</span>
-        <div>
-          <h2 class="text-lg font-semibold">孫志刚 (Sūn Zhìgāng)</h2>
-          <p><strong>Hijo de Sun Yukui</strong></p>
-          <p><strong>Tío mayor</strong></p>
-          <p><strong>師伯 (Shī bó):</strong> Título honorífico</p>
-        </div>
-      </li> -->
-      <!-- Item 7 -->
-      <li class="person flex items-start" data-image="/images/shifu_jorge.webp" data-title="Qin Feng - Jorge Quiñones" data-info="Qin Feng, también conocido como Jorge Quiñones, Es el Representante de la Asociacion de Artes Marciales De Sun Lu Tang de Dingxing en Uruguay, 6ª generación de la familia Sun de Ding Xing. Discipulo del Maestro Wang Delong." data-link="/maestros/qin-feng">
-        <span class="bullet mr-2 mt-1">•</span>
-        <div>
-          <h2 class="text-lg font-semibold">Qin Feng - Jorge Quiñones</h2>
-          <p><strong>Discípulo</strong></p>
-          <p><strong>Dìzǐ:</strong> Bajo ceremonia <em>Bàishī Yíshì  拜師仪式</em></p>
-        </div>
-      </li>
-    </ol>
-    <!-- Modal -->
-    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white p-8 rounded-lg max-w-lg">
-        <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">&times;</button>
-        <Image 
-          id="modal-image" 
-          src="/foto_linaje.webp"
-          width={100}
-          height={80} 
-          alt="Person Image" 
-          class="w-32 h-32 object-cover mb-4 rounded-full mx-auto" />
-        <h3 id="modal-title" class="text-xl font-bold text-center mb-2 text-gray-900"></h3>
-        <p id="modal-info" class="text-gray-700 text-center mb-4"></p>
-        <a id="modal-link" href="#" class="block text-center bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">Ver más información</a>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold text-center text-gray-200 mb-8">Galería de Maestros</h2>
+    <div class="w-full overflow-hidden" id="gallery-container"> 
+      <div class="flex whitespace-nowrap" id="gallery-track"> 
+        {uniquePeopleForGallery.map((person) => (
+          <div class="mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5">
+            <Image
+              src={person.image}
+              alt={`Foto de ${person.name}`}
+              width={300}
+              height={400}
+              class="rounded-lg object-cover w-full h-80 mb-3" 
+              densities={[1, 1.5, 2]}
+              quality="mid"
+            />
+            <p class="text-center text-base font-semibold text-gray-100 truncate px-2">{person.name}</p> 
+            <p class="text-center text-sm text-gray-400 truncate px-2">{person.title}</p>
+          </div>
+        ))}
+        {uniquePeopleForGallery.map((person) => (
+          <div class="mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5" aria-hidden="true">
+            <Image
+              src={person.image}
+              alt={`Foto de ${person.name}`}
+              width={300}
+              height={400}
+              class="rounded-lg object-cover w-full h-80 mb-3"
+              densities={[1, 1.5, 2]}
+              quality="mid"
+            />
+            <p class="text-center text-base font-semibold text-gray-100 truncate px-2">{person.name}</p>
+            <p class="text-center text-sm text-gray-400 truncate px-2">{person.title}</p>
+          </div>
+        ))}
       </div>
     </div>
+  </section>
+
+  <!-- Lista de Acordeón -->
+  <div class="accordion-container max-w-3xl mx-auto px-4">
+    {uniquePeopleForGallery.map((person, index) => (
+      <div class="accordion-item border-b border-slate-300">
+        <h2>
+          <button type="button" class="accordion-button flex items-center justify-between w-full py-4 px-2 text-left text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150 ease-in-out" data-accordion-index={index}>
+            <span class="text-lg font-medium">{person.name}</span>
+            <svg class="accordion-icon w-5 h-5 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </h2>
+        <div class="accordion-content hidden overflow-hidden transition-all duration-500 ease-in-out">
+          <div class="p-4 md:p-6 flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-6">
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-slate-800 mb-1">{person.name}</h3>
+              <p class="text-md text-blue-600 font-medium mb-3">{person.title}</p>
+              <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="text-slate-600 text-sm prose prose-sm max-w-none" set:html={person.info}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
   </div>
-  <style>
-    /* Estilo para el punto de la viñeta */
-    .bullet {
-      font-size: 1.2rem;
-      color: #6b7280; /* Color gris suave */
+
+</Layout>
+
+<style>
+  #gallery-track {
+    animation: scroll 40s linear infinite;
+  }
+  
+  #gallery-container:hover #gallery-track {
+    animation-play-state: paused;
+  }
+
+  #gallery-track > div {
+    flex-shrink: 0;
+  }
+
+  @keyframes scroll {
+    0% { 
+      transform: translateX(0); 
+    }
+    100% { 
+      transform: translateX(calc(-300px * 6 - 24px * 6)); 
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    const galleryImageWrappers = document.querySelectorAll('.gallery-image-wrapper');
+    const galleryTrack = document.getElementById('gallery-track');
+
+    // Configurar carrusel infinito
+    if (galleryTrack) {
+      const cards = galleryTrack.children;
+      const cardWidth = 300; // 288px (w-72) + 24px (mx-3 * 2)
+      const totalWidth = cardWidth * (cards.length / 2); // Solo contamos las originales
+      
+      // Función para resetear la posición sin animación
+      function resetPosition() {
+        galleryTrack.style.animation = 'none';
+        galleryTrack.style.transform = 'translateX(0)';
+        // Forzar reflow
+        galleryTrack.offsetHeight;
+        // Restaurar animación
+        galleryTrack.style.animation = `scroll 40s linear infinite`;
+      }
+
+      // Escuchar el final de la animación
+      galleryTrack.addEventListener('animationiteration', resetPosition);
     }
 
-    /* Efecto de hover para los elementos clickeables */
-    .person {
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
-    }
-    .person:hover {
-      color: #2563eb; /* Cambiado a blue-600, un azul más suave y moderno */
-    }
-    .person:hover h2 {
-      color: #2563eb; /* Mismo color para mantener consistencia */
-    }
-
-    /* Estilos para el modal */
-    #modal.hidden {
-      display: none;
-    }
-    #modal {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #modal button {
-      font-size: 1.5rem;
-      line-height: 1;
-      cursor: pointer;
-    }
-    #modal img {
-      width: 128px;
-      height: 128px;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-  </style>
-  <script>
-    // JavaScript para manejar el modal
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('modal');
-      const modalImage = document.getElementById('modal-image');
-      const modalTitle = document.getElementById('modal-title');
-      const modalInfo = document.getElementById('modal-info');
-      const modalLink = document.getElementById('modal-link'); // Enlace para más información
-      const closeModalButton = document.getElementById('close-modal');
-
-      // Abrir modal al hacer clic en un personaje
-      document.querySelectorAll('.person').forEach(person => {
-        person.addEventListener('click', () => {
-          const imageSrc = person.getAttribute('data-image');
-          const title = person.getAttribute('data-title');
-          const info = person.getAttribute('data-info');
-          const link = person.getAttribute('data-link'); // Obtener el enlace del atributo data-link
-          modalImage.src = imageSrc;
-          modalTitle.textContent = title;
-          modalInfo.textContent = info;
-          modalLink.href = link; // Asignar el enlace al botón "Ver más información"
-          modal.classList.remove('hidden');
-        });
+    function closeAllAccordionItems(exceptIndex = -1) {
+      accordionButtons.forEach((button, index) => {
+        if (index === exceptIndex) return;
+        const content = button.parentElement?.nextElementSibling as HTMLElement;
+        if (content) {
+          button.classList.remove('active');
+          button.setAttribute('aria-expanded', 'false');
+          content.style.maxHeight = '';
+          content.classList.add('hidden');
+        }
+        // Actualizar estado de imagen de galería si está conectada
+        const galleryButton = document.querySelector(`.gallery-image-wrapper[data-accordion-target='${index}']`);
+        if (galleryButton) {
+            galleryButton.classList.remove('active');
+        }
       });
+    }
 
-      // Cerrar modal al hacer clic en el botón de cierre
-      closeModalButton.addEventListener('click', () => {
-        modal.classList.add('hidden');
-      });
+    accordionButtons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        const content = button.parentElement?.nextElementSibling as HTMLElement;
+        if (!content) return;
+        
+        const isCurrentlyActive = button.classList.contains('active');
 
-      // Cerrar modal al hacer clic fuera del contenido
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.classList.add('hidden');
+        closeAllAccordionItems(isCurrentlyActive ? -1 : index);
+
+        if (!isCurrentlyActive) {
+          button.classList.add('active');
+          button.setAttribute('aria-expanded', 'true');
+          content.classList.remove('hidden');
+          content.style.maxHeight = content.scrollHeight + "px";
+          // Activar imagen de galería correspondiente
+          const galleryButton = document.querySelector(`.gallery-image-wrapper[data-accordion-target='${index}']`);
+          if (galleryButton) {
+            galleryButton.classList.add('active');
+          }
         }
       });
     });
-  </script>
-</Layout>
+
+    galleryImageWrappers.forEach(wrapper => {
+        wrapper.addEventListener('click', () => {
+            const targetIndex = parseInt((wrapper as HTMLElement).dataset.accordionTarget || '0');
+            const targetAccordionButton = document.querySelector(`.accordion-button[data-accordion-index='${targetIndex}']`) as HTMLElement;
+            if (targetAccordionButton) {
+                const isCurrentlyActive = targetAccordionButton.classList.contains('active');
+                
+                if (!isCurrentlyActive) {
+                    targetAccordionButton.click();
+                } else {
+                    targetAccordionButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        });
+    });
+  });
+</script>
