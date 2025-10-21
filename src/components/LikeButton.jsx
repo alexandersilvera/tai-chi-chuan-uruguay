@@ -13,7 +13,9 @@ const LikeButton = ({ slug, initialLikes }) => {
   const user = auth?.user;
 
   useEffect(() => {
+    console.log('[LikeButton] useEffect triggered - slug:', slug, 'user:', user?.uid);
     if (!slug) {
+      console.log('[LikeButton] No slug provided, skipping load');
       setLoading(false);
       return;
     }
@@ -23,10 +25,12 @@ const LikeButton = ({ slug, initialLikes }) => {
 
     const loadLikesData = async () => {
       try {
+        console.log('[LikeButton] Loading likes for slug:', slug);
         // Cargar el conteo total de likes desde Firestore
         const likesCollectionRef = collection(db, 'posts', slug, 'likes');
         const likesSnapshot = await getDocs(likesCollectionRef);
         const totalLikes = likesSnapshot.size;
+        console.log('[LikeButton] Loaded likes count:', totalLikes);
 
         if (isSubscribed) {
           setLikes(totalLikes);
@@ -42,6 +46,7 @@ const LikeButton = ({ slug, initialLikes }) => {
         }
       } catch (error) {
         console.error("Error loading likes: ", error);
+        console.error("Error details - slug:", slug, "error message:", error.message);
         if (isSubscribed) {
           // En caso de error, usar initialLikes como fallback
           setLikes(initialLikes || 0);
@@ -88,9 +93,9 @@ const LikeButton = ({ slug, initialLikes }) => {
     } finally {
       setLoading(false);
     }
-  }, [isLiked, slug, user]); 
+  }, [isLiked, slug, user]);
 
-  // console.log('[LikeButton] user:', user, 'loading:', loading);
+  console.log('[LikeButton] Render - user:', user?.uid, 'loading:', loading, 'likes:', likes, 'isLiked:', isLiked);
   if (loading) {
     return <div className="text-xs text-zinc-400 mt-1">Cargando...</div>;
   }
