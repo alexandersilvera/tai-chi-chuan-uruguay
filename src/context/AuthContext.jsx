@@ -125,5 +125,10 @@ export function AuthProvider({ children }) {
 
 // Hook personalizado para consumir el contexto
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    // Si el contexto es undefined, devolver un objeto con valores por defecto
+    return { user: null, loading: true, handleGoogleLogin: () => {}, handleLogout: () => {}, refreshUser: () => {} };
+  }
+  return context;
 };

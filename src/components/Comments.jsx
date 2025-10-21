@@ -18,7 +18,9 @@ export default function Comments({ slug }) {
   const [error, setError] = useState('');
 
   // Estado de autenticación
-  const { user, loading: loadingAuth } = useAuth();
+  const auth = useAuth();
+  const user = auth?.user || null;
+  const loadingAuth = auth?.loading ?? true;
 
   useEffect(() => {
     if (!slug) return;
