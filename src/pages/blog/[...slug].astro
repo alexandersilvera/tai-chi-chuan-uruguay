@@ -1,25 +1,39 @@
 ---
 import BlogPost from "@/layouts/BlogPost.astro";
-import type { GetStaticPaths } from "astro";
-import { getCollection, getEntry } from "astro:content";
+import { adminDB } from '@/lib/firebase/admin.js';
+import { marked } from 'marked';
 
-export const prerender = true;
+export const prerender = false;
 
-export const getStaticPaths = (async () => {
-    const posts = await getCollection("blog");
-    return posts.map((post) => ({ params: { slug: post.slug }, props: { slug: post.slug } }));
-}) satisfies GetStaticPaths;
+const { slug } = Astro.params;
 
-const { slug } = Astro.props;
-const post = await getEntry("blog", slug);
+// Obtener el artículo de Firestore
+const articleRef = adminDB.collection('articles').doc(slug);
+const articleDoc = await articleRef.get();
 
-if (!post) {
+if (!articleDoc.exists) {
     return Astro.redirect("/404");
 }
 
-const { Content } = await post.render();
+const data = articleDoc.data();
+
+// Convertir el contenido Markdown a HTML
+const contentHTML = marked(data.content || '');
+
+const post = {
+    data: {
+        title: data.title || 'Sin título',
+        description: data.description || '',
+        pubDate: data.pubDate ? new Date(data.pubDate) : new Date(),
+        heroImage: data.heroImage || '/images/banner-web-1.png',
+        tags: Array.isArray(data.tags) ? data.tags : [],
+        author: data.author || 'Admin',
+        initialLikes: data.initialLikes || 0,
+    },
+    slug: slug
+};
 ---
 
 <BlogPost {...post.data} slug={post.slug} initialLikes={post.data.initialLikes}>
-    <Content />
+    <Fragment set:html={contentHTML} />
 </BlogPost>
