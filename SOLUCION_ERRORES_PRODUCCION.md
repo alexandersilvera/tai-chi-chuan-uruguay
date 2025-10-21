@@ -21,7 +21,7 @@ Firebase está bloqueando la autenticación porque el dominio de Vercel no está
 ### Solución:
 
 1. Ve a [Firebase Console](https://console.firebase.google.com)
-2. Selecciona tu proyecto: **reino-da-mata-160a9**
+2. Selecciona tu proyecto: **reino-da-mata-160a9** (proyecto Firebase usado para tai-chi-chuan-uruguay)
 3. En el menú lateral: **Authentication** → **Settings**
 4. Haz clic en la pestaña **Authorized domains**
 5. Haz clic en **"Add domain"** y agrega estos dominios (UNO POR UNO):
