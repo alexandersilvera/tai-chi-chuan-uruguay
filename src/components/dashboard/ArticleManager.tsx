@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import ArticleEditorWrapper from './ArticleEditorWrapper.jsx';
 import { getAuth } from 'firebase/auth';
 import { app } from '@/lib/firebase/client.js';
+import { useAuth } from '@/context/AuthContext.jsx';
 
 export default function ArticleManager() {
+  const auth = useAuth();
+  const currentUser = auth?.user;
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, published, draft
@@ -94,12 +97,17 @@ export default function ArticleManager() {
     if (!articleToDelete) return;
 
     try {
-      const auth = getAuth(app);
-      const currentUser = auth.currentUser;
       if (!currentUser) {
         throw new Error('No estás autenticado.');
       }
-      const token = await currentUser.getIdToken();
+
+      // Obtener el token del usuario actual de Firebase Auth
+      const auth = getAuth(app);
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) {
+        throw new Error('Sesión de Firebase no encontrada.');
+      }
+      const token = await firebaseUser.getIdToken();
 
       const response = await fetch('/api/admin/articles/delete', {
         method: 'DELETE',
@@ -140,12 +148,17 @@ export default function ArticleManager() {
     if (!article) return;
 
     try {
-      const auth = getAuth(app);
-      const currentUser = auth.currentUser;
       if (!currentUser) {
         throw new Error('No estás autenticado.');
       }
-      const token = await currentUser.getIdToken();
+
+      // Obtener el token del usuario actual de Firebase Auth
+      const auth = getAuth(app);
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) {
+        throw new Error('Sesión de Firebase no encontrada.');
+      }
+      const token = await firebaseUser.getIdToken();
 
       const response = await fetch('/api/admin/articles/toggle-status', {
         method: 'POST',

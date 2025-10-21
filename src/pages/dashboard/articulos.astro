@@ -3,7 +3,7 @@
 export const prerender = false;
 
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import ArticleManager from '@/components/dashboard/ArticleManager.tsx'; 
+import ArticleManagerWithProvider from '@/components/dashboard/ArticleManagerWithProvider.jsx';
 
 ---
 
@@ -13,6 +13,6 @@ import ArticleManager from '@/components/dashboard/ArticleManager.tsx';
     <p class="mb-6">Aquí podrás crear, editar y eliminar artículos del blog.</p>
 
     {/* Usar el componente React con una directiva client:* */}
-    <ArticleManager client:load />
+    <ArticleManagerWithProvider client:load />
   </div>
 </DashboardLayout>
