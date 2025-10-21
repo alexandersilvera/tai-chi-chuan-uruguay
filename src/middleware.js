@@ -6,6 +6,14 @@ import { defineMiddleware } from 'astro:middleware';
 export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
 
+  // Excluir archivos estáticos del middleware
+  const staticFileExtensions = ['.css', '.js', '.json', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webmanifest', '.xml', '.txt', '.woff', '.woff2', '.ttf', '.eot'];
+  const isStaticFile = staticFileExtensions.some(ext => url.pathname.endsWith(ext));
+
+  if (isStaticFile) {
+    return next();
+  }
+
   // Si la ruta es del dashboard
   if (url.pathname.startsWith('/dashboard')) {
     console.log(`Middleware: Processing protected route: ${url.pathname}`);
