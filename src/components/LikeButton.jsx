@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { db } from '@/lib/firebase/client'; 
-import { doc, getDoc, setDoc, deleteDoc, collection, writeBatch } from 'firebase/firestore';
+import { db } from '@/lib/firebase/client';
+import { doc, getDoc, setDoc, deleteDoc, collection, writeBatch, getDocs } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,37 +9,52 @@ const LikeButton = ({ slug, initialLikes }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const auth = useAuth(); 
-  const user = auth?.user; 
+  const auth = useAuth();
+  const user = auth?.user;
 
   useEffect(() => {
-    if (!user || !slug) {
+    if (!slug) {
       setLoading(false);
       return;
     }
+
     setLoading(true);
     let isSubscribed = true;
 
-    const checkLikeStatus = async () => {
+    const loadLikesData = async () => {
       try {
-        const likeRef = doc(db, 'posts', slug, 'likes', user.uid);
-        const likeSnap = await getDoc(likeRef);
+        // Cargar el conteo total de likes desde Firestore
+        const likesCollectionRef = collection(db, 'posts', slug, 'likes');
+        const likesSnapshot = await getDocs(likesCollectionRef);
+        const totalLikes = likesSnapshot.size;
+
         if (isSubscribed) {
-          setIsLiked(likeSnap.exists());
+          setLikes(totalLikes);
+
+          // Si el usuario está logueado, verificar si dio like
+          if (user) {
+            const userLikeRef = doc(db, 'posts', slug, 'likes', user.uid);
+            const userLikeSnap = await getDoc(userLikeRef);
+            setIsLiked(userLikeSnap.exists());
+          }
+
           setLoading(false);
         }
       } catch (error) {
-        // console.error("Error checking like status: ", error);
+        console.error("Error loading likes: ", error);
         if (isSubscribed) {
-          setLoading(false); 
+          // En caso de error, usar initialLikes como fallback
+          setLikes(initialLikes || 0);
+          setLoading(false);
         }
       }
     };
-    checkLikeStatus();
+
+    loadLikesData();
     return () => {
       isSubscribed = false;
     };
-  }, [user, slug]);
+  }, [user, slug, initialLikes]);
 
   const handleLike = useCallback(async () => {
     if (!user || !slug) {

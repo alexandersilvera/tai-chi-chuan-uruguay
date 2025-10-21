@@ -106,7 +106,7 @@ export default function ArticleManager() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ filename: `${articleId}.md` }),
+        body: JSON.stringify({ filename: `${articleToDelete.slug}.md` }),
       });
 
       const result = await response.json();
