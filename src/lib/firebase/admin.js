@@ -10,17 +10,29 @@ import { getFirestore } from 'firebase-admin/firestore';
 let privateKey = import.meta.env.FIREBASE_PRIVATE_KEY;
 
 if (privateKey) {
+  console.log('🔑 Procesando FIREBASE_PRIVATE_KEY...');
+  console.log('Longitud original:', privateKey.length);
+  console.log('Comienza con comilla:', privateKey.startsWith('"'));
+  console.log('Termina con comilla:', privateKey.endsWith('"'));
+
   // Si viene con comillas al inicio y final, intentar parsear como JSON
   if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
     try {
       privateKey = JSON.parse(privateKey);
+      console.log('✅ Clave parseada exitosamente como JSON');
     } catch (e) {
       // Si falla el parse, quitar las comillas manualmente
       privateKey = privateKey.slice(1, -1);
+      console.log('⚠️  JSON.parse falló, quitando comillas manualmente');
     }
   }
   // Reemplazar los \n literales por saltos de línea reales
   privateKey = privateKey.replace(/\\n/g, '\n');
+  console.log('✅ Saltos de línea procesados');
+  console.log('Longitud final:', privateKey.length);
+  console.log('Contiene BEGIN PRIVATE KEY:', privateKey.includes('BEGIN PRIVATE KEY'));
+} else {
+  console.error('❌ FIREBASE_PRIVATE_KEY no está definida');
 }
 
 const serviceAccount = {
@@ -45,17 +57,23 @@ if (getApps().length === 0 && serviceAccount.privateKey) { // Solo intentar inic
       credential: cert(serviceAccount),
       storageBucket: `${serviceAccount.projectId}.appspot.com`
     });
-    // console.log('Firebase Admin SDK inicializado correctamente (desde src/lib/firebase/admin.js).');
+    console.log('✅ Firebase Admin SDK inicializado correctamente');
   } catch (error) {
-    // console.error('Error inicializando Firebase Admin SDK (desde src/lib/firebase/admin.js):', error);
-    // Considera cómo manejar este error crítico.
+    console.error('❌ Error inicializando Firebase Admin SDK:', error.message);
+    console.error('Stack:', error.stack);
+    // No lanzar el error para permitir que la app continúe, pero registrar el problema
   }
 } else if (serviceAccount.privateKey) {
   // Si ya está inicializado, simplemente obtén la instancia existente
   app = getApp();
-  // // console.log('Firebase Admin SDK ya estaba inicializado.');
+  console.log('✅ Firebase Admin SDK ya estaba inicializado');
 } else {
-    console.warn('Firebase Admin SDK no se inicializó porque faltan credenciales.');
+  console.warn('⚠️  Firebase Admin SDK no se inicializó porque faltan credenciales.');
+  console.warn('Variables encontradas:', {
+    projectId: !!serviceAccount.projectId,
+    clientEmail: !!serviceAccount.clientEmail,
+    privateKey: !!serviceAccount.privateKey
+  });
 }
 
 // Exporta las instancias necesarias (maneja el caso donde app no se inicializó)
