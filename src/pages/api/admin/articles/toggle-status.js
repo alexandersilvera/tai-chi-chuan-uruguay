@@ -1,7 +1,3 @@
-
-import { readFile, writeFile } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
 import { adminDB, adminAuth } from '@/lib/firebase/admin.js';
 
 export const prerender = false;
@@ -25,14 +21,9 @@ async function verifyAdminAuth(request) {
   }
 }
 
-// Función para formatear la fecha como YYYY-MM-DD
-function getFormattedDate() {
-  return new Date().toISOString().split('T')[0];
-}
-
 export async function POST({ request }) {
   try {
-    // 1. Verificar autenticación de administrador
+    // Verificar autenticación de administrador
     const authResult = await verifyAdminAuth(request);
     if (authResult.error) {
       return new Response(JSON.stringify({ error: authResult.error }), {
@@ -41,7 +32,7 @@ export async function POST({ request }) {
       });
     }
 
-    // 2. Obtener datos del cuerpo de la solicitud
+    // Obtener datos del cuerpo de la solicitud
     const { filename, currentStatus } = await request.json();
     if (!filename || !currentStatus) {
       return new Response(JSON.stringify({ error: 'Se requiere el nombre del archivo (filename) y el estado actual (currentStatus).' }), {
@@ -50,55 +41,42 @@ export async function POST({ request }) {
       });
     }
 
-    // 3. Construir la ruta y verificar que el archivo existe
-    const blogDir = join(process.cwd(), 'src', 'content', 'blog');
-    const filePath = join(blogDir, filename);
+    // Extraer slug del filename
+    const slug = filename.replace(/\.md$/, '');
 
-    if (!existsSync(filePath)) {
+    // Verificar que el artículo existe en Firestore
+    const articleRef = adminDB.collection('articles').doc(slug);
+    const articleDoc = await articleRef.get();
+
+    if (!articleDoc.exists) {
       return new Response(JSON.stringify({ error: 'El artículo no existe.' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // 4. Leer el contenido del archivo
-    const fileContent = await readFile(filePath, 'utf8');
-    const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n/;
-    const match = fileContent.match(frontmatterRegex);
+    // Determinar el nuevo estado
+    const newStatus = currentStatus === 'draft' ? 'published' : 'draft';
 
-    if (!match) {
-        return new Response(JSON.stringify({ error: 'Frontmatter inválido o no encontrado en el artículo.' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
-    }
+    // Actualizar el estado en Firestore
+    const updateData = {
+      status: newStatus,
+      updatedAt: new Date(),
+    };
 
-    let frontmatter = match[1];
-    let newStatus = '';
-    
-    // 5. Modificar el frontmatter según el estado
-    if (currentStatus === 'draft') {
-      // Publicar: añadir o actualizar pubDate
-      newStatus = 'published';
-      if (frontmatter.includes('pubDate:')) {
-        frontmatter = frontmatter.replace(/pubDate:.*/, `pubDate: '${getFormattedDate()}'`);
-      } else {
-        frontmatter += `\npubDate: '${getFormattedDate()}'`;
+    // Si se publica, actualizar pubDate si no existe
+    if (newStatus === 'published') {
+      const currentData = articleDoc.data();
+      if (!currentData.pubDate) {
+        updateData.pubDate = new Date().toISOString();
       }
-    } else { // currentStatus is 'published'
-      // Despublicar: eliminar pubDate
-      newStatus = 'draft';
-      frontmatter = frontmatter.replace(/pubDate:.*\r?\n?/, '');
     }
 
-    const newFileContent = fileContent.replace(frontmatterRegex, `---\n${frontmatter.trim()}\n---\n`);
+    await articleRef.update(updateData);
 
-    // 6. Escribir el archivo actualizado
-    await writeFile(filePath, newFileContent, 'utf8');
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: `El estado del artículo '${filename}' se actualizó a '${newStatus}'.`,
+    return new Response(JSON.stringify({
+      success: true,
+      message: `El estado del artículo se actualizó a '${newStatus}'.`,
       newStatus
     }), {
       status: 200,
@@ -107,9 +85,9 @@ export async function POST({ request }) {
 
   } catch (error) {
     console.error('Error actualizando el estado del artículo:', error);
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: 'Error en el servidor al actualizar el estado.',
-      details: error.message 
+      details: error.message
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

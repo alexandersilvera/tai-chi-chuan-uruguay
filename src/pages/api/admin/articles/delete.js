@@ -1,7 +1,3 @@
-
-import { unlink } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
 import { adminDB, adminAuth } from '@/lib/firebase/admin.js';
 
 export const prerender = false;
@@ -43,7 +39,7 @@ export async function DELETE({ request }) {
       });
     }
 
-    // 2. Obtener el nombre del archivo del cuerpo de la solicitud
+    // 2. Obtener el slug del artículo del cuerpo de la solicitud
     const { filename } = await request.json();
     if (!filename || typeof filename !== 'string') {
       return new Response(JSON.stringify({ error: 'Se requiere el nombre del archivo (filename).' }), {
@@ -52,25 +48,46 @@ export async function DELETE({ request }) {
       });
     }
 
-    // 3. Construir la ruta y verificar que el archivo existe
-    const blogDir = join(process.cwd(), 'src', 'content', 'blog');
-    const filePath = join(blogDir, filename);
+    // Extraer el slug del filename (remover .md)
+    const slug = filename.replace(/\.md$/, '');
 
-    if (!existsSync(filePath)) {
+    // 3. Verificar que el artículo existe en Firestore
+    const articleRef = adminDB.collection('articles').doc(slug);
+    const articleDoc = await articleRef.get();
+
+    if (!articleDoc.exists) {
       return new Response(JSON.stringify({ error: 'El artículo no existe.' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // 4. Eliminar el archivo
-    await unlink(filePath);
+    // 4. Eliminar el artículo de Firestore
+    await articleRef.delete();
 
-    // TODO: En una futura mejora, se podrían eliminar los comentarios y likes asociados de Firestore.
+    // 5. Opcional: Eliminar comentarios y likes asociados
+    // Eliminar comentarios
+    const commentsSnapshot = await adminDB.collection('posts').doc(slug).collection('comments').get();
+    const commentsBatch = adminDB.batch();
+    commentsSnapshot.forEach(doc => {
+      commentsBatch.delete(doc.ref);
+    });
+    await commentsBatch.commit();
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: `Artículo '${filename}' eliminado exitosamente.`
+    // Eliminar likes
+    const likesSnapshot = await adminDB.collection('posts').doc(slug).collection('likes').get();
+    const likesBatch = adminDB.batch();
+    likesSnapshot.forEach(doc => {
+      likesBatch.delete(doc.ref);
+    });
+    await likesBatch.commit();
+
+    // Eliminar documento del post
+    await adminDB.collection('posts').doc(slug).delete();
+
+    return new Response(JSON.stringify({
+      success: true,
+      message: `Artículo '${slug}' eliminado exitosamente de Firestore.`
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

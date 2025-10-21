@@ -1,8 +1,3 @@
-
-
-import { writeFile, readFile } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
 import { adminDB, adminAuth } from '@/lib/firebase/admin.js';
 
 export const prerender = false;
@@ -26,48 +21,10 @@ async function verifyAdminAuth(request) {
   }
 }
 
-function formatDate(date) {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
-
-function createMarkdownContent(articleData, originalPubDate = null) {
-  const { title, description, tags, heroImage, author, content } = articleData;
-  const pubDate = originalPubDate || formatDate(new Date());
-  
-  const frontmatter = `---\ntitle: '${title}'
-description: '${description}'
-pubDate: '${pubDate}'
-heroImage: '${heroImage || ''}'
-tags: [${tags.map(tag => `"${tag}"`).join(', ')}]
-initialLikes: 0
-author: '${author}'
----
-
-${content}`;
-
-  return frontmatter;
-}
-
-function extractFrontmatter(markdownContent) {
-  const frontmatterRegex = /^---\n([\s\S]*?)\n---/;
-  const match = markdownContent.match(frontmatterRegex);
-  
-  if (match) {
-    const frontmatterText = match[1];
-    const pubDateMatch = frontmatterText.match(/pubDate:\s*['"]([^'"]*)['"]/);
-    return pubDateMatch ? pubDateMatch[1] : null;
-  }
-  
-  return null;
-}
 
 export async function POST({ request }) {
   try {
-    // **INICIO DEL PARCHE DE SEGURIDAD**
+    // Verificar autenticación de administrador
     const authResult = await verifyAdminAuth(request);
     if (authResult.error) {
       return new Response(JSON.stringify({ error: authResult.error }), {
@@ -75,51 +32,59 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-    // **FIN DEL PARCHE DE SEGURIDAD**
 
     const { filename, articleData } = await request.json();
-    
-    const { title, description, tags, content } = articleData;
+
+    const { title, description, tags, content, heroImage, author } = articleData;
     if (!filename || !title || !description || !tags || !content) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing required fields: filename, title, description, tags, content' 
+      return new Response(JSON.stringify({
+        error: 'Missing required fields: filename, title, description, tags, content'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    const blogDir = join(process.cwd(), 'src', 'content', 'blog');
-    const filePath = join(blogDir, filename);
+    // Extraer slug del filename
+    const slug = filename.replace(/\.md$/, '');
 
-    if (!existsSync(filePath)) {
-      return new Response(JSON.stringify({ 
-        error: 'Article not found' 
+    // Verificar que el artículo existe en Firestore
+    const articleRef = adminDB.collection('articles').doc(slug);
+    const articleDoc = await articleRef.get();
+
+    if (!articleDoc.exists) {
+      return new Response(JSON.stringify({
+        error: 'Article not found'
       }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    let originalPubDate = null;
-    try {
-      const existingContent = await readFile(filePath, 'utf8');
-      originalPubDate = extractFrontmatter(existingContent);
-    } catch (error) {
-      console.warn('Could not read existing file for pubDate preservation:', error);
-    }
+    // Obtener datos existentes para preservar campos que no se editan
+    const existingData = articleDoc.data();
 
-    const markdownContent = createMarkdownContent(articleData, originalPubDate);
+    // Actualizar documento en Firestore
+    const updatedArticleDoc = {
+      title,
+      description,
+      content,
+      tags: Array.isArray(tags) ? tags : [],
+      heroImage: heroImage || existingData.heroImage || '/images/banner-web-1.png',
+      author: author || existingData.author || 'Admin',
+      pubDate: existingData.pubDate, // Preservar fecha original de publicación
+      status: existingData.status, // Preservar estado
+      initialLikes: existingData.initialLikes || 0,
+      updatedAt: new Date(),
+    };
 
-    await writeFile(filePath, markdownContent, 'utf8');
+    await articleRef.update(updatedArticleDoc);
 
-    const slug = filename.replace('.md', '');
-
-    return new Response(JSON.stringify({ 
-      success: true, 
+    return new Response(JSON.stringify({
+      success: true,
       slug,
-      filename,
-      path: `/blog/${slug}`
+      path: `/blog/${slug}`,
+      message: 'Artículo actualizado exitosamente en Firestore'
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -127,9 +92,9 @@ export async function POST({ request }) {
 
   } catch (error) {
     console.error('Error updating article:', error);
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: 'Failed to update article',
-      details: error.message 
+      details: error.message
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

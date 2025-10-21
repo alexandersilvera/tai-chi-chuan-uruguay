@@ -9,9 +9,6 @@ export default function ArticleManager() {
   const currentUser = auth?.user;
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Detectar si estamos en producción
-  const isProduction = import.meta.env.PROD;
   const [filter, setFilter] = useState('all'); // all, published, draft
   const [sortBy, setSortBy] = useState('newest'); // newest, oldest, title, likes, comments
   const [searchTerm, setSearchTerm] = useState('');
@@ -308,26 +305,6 @@ export default function ArticleManager() {
 
   return (
     <div className="space-y-6">
-      {/* Banner de advertencia en producción */}
-      {isProduction && (
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-yellow-700">
-                <strong>Modo solo lectura:</strong> Vercel usa un sistema de archivos de solo lectura.
-                Para crear, editar o eliminar artículos, hazlo en tu entorno local y haz push a GitHub.
-                <a href="/LIMITACIONES_VERCEL.md" target="_blank" className="underline ml-1">Más información</a>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -431,13 +408,7 @@ export default function ArticleManager() {
           <div>
             <button
               onClick={handleCreateArticle}
-              disabled={isProduction}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                isProduction
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-green-600 text-white hover:bg-green-700'
-              }`}
-              title={isProduction ? 'Disponible solo en desarrollo local' : 'Crear nuevo artículo'}
+              className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors flex items-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -543,13 +514,7 @@ export default function ArticleManager() {
                       )}
                       <button
                         onClick={() => handleEditArticle(article)}
-                        disabled={isProduction}
-                        className={`px-3 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
-                          isProduction
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                        title={isProduction ? 'Disponible solo en desarrollo local' : 'Editar artículo'}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors flex items-center gap-1"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -558,15 +523,11 @@ export default function ArticleManager() {
                       </button>
                       <button
                         onClick={() => handleToggleStatus(article.id)}
-                        disabled={isProduction}
                         className={`px-3 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
-                          isProduction
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : article.status === 'published'
+                          article.status === 'published'
                             ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
                             : 'bg-green-100 text-green-700 hover:bg-green-200'
                         }`}
-                        title={isProduction ? 'Disponible solo en desarrollo local' : 'Cambiar estado'}
                       >
                         {article.status === 'published' ? (
                           <>
@@ -589,13 +550,7 @@ export default function ArticleManager() {
                           setArticleToDelete(article);
                           setShowDeleteModal(true);
                         }}
-                        disabled={isProduction}
-                        className={`px-3 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
-                          isProduction
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-red-100 text-red-700 hover:bg-red-200'
-                        }`}
-                        title={isProduction ? 'Disponible solo en desarrollo local' : 'Eliminar artículo'}
+                        className="px-3 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors flex items-center gap-1"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
