@@ -8,6 +8,12 @@ export const prerender = false;
 
 // Función de seguridad para verificar que el solicitante es un administrador
 async function verifyAdminAuth(request) {
+  // Verificar que Firebase Admin SDK esté disponible
+  if (!adminAuth || !adminDB) {
+    console.error('Firebase Admin SDK no está inicializado');
+    return { error: 'Error de configuración del servidor', status: 500 };
+  }
+
   const authHeader = request.headers.get('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return { error: 'Token de autenticación requerido', status: 401 };
@@ -21,6 +27,7 @@ async function verifyAdminAuth(request) {
     }
     return { user: decodedToken };
   } catch (error) {
+    console.error('Error verificando token:', error);
     return { error: 'Token inválido o expirado', status: 401 };
   }
 }
@@ -71,9 +78,11 @@ export async function DELETE({ request }) {
 
   } catch (error) {
     console.error('Error eliminando el artículo:', error);
-    return new Response(JSON.stringify({ 
+    console.error('Stack trace:', error.stack);
+    return new Response(JSON.stringify({
       error: 'Error en el servidor al eliminar el artículo.',
-      details: error.message 
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
