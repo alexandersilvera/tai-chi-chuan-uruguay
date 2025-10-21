@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ArticleEditorWrapper from './ArticleEditorWrapper.jsx';
 import { getAuth } from 'firebase/auth';
+import { app } from '@/lib/firebase/client.js';
 
 export default function ArticleManager() {
   const [articles, setArticles] = useState([]);
@@ -93,7 +94,7 @@ export default function ArticleManager() {
     if (!articleToDelete) return;
 
     try {
-      const auth = getAuth();
+      const auth = getAuth(app);
       const currentUser = auth.currentUser;
       if (!currentUser) {
         throw new Error('No estás autenticado.');
@@ -139,7 +140,7 @@ export default function ArticleManager() {
     if (!article) return;
 
     try {
-      const auth = getAuth();
+      const auth = getAuth(app);
       const currentUser = auth.currentUser;
       if (!currentUser) {
         throw new Error('No estás autenticado.');
