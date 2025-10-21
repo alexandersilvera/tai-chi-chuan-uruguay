@@ -5,11 +5,28 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 // Lee las credenciales desde las variables de entorno
 // Asegúrate de que estas variables estén disponibles en tu entorno (ej. .env)
+
+// Procesar la clave privada: puede venir con comillas o sin ellas desde Vercel
+let privateKey = import.meta.env.FIREBASE_PRIVATE_KEY;
+
+if (privateKey) {
+  // Si viene con comillas al inicio y final, intentar parsear como JSON
+  if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+    try {
+      privateKey = JSON.parse(privateKey);
+    } catch (e) {
+      // Si falla el parse, quitar las comillas manualmente
+      privateKey = privateKey.slice(1, -1);
+    }
+  }
+  // Reemplazar los \n literales por saltos de línea reales
+  privateKey = privateKey.replace(/\\n/g, '\n');
+}
+
 const serviceAccount = {
   projectId: import.meta.env.FIREBASE_PROJECT_ID,
   clientEmail: import.meta.env.FIREBASE_CLIENT_EMAIL,
-  // Asegúrate de que la clave privada en .env maneje correctamente los saltos de línea
-  privateKey: import.meta.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'), // Añadir ? por si no está definida
+  privateKey: privateKey,
 };
 
 // Verifica si las credenciales están completas
