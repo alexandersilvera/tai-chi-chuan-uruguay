@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TurndownService from 'turndown';
+import ImageUploader from './ImageUploader.jsx';
 
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
@@ -309,8 +310,10 @@ export default function ArticleEditor({
                 {errors.tags && <p className="text-red-500 text-sm mt-1">{errors.tags}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Imagen Destacada (URL)</label>
-                <input type="url" value={formData.heroImage} onChange={(e) => handleInputChange('heroImage', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="https://ejemplo.com/imagen.jpg" />
+                <ImageUploader
+                  currentImageUrl={formData.heroImage}
+                  onImageUploaded={(url) => handleInputChange('heroImage', url)}
+                />
               </div>
             </div>
             <LexicalComposer initialConfig={initialConfig}>
