@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths } from "astro";
 import { getAllTags } from "@/utils/getAllTags";
-import { getCollection } from "astro:content";
+import { adminDB } from "@/lib/firebase/admin";
 import ArticleList from "@/layouts/ArticleList.astro";
 import Article from "@/components/Article.astro";
 
@@ -18,15 +18,59 @@ export const getStaticPaths = (async () => {
     return tags.map((tag) => ({ params: { tag }, props: { tag } }));
 }) satisfies GetStaticPaths;
 
-const { tag } = Astro.props;
+// En modo desarrollo, getStaticPaths se ignora, así que tomamos el tag de params
+const { tag } = Astro.params;
 
-const posts = await getCollection("blog", ({ data }) => {
-    if (!Array.isArray(data.tags)) return false;
-    return data.tags
+// Obtener artículos publicados de Firestore
+const articlesSnapshot = await adminDB.collection('articles')
+  .where('status', '==', 'published')
+  .get();
+
+// Filtrar artículos por tag
+const posts = await Promise.all(
+  articlesSnapshot.docs
+    .filter(doc => {
+      const data = doc.data();
+      if (!Array.isArray(data.tags)) return false;
+
+      const slugifiedTags = data.tags
         .filter((t) => typeof t === 'string')
-        .map((t) => slugify(t))
-        .includes(tag);
-});
+        .map((t) => slugify(t));
+
+      return slugifiedTags.includes(tag);
+    })
+    .map(async doc => {
+      const data = doc.data();
+      const normalizedSlug = doc.id.toLowerCase();
+
+      // Obtener el conteo de likes desde la colección 'likes'
+      let likesCount = 0;
+      try {
+        const likesDoc = await adminDB.collection('likes').doc(normalizedSlug).get();
+        if (likesDoc.exists) {
+          likesCount = likesDoc.data().count || 0;
+        }
+      } catch (error) {
+        console.error(`Error getting likes for ${doc.id}:`, error);
+      }
+
+      return {
+        slug: doc.id,
+        data: {
+          title: data.title || 'Sin título',
+          description: data.description || '',
+          pubDate: data.pubDate ? new Date(data.pubDate) : new Date(),
+          heroImage: data.heroImage || '/images/banner-web-1.png',
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          author: data.author || 'Admin',
+          initialLikes: likesCount,
+        }
+      };
+    })
+);
+
+// Ordenar por fecha de publicación (más reciente primero)
+posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
 ---
 

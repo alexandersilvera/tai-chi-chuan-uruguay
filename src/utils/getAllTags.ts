@@ -1,5 +1,4 @@
-import { getCollection } from "astro:content";  
-
+import { adminDB } from "@/lib/firebase/admin";
 
 function slugify(str: string): string {
   return str
@@ -10,16 +9,32 @@ function slugify(str: string): string {
 }
 
 export async function getAllTags() {
-  const posts = await getCollection("blog");
-  const tagMap = new Map<string, number>();
+  try {
+    // Obtener todos los artículos publicados de Firestore
+    const articlesSnapshot = await adminDB.collection('articles')
+      .where('status', '==', 'published')
+      .get();
 
-  posts.forEach(post => {
-    post.data.tags.forEach(tag => {
-      const normalizedTag = slugify(tag);
-      tagMap.set(normalizedTag, (tagMap.get(normalizedTag) || 0) + 1);
+    const tagMap = new Map<string, number>();
+
+    articlesSnapshot.docs.forEach(doc => {
+      const data = doc.data();
+      const tags = data.tags;
+
+      if (Array.isArray(tags)) {
+        tags.forEach((tag: string) => {
+          if (typeof tag === 'string') {
+            const normalizedTag = slugify(tag);
+            tagMap.set(normalizedTag, (tagMap.get(normalizedTag) || 0) + 1);
+          }
+        });
+      }
     });
-  });
 
-  return Array.from(tagMap.entries())
-    .sort((a, b) => b[1] - a[1]);
+    return Array.from(tagMap.entries())
+      .sort((a, b) => b[1] - a[1]);
+  } catch (error) {
+    console.error('Error getting tags from Firestore:', error);
+    return [];
+  }
 }
