@@ -51,7 +51,7 @@ const { title, heroImage, pubDate, initialLikes = 0, slug } = Astro.props;
         <div class="flex justify-between items-center mb-4">
           <FormattedDate date={pubDate} />
           <LikeButtonWithProvider
-            client:only="react"
+            client:load
             slug={slug}
             initialLikes={initialLikes}
           />
