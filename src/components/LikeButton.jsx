@@ -1,22 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { db } from '@/lib/firebase/client';
+import { doc, getDoc, setDoc, deleteDoc, collection, writeBatch, getDocs } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext.jsx';
 
 const LikeButton = ({ slug, initialLikes }) => {
   const [likes, setLikes] = useState(initialLikes || 0);
   const [isLiked, setIsLiked] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false); // Prevenir clics múltiples
 
   const auth = useAuth();
   const user = auth?.user;
 
   // Normalizar el slug a minúsculas
   const normalizedSlug = slug ? slug.toLowerCase() : '';
-
-  // Inicializar Functions
-  const functions = getFunctions();
 
   useEffect(() => {
     console.log('[LikeButton] useEffect triggered - slug:', normalizedSlug, 'user:', user?.uid, 'initialLikes:', initialLikes);
@@ -29,35 +26,35 @@ const LikeButton = ({ slug, initialLikes }) => {
     setLoading(true);
     let isSubscribed = true;
 
-    const loadLikeStatus = async () => {
+    const checkUserLike = async () => {
       try {
-        // Usar Cloud Function para obtener el estado
-        const getLikeStatus = httpsCallable(functions, 'getLikeStatus');
-        const result = await getLikeStatus({ slug: normalizedSlug });
-
-        if (isSubscribed && result.data.success) {
-          setLikes(result.data.likesCount);
-          setIsLiked(result.data.userLiked);
-          setError(null);
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error loading like status: ", error);
+        // Usar el initialLikes del servidor como fuente de verdad
         if (isSubscribed) {
-          // En caso de error, usar initialLikes como fallback
           setLikes(initialLikes || 0);
-          setError('Error al cargar el estado de likes');
+
+          // Si el usuario está logueado, verificar si dio like
+          if (user) {
+            const userLikeRef = doc(db, 'posts', normalizedSlug, 'likes', user.uid);
+            const userLikeSnap = await getDoc(userLikeRef);
+            setIsLiked(userLikeSnap.exists());
+          }
+
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error checking user like: ", error);
+        if (isSubscribed) {
+          setLikes(initialLikes || 0);
           setLoading(false);
         }
       }
     };
 
-    loadLikeStatus();
+    checkUserLike();
     return () => {
       isSubscribed = false;
     };
-  }, [user, normalizedSlug, initialLikes, functions]);
+  }, [user, normalizedSlug, initialLikes]);
 
   const handleLike = useCallback(async () => {
     // Prevenir múltiples clics simultáneos
@@ -66,49 +63,73 @@ const LikeButton = ({ slug, initialLikes }) => {
     }
 
     setIsProcessing(true);
-    setError(null);
-
-    // Estado optimista: actualizar UI inmediatamente
-    const previousLikes = likes;
-    const previousIsLiked = isLiked;
-    setIsLiked(!isLiked);
-    setLikes(isLiked ? likes - 1 : likes + 1);
+    const likeRef = doc(db, 'posts', normalizedSlug, 'likes', user.uid);
+    const userLikesRef = doc(db, 'users', user.uid, 'likes', normalizedSlug);
+    const likesCountRef = doc(db, 'likes', normalizedSlug);
 
     try {
-      // Llamar a Cloud Function
-      const toggleLike = httpsCallable(functions, 'toggleLike');
-      const result = await toggleLike({ slug: normalizedSlug });
+      if (isLiked) {
+        // Quitar like
+        // Primero verificar que el like existe
+        const likeSnap = await getDoc(likeRef);
+        if (!likeSnap.exists()) {
+          console.warn('Intento de eliminar un like que no existe');
+          setIsProcessing(false);
+          return;
+        }
 
-      if (result.data.success) {
-        // Actualizar con el valor real del servidor
-        setLikes(result.data.likesCount);
-        setIsLiked(result.data.liked);
-        console.log('[LikeButton] Success:', result.data.message);
+        const batch = writeBatch(db);
+        batch.delete(likeRef);
+        batch.delete(userLikesRef);
+        await batch.commit();
+
+        // Actualizar el contador (decrementar en 1)
+        const likesCountSnap = await getDoc(likesCountRef);
+        if (likesCountSnap.exists()) {
+          const currentCount = likesCountSnap.data().count || 0;
+          const newCount = Math.max(0, currentCount - 1);
+          await setDoc(likesCountRef, { count: newCount });
+          setLikes(newCount);
+        }
+        setIsLiked(false);
+      } else {
+        // Agregar like
+        // Primero verificar que el like NO existe ya
+        const likeSnap = await getDoc(likeRef);
+        if (likeSnap.exists()) {
+          console.warn('Intento de crear un like que ya existe');
+          setIsProcessing(false);
+          return;
+        }
+
+        const likeData = {
+          timestamp: new Date(),
+          userId: user.uid
+        };
+        const batch = writeBatch(db);
+        batch.set(likeRef, likeData);
+        batch.set(userLikesRef, { timestamp: new Date(), postSlug: normalizedSlug });
+        await batch.commit();
+
+        // Actualizar el contador (incrementar en 1)
+        const likesCountSnap = await getDoc(likesCountRef);
+        const currentCount = likesCountSnap.exists() ? (likesCountSnap.data().count || 0) : 0;
+        const newCount = currentCount + 1;
+        await setDoc(likesCountRef, { count: newCount });
+        setLikes(newCount);
+        setIsLiked(true);
       }
     } catch (error) {
-      console.error("Error toggling like: ", error);
-
-      // Revertir estado optimista en caso de error
-      setIsLiked(previousIsLiked);
-      setLikes(previousLikes);
-
-      // Mostrar mensaje de error al usuario
-      if (error.code === 'unauthenticated') {
-        setError('Debes iniciar sesión para dar like');
-      } else if (error.code === 'resource-exhausted') {
-        setError('Has excedido el límite de acciones. Espera un momento.');
-      } else if (error.code === 'permission-denied') {
-        setError('Tu cuenta está bloqueada');
-      } else {
-        setError('Error al procesar tu like. Intenta de nuevo.');
+      console.error("Error updating like status: ", error);
+      // Revertir el estado optimista si hubo error
+      const likesCountSnap = await getDoc(likesCountRef);
+      if (likesCountSnap.exists()) {
+        setLikes(likesCountSnap.data().count || 0);
       }
-
-      // Limpiar error después de 5 segundos
-      setTimeout(() => setError(null), 5000);
     } finally {
       setIsProcessing(false);
     }
-  }, [isLiked, normalizedSlug, user, isProcessing, likes, functions]);
+  }, [isLiked, normalizedSlug, user, isProcessing]);
 
   if (loading) {
     return <div className="text-xs text-zinc-400 mt-1">Cargando...</div>;
@@ -131,10 +152,7 @@ const LikeButton = ({ slug, initialLikes }) => {
         </svg>
         <span>{likes}</span>
       </button>
-      {error && (
-        <div className="text-xs text-red-400 mt-1">{error}</div>
-      )}
-      {!user && !error && (
+      {!user && (
         <div className="text-xs text-zinc-400 mt-1">Inicia sesión para dar "Me Gusta"</div>
       )}
     </div>
