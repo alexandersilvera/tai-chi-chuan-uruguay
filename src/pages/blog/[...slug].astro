@@ -7,8 +7,11 @@ export const prerender = false;
 
 const { slug } = Astro.params;
 
+// Normalizar el slug a minúsculas para que coincida con Firestore
+const normalizedSlug = slug.toLowerCase();
+
 // Obtener el artículo de Firestore
-const articleRef = adminDB.collection('articles').doc(slug);
+const articleRef = adminDB.collection('articles').doc(normalizedSlug);
 const articleDoc = await articleRef.get();
 
 if (!articleDoc.exists) {
@@ -16,6 +19,17 @@ if (!articleDoc.exists) {
 }
 
 const data = articleDoc.data();
+
+// Obtener el conteo de likes desde la colección 'likes'
+let likesCount = 0;
+try {
+    const likesDoc = await adminDB.collection('likes').doc(normalizedSlug).get();
+    if (likesDoc.exists) {
+        likesCount = likesDoc.data().count || 0;
+    }
+} catch (error) {
+    console.error(`Error getting likes for ${normalizedSlug}:`, error);
+}
 
 // Convertir el contenido Markdown a HTML
 const contentHTML = marked(data.content || '');
@@ -28,9 +42,9 @@ const post = {
         heroImage: data.heroImage || '/images/banner-web-1.png',
         tags: Array.isArray(data.tags) ? data.tags : [],
         author: data.author || 'Admin',
-        initialLikes: data.initialLikes || 0,
+        initialLikes: likesCount,
     },
-    slug: slug
+    slug: normalizedSlug
 };
 ---
 

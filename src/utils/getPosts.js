@@ -9,8 +9,26 @@ export async function getSortedPosts() {
       .where('status', '==', 'published')
       .get();
 
-    const posts = articlesSnapshot.docs.map(doc => {
+    const posts = await Promise.all(articlesSnapshot.docs.map(async doc => {
       const data = doc.data();
+
+      // Normalizar el slug a minúsculas para buscar en la colección 'likes'
+      const normalizedSlug = doc.id.toLowerCase();
+
+      // Obtener el conteo de likes desde la colección 'likes'
+      let likesCount = 0;
+      try {
+        const likesDoc = await adminDB.collection('likes').doc(normalizedSlug).get();
+        if (likesDoc.exists) {
+          likesCount = likesDoc.data().count || 0;
+          console.log(`[getSortedPosts] Article ${doc.id} (normalized: ${normalizedSlug}) has ${likesCount} likes`);
+        } else {
+          console.log(`[getSortedPosts] No likes document found for ${doc.id} (normalized: ${normalizedSlug})`);
+        }
+      } catch (error) {
+        console.error(`Error getting likes for ${doc.id}:`, error);
+      }
+
       return {
         slug: doc.id,
         data: {
@@ -20,11 +38,11 @@ export async function getSortedPosts() {
           heroImage: data.heroImage || '/images/banner-web-1.png',
           tags: Array.isArray(data.tags) ? data.tags : [],
           author: data.author || 'Admin',
-          initialLikes: data.initialLikes || 0,
+          initialLikes: likesCount,
           content: data.content || '',
         }
       };
-    });
+    }));
 
     return posts.sort(
       (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -41,30 +59,45 @@ export async function getPostsByTag(tag) {
       .where('status', '==', 'published')
       .get();
 
-    const posts = articlesSnapshot.docs
-      .map(doc => {
-        const data = doc.data();
-        return {
-          slug: doc.id,
-          data: {
-            title: data.title || 'Sin título',
-            description: data.description || '',
-            pubDate: data.pubDate ? new Date(data.pubDate) : new Date(),
-            heroImage: data.heroImage || '/images/banner-web-1.png',
-            tags: Array.isArray(data.tags) ? data.tags : [],
-            author: data.author || 'Admin',
-            initialLikes: data.initialLikes || 0,
-            content: data.content || '',
-          }
-        };
-      })
-      .filter(post =>
-        post.data.tags.some(
-          (postTag) => postTag.toLowerCase() === tag.toLowerCase()
-        )
-      );
+    const posts = await Promise.all(articlesSnapshot.docs.map(async doc => {
+      const data = doc.data();
 
-    return posts.sort(
+      // Normalizar el slug a minúsculas para buscar en la colección 'likes'
+      const normalizedSlug = doc.id.toLowerCase();
+
+      // Obtener el conteo de likes desde la colección 'likes'
+      let likesCount = 0;
+      try {
+        const likesDoc = await adminDB.collection('likes').doc(normalizedSlug).get();
+        if (likesDoc.exists) {
+          likesCount = likesDoc.data().count || 0;
+        }
+      } catch (error) {
+        console.error(`Error getting likes for ${doc.id}:`, error);
+      }
+
+      return {
+        slug: doc.id,
+        data: {
+          title: data.title || 'Sin título',
+          description: data.description || '',
+          pubDate: data.pubDate ? new Date(data.pubDate) : new Date(),
+          heroImage: data.heroImage || '/images/banner-web-1.png',
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          author: data.author || 'Admin',
+          initialLikes: likesCount,
+          content: data.content || '',
+        }
+      };
+    }));
+
+    const filteredPosts = posts.filter(post =>
+      post.data.tags.some(
+        (postTag) => postTag.toLowerCase() === tag.toLowerCase()
+      )
+    );
+
+    return filteredPosts.sort(
       (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
     );
   } catch (error) {

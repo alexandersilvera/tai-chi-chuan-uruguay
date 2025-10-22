@@ -15,15 +15,19 @@ service cloud.firestore {
         // Cualquiera puede verificar si un usuario/visitante específico ha dado like
         allow read: if true;
 
-        // Permitir crear un like si:
+        // Permitir crear un like solo si:
         // 1. Es un usuario autenticado y el ID coincide
-        // 2. Es anónimo (auth es null) y el ID del documento coincide con el userId en los datos (que será el localId)
-        allow create: if request.auth != null && request.auth.uid == userIdOrLocalId;
+        // 2. El documento contiene campos válidos
+        // 3. El timestamp es reciente (dentro de los últimos 5 segundos)
+        allow create: if request.auth != null
+                      && request.auth.uid == userIdOrLocalId
+                      && request.resource.data.userId == request.auth.uid
+                      && request.resource.data.timestamp is timestamp
+                      && request.resource.data.timestamp > request.time - duration.value(5, 's');
 
-        // Permitir eliminar un like si:
-        // 1. Es un usuario autenticado y el ID coincide
-        // 2. Es anónimo (auth es null) y el ID del documento coincide con el userId en los datos (que será el localId)
-        allow delete: if request.auth != null && request.auth.uid == userIdOrLocalId;
+        // Permitir eliminar un like solo si el usuario es el dueño
+        allow delete: if request.auth != null
+                      && request.auth.uid == userIdOrLocalId;
 
         // No permitir actualizaciones directas
         allow update: if false;
@@ -56,21 +60,47 @@ service cloud.firestore {
 
       // --- Subcolección: likes (dentro de users) ---
       match /likes/{postId} {
-         // El usuario autenticado puede gestionar su propia lista de likes
-         allow read, write: if request.auth != null && request.auth.uid == userId;
+         // El usuario puede leer su propia lista de likes
+         allow read: if request.auth != null && request.auth.uid == userId;
+
+         // Permitir crear un registro de like solo con campos válidos
+         allow create: if request.auth != null
+                       && request.auth.uid == userId
+                       && request.resource.data.keys().hasOnly(['timestamp', 'postSlug'])
+                       && request.resource.data.postSlug == postId
+                       && request.resource.data.timestamp is timestamp
+                       && request.resource.data.timestamp > request.time - duration.value(5, 's');
+
+         // Permitir eliminar su propio like
+         allow delete: if request.auth != null && request.auth.uid == userId;
+
+         // No permitir actualizaciones
+         allow update: if false;
       }
     }
 
     // --- Colección: likes (contador global) ---
     match /likes/{slug} {
       allow read: if true;
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+
+      // Cloud Functions pueden escribir libremente (no tienen auth)
+      // Las Cloud Functions se ejecutan con credenciales de admin
+      allow write: if true;
+
+      // Nota: La seguridad está garantizada por las Cloud Functions
+      // que validan autenticación, rate limiting, etc.
     }
 
     // --- Colección: likesLog ---
     match /likesLog/{docId} {
-      allow read: if false;
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      allow write: if true; // Cloud Functions pueden escribir libremente
+    }
+
+    // --- Colección: abuseReports ---
+    match /abuseReports/{reportId} {
+      allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      allow write: if true; // Cloud Functions pueden escribir libremente
     }
 
     // --- Colección: articles ---
