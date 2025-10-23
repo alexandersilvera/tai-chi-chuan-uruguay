@@ -7,11 +7,8 @@ export const prerender = false;
 
 const { slug } = Astro.params;
 
-// Normalizar el slug a minúsculas para que coincida con Firestore
-const normalizedSlug = slug.toLowerCase();
-
-// Obtener el artículo de Firestore
-const articleRef = adminDB.collection('articles').doc(normalizedSlug);
+// Obtener el artículo de Firestore (sin normalizar el slug)
+const articleRef = adminDB.collection('articles').doc(slug);
 const articleDoc = await articleRef.get();
 
 if (!articleDoc.exists) {
@@ -21,8 +18,10 @@ if (!articleDoc.exists) {
 const data = articleDoc.data();
 
 // Obtener el conteo de likes desde la colección 'likes'
+// Los likes sí están normalizados a minúsculas
 let likesCount = 0;
 try {
+    const normalizedSlug = slug.toLowerCase();
     const likesDoc = await adminDB.collection('likes').doc(normalizedSlug).get();
     if (likesDoc.exists) {
         likesCount = likesDoc.data().count || 0;
@@ -44,7 +43,7 @@ const post = {
         author: data.author || 'Admin',
         initialLikes: likesCount,
     },
-    slug: normalizedSlug
+    slug: slug
 };
 ---
 
