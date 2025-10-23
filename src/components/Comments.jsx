@@ -30,7 +30,8 @@ export default function Comments({ slug }) {
     // console.log(`Setting up Firestore listener for comments on slug: ${slug}`);
 
     // Listener de Firestore para obtener comentarios en tiempo real
-    const commentsRef = collection(db, 'posts', slug, 'comments');
+    // Usar colección 'articles' en lugar de 'posts'
+    const commentsRef = collection(db, 'articles', slug, 'comments');
     const q = query(commentsRef, orderBy('timestamp', 'asc'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const commentsData = [];
@@ -63,7 +64,8 @@ export default function Comments({ slug }) {
 
     setError('');
     try {
-      const commentsRef = collection(db, 'posts', slug, 'comments');
+      // Usar colección 'articles' en lugar de 'posts'
+      const commentsRef = collection(db, 'articles', slug, 'comments');
       await addDoc(commentsRef, {
         text: newComment,
         userId: user.uid,
