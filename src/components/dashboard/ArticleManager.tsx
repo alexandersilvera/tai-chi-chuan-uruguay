@@ -4,18 +4,36 @@ import { getAuth } from 'firebase/auth';
 import { app } from '@/lib/firebase/client.js';
 import { useAuth } from '@/context/AuthContext.jsx';
 
+interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  image?: string;
+  tags: string[];
+  status: 'published' | 'draft';
+  lastModified?: string;
+  publishDate?: string;
+  views?: number;
+  likes?: number;
+  comments?: number;
+  readTime?: string;
+  [key: string]: any;
+}
+
 export default function ArticleManager() {
-  const auth = useAuth();
+  const auth = useAuth() as any;
   const currentUser = auth?.user;
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, published, draft
   const [sortBy, setSortBy] = useState('newest'); // newest, oldest, title, likes, comments
   const [searchTerm, setSearchTerm] = useState('');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [articleToDelete, setArticleToDelete] = useState(null);
-  const [showEditor, setShowEditor] = useState(false);
-  const [editingArticle, setEditingArticle] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
+  const [showEditor, setShowEditor] = useState<boolean>(false);
+  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     published: 0,
@@ -42,15 +60,15 @@ export default function ArticleManager() {
       setArticles(data.articles);
       
       // Calcular estadísticas
-      const published = data.articles.filter(a => a.status === 'published');
-      const drafts = data.articles.filter(a => a.status === 'draft');
+      const published = data.articles.filter((a: any) => a.status === 'published');
+      const drafts = data.articles.filter((a: any) => a.status === 'draft');
       
       setStats({
         total: data.articles.length,
         published: published.length,
         drafts: drafts.length,
-        totalLikes: data.articles.reduce((sum, a) => sum + a.likes, 0),
-        totalComments: data.articles.reduce((sum, a) => sum + a.comments, 0)
+        totalLikes: data.articles.reduce((sum: number, a: any) => sum + (a.likes || 0), 0),
+        totalComments: data.articles.reduce((sum: number, a: any) => sum + (a.comments || 0), 0)
       });
       
     } catch (error) {
@@ -93,7 +111,7 @@ export default function ArticleManager() {
     }
   });
 
-  const handleDeleteArticle = async (articleId) => {
+  const handleDeleteArticle = async (articleId: string) => {
     if (!articleToDelete) return;
 
     try {
@@ -143,7 +161,7 @@ export default function ArticleManager() {
     }
   };
 
-  const handleToggleStatus = async (articleId) => {
+  const handleToggleStatus = async (articleId: string) => {
     const article = articles.find(a => a.id === articleId);
     if (!article) return;
 
@@ -205,12 +223,12 @@ export default function ArticleManager() {
     setShowEditor(true);
   };
 
-  const handleEditArticle = (article) => {
+  const handleEditArticle = (article: Article) => {
     setEditingArticle(article);
     setShowEditor(true);
   };
 
-  const handleSaveArticle = async (articleData) => {
+  const handleSaveArticle = async (articleData: any) => {
     try {
       const isEditing = editingArticle !== null;
       const endpoint = isEditing ? '/api/admin/articles/update' : '/api/admin/articles/create';
@@ -248,7 +266,7 @@ export default function ArticleManager() {
     }
   };
 
-  const formatDate = (timestamp) => {
+  const formatDate = (timestamp: string | null | undefined) => {
     if (!timestamp) return 'Sin publicar';
     return new Date(timestamp).toLocaleString('es-ES', {
       year: 'numeric',
@@ -259,7 +277,7 @@ export default function ArticleManager() {
     });
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     return status === 'published' ? (
       <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
         Publicado
@@ -435,20 +453,22 @@ export default function ArticleManager() {
           </div>
         ) : (
           sortedArticles.map((article) => (
-            <div key={article.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="flex gap-6">
+            <div key={article.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow overflow-hidden w-full max-w-full">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-full overflow-hidden">
                 <img 
                   src={article.image} 
                   alt={article.title}
-                  className="w-24 h-24 rounded-lg object-cover border border-gray-200 flex-shrink-0"
+                  className="w-full sm:w-24 h-auto sm:h-24 rounded-lg object-cover border border-gray-200 flex-shrink-0"
                 />
                 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 truncate">{article.title}</h3>
-                        {getStatusBadge(article.status)}
+                <div className="flex-1 min-w-0 w-full max-w-full overflow-hidden">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-2 mb-3 min-w-0 w-full">
+                    <div className="flex-1 min-w-0 w-full overflow-hidden">
+                      <div className="flex justify-between items-center gap-2 mb-2 w-full min-w-0">
+                        <h3 className="text-lg font-semibold text-gray-900 truncate flex-1 min-w-0" title={article.title}>{article.title}</h3>
+                        <div className="flex-shrink-0">
+                          {getStatusBadge(article.status)}
+                        </div>
                       </div>
                       <p className="text-gray-600 text-sm line-clamp-2 mb-2">{article.description}</p>
                       
@@ -467,8 +487,8 @@ export default function ArticleManager() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mt-2">
+                    <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs text-gray-500">
                       <span className="flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -497,7 +517,7 @@ export default function ArticleManager() {
                       <span>• {article.readTime} lectura</span>
                     </div>
                     
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2 mt-3 sm:mt-0">
                       {article.status === 'published' && (
                         <a 
                           href={`/blog/${article.slug}`}

@@ -26,20 +26,17 @@ const {
     description={description}
     image={image}
   />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="generator" content={Astro.generator} />
-  <title>{title}</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="flex flex-col md:flex-row min-h-screen mt-0 text-gray-500 bg-gray-50"> 
+<body class="flex flex-col min-h-screen mt-0 text-gray-500 bg-gray-50"> 
   {/* Sidebar responsivo */}
   <Sidebar />
 
   {/* Contenedor principal responsivo */}
-  <main class="flex-grow w-full px-3 py-4 sm:px-4 md:px-6 lg:px-8 md:py-6 dashboard-content">
+  <main class="flex-grow w-full px-3 py-4 sm:px-4 md:px-6 md:py-6 dashboard-content">
     <slot /> {/* Aquí se renderizará el contenido de cada página del dashboard */}
   </main>
 </body>
@@ -64,6 +61,7 @@ const {
     .dashboard-content {
       /* En desktop deja espacio para el sidebar */
       margin-left: 240px;
+      width: calc(100% - 240px);
       min-height: 100vh;
     }
   }
