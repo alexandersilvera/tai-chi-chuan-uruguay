@@ -20,7 +20,7 @@ const lineageDataNested = [
       <section class="mb-8">
         <h2 class="text-2xl font-semibold text-gray-400 mb-4">Dominio de las Artes Internas</h2>
         <p class="text-gray-200 leading-relaxed">
-          Movido por su búsqueda del conocimiento y la conexión entre el boxeo y el "Yi" (intención), Sun Lutang estudió Ba Gua Zhang con Cheng Tinghua, logrando una comprensión profunda de esta disciplina. En 1886, emprendió un extenso viaje por once provincias de China, visitando los centros más importantes de las artes marciales, incluidos Shaolin, Wudang y Emei. Dos años después, en 1888, regresó a su tierra natal y fundó el Puyang Boxing Club, un espacio dedicado a la enseñanza y difusión de las artes marciales.
+          Movido por su búsqueda del conocimiento y la conexión entre el boxeo y el "Yi" (intención), Sun Lutang estudió Ba Gua Zhang con Cheng Tinghua, logrando una comprensión profunda de esta disciplina. En 1886, emprendió un extenso viaje por once provincias de China, visitando los centros más importantes de las artes marciales, incluidos Shaolin, Wudang y Emei. Dos años después, in 1888, regresó a su tierra natal y fundó el Puyang Boxing Club, un espacio dedicado a la enseñanza y difusión de las artes marciales.
         </p>
       </section>
       <section class="mb-8">
@@ -426,8 +426,8 @@ const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa
     <h2 class="text-3xl font-bold text-center text-gray-200 mb-8">Galería de Maestros</h2>
     <div class="w-full overflow-hidden" id="gallery-container"> 
       <div class="flex whitespace-nowrap" id="gallery-track"> 
-        {uniquePeopleForGallery.map((person) => (
-          <div class="mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5">
+        {uniquePeopleForGallery.map((person, index) => (
+          <div class="gallery-image-wrapper cursor-pointer mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5" data-accordion-target={index}>
             <Image
               src={person.image}
               alt={`Foto de ${person.name}`}
@@ -441,8 +441,8 @@ const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa
             <p class="text-center text-sm text-gray-400 truncate px-2">{person.title}</p>
           </div>
         ))}
-        {uniquePeopleForGallery.map((person) => (
-          <div class="mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5" aria-hidden="true">
+        {uniquePeopleForGallery.map((person, index) => (
+          <div class="gallery-image-wrapper cursor-pointer mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5" aria-hidden="true" data-accordion-target={index}>
             <Image
               src={person.image}
               alt={`Foto de ${person.name}`}
@@ -513,19 +513,19 @@ const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const accordionButtons = document.querySelectorAll('.accordion-button');
-    const galleryImageWrappers = document.querySelectorAll('.gallery-image-wrapper');
-    const galleryTrack = document.getElementById('gallery-track');
+  const accordionButtons = document.querySelectorAll('.accordion-button');
+  const galleryImageWrappers = document.querySelectorAll('.gallery-image-wrapper');
+  const galleryTrack = document.getElementById('gallery-track');
 
-    // Configurar carrusel infinito
-    if (galleryTrack) {
-      const cards = galleryTrack.children;
-      const cardWidth = 300; // 288px (w-72) + 24px (mx-3 * 2)
-      const totalWidth = cardWidth * (cards.length / 2); // Solo contamos las originales
-      
-      // Función para resetear la posición sin animación
-      function resetPosition() {
+  // Configurar carrusel infinito
+  if (galleryTrack) {
+    const cards = galleryTrack.children;
+    const cardWidth = 300; // 288px (w-72) + 24px (mx-3 * 2)
+    const totalWidth = cardWidth * (cards.length / 2); // Solo contamos las originales
+    
+    // Función para resetear la posición sin animación
+    function resetPosition() {
+      if (galleryTrack) {
         galleryTrack.style.animation = 'none';
         galleryTrack.style.transform = 'translateX(0)';
         // Forzar reflow
@@ -533,66 +533,66 @@ const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa
         // Restaurar animación
         galleryTrack.style.animation = `scroll 40s linear infinite`;
       }
-
-      // Escuchar el final de la animación
-      galleryTrack.addEventListener('animationiteration', resetPosition);
     }
 
-    function closeAllAccordionItems(exceptIndex = -1) {
-      accordionButtons.forEach((button, index) => {
-        if (index === exceptIndex) return;
-        const content = button.parentElement?.nextElementSibling as HTMLElement;
-        if (content) {
-          button.classList.remove('active');
-          button.setAttribute('aria-expanded', 'false');
-          content.style.maxHeight = '';
-          content.classList.add('hidden');
-        }
-        // Actualizar estado de imagen de galería si está conectada
+    // Escuchar el final de la animación
+    galleryTrack.addEventListener('animationiteration', resetPosition);
+  }
+
+  function closeAllAccordionItems(exceptIndex = -1) {
+    accordionButtons.forEach((button, index) => {
+      if (index === exceptIndex) return;
+      const content = button.parentElement?.nextElementSibling as HTMLElement;
+      if (content) {
+        button.classList.remove('active');
+        button.setAttribute('aria-expanded', 'false');
+        content.style.maxHeight = '';
+        content.classList.add('hidden');
+      }
+      // Actualizar estado de imagen de galería si está conectada
+      const galleryButton = document.querySelector(`.gallery-image-wrapper[data-accordion-target='${index}']`);
+      if (galleryButton) {
+          galleryButton.classList.remove('active');
+      }
+    });
+  }
+
+  accordionButtons.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      const content = button.parentElement?.nextElementSibling as HTMLElement;
+      if (!content) return;
+      
+      const isCurrentlyActive = button.classList.contains('active');
+
+      closeAllAccordionItems(isCurrentlyActive ? -1 : index);
+
+      if (!isCurrentlyActive) {
+        button.classList.add('active');
+        button.setAttribute('aria-expanded', 'true');
+        content.classList.remove('hidden');
+        content.style.maxHeight = content.scrollHeight + "px";
+        // Activar imagen de galería correspondiente
         const galleryButton = document.querySelector(`.gallery-image-wrapper[data-accordion-target='${index}']`);
         if (galleryButton) {
-            galleryButton.classList.remove('active');
+          galleryButton.classList.add('active');
         }
-      });
-    }
+      }
+    });
+  });
 
-    accordionButtons.forEach((button, index) => {
-      button.addEventListener('click', () => {
-        const content = button.parentElement?.nextElementSibling as HTMLElement;
-        if (!content) return;
-        
-        const isCurrentlyActive = button.classList.contains('active');
-
-        closeAllAccordionItems(isCurrentlyActive ? -1 : index);
-
-        if (!isCurrentlyActive) {
-          button.classList.add('active');
-          button.setAttribute('aria-expanded', 'true');
-          content.classList.remove('hidden');
-          content.style.maxHeight = content.scrollHeight + "px";
-          // Activar imagen de galería correspondiente
-          const galleryButton = document.querySelector(`.gallery-image-wrapper[data-accordion-target='${index}']`);
-          if (galleryButton) {
-            galleryButton.classList.add('active');
+  galleryImageWrappers.forEach(wrapper => {
+      wrapper.addEventListener('click', () => {
+          const targetIndex = parseInt((wrapper as HTMLElement).dataset.accordionTarget || '0');
+          const targetAccordionButton = document.querySelector(`.accordion-button[data-accordion-index='${targetIndex}']`) as HTMLElement;
+          if (targetAccordionButton) {
+              const isCurrentlyActive = targetAccordionButton.classList.contains('active');
+              
+              if (!isCurrentlyActive) {
+                  targetAccordionButton.click();
+              } else {
+                  targetAccordionButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
           }
-        }
       });
-    });
-
-    galleryImageWrappers.forEach(wrapper => {
-        wrapper.addEventListener('click', () => {
-            const targetIndex = parseInt((wrapper as HTMLElement).dataset.accordionTarget || '0');
-            const targetAccordionButton = document.querySelector(`.accordion-button[data-accordion-index='${targetIndex}']`) as HTMLElement;
-            if (targetAccordionButton) {
-                const isCurrentlyActive = targetAccordionButton.classList.contains('active');
-                
-                if (!isCurrentlyActive) {
-                    targetAccordionButton.click();
-                } else {
-                    targetAccordionButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            }
-        });
-    });
   });
 </script>

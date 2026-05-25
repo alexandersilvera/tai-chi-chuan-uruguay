@@ -5,6 +5,8 @@ import styles from "@/styles/HorizontalGallery.module.css"
 interface Image {
   src: string
   alt: string
+  title?: string
+  description?: string
 }
 
 interface HorizontalGalleryProps {
@@ -33,7 +35,7 @@ const HorizontalGallery: React.FC<HorizontalGalleryProps> = ({ images }) => {
 
   return (
     <div className={styles.galleryContainer}>
-      <button className={styles.navButtonLeft} onClick={goToPreviousImage}>
+      <button className={`${styles.navButton} ${styles.navButtonLeft}`} onClick={goToPreviousImage}>
         &lt;
       </button>
       <div className={styles.gallery}>
@@ -44,7 +46,7 @@ const HorizontalGallery: React.FC<HorizontalGalleryProps> = ({ images }) => {
           className={styles.galleryImage}
         />
       </div>
-      <button className={styles.navButtonRight} onClick={goToNextImage}>
+      <button className={`${styles.navButton} ${styles.navButtonRight}`} onClick={goToNextImage}>
         &gt;
       </button>
       <div className={styles.imageCounter}>
@@ -54,6 +56,8 @@ const HorizontalGallery: React.FC<HorizontalGalleryProps> = ({ images }) => {
         <div className={styles.popupOverlay} onClick={closePopup}>
           <div className={styles.popupContent} onClick={(e) => e.stopPropagation()}>
             <img src={selectedImage.src || "/placeholder.svg"} alt={selectedImage.alt} className={styles.popupImage} />
+            {selectedImage.title && <h3 className={styles.popupTitle}>{selectedImage.title}</h3>}
+            {selectedImage.description && <p className={styles.popupDescription}>{selectedImage.description}</p>}
             <button className={styles.closeButton} onClick={closePopup}>
               &times;
             </button>

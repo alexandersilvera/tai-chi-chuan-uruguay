@@ -74,8 +74,10 @@
 
 .popupImage {
   max-width: 100%;
-  max-height: 90vh;
+  max-height: 70vh;
   object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .closeButton {
@@ -99,5 +101,25 @@
   padding: 5px 10px;
   border-radius: 15px;
   font-size: 14px;
+}
+
+.popupTitle {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.popupDescription {
+  color: #d1d5db;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 0.5rem;
+  padding: 0 1rem;
+  line-height: 1.5;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
