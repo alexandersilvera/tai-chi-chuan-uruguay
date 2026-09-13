@@ -52,17 +52,41 @@
 
 <div class="carousel-container">
   <div class="carousel-track" id="carouselTrack">
-    <!-- Clon de la última imagen -->
-    <div class="carousel-slide"><img src="/images/banner-web-4.png" alt="Imagen 4 (clon)" /></div>
+    <!-- Clon de la última imagen (decorativo, para efecto loop) -->
+    <div class="carousel-slide">
+      <img src="/images/banner-web-4.png" alt="" />
+    </div>
 
     <!-- Imágenes originales -->
-    <div class="carousel-slide"><img src="/images/banner-web-1.png" alt="Imagen 1" /></div>
-    <div class="carousel-slide"><img src="/images/banner-web-2.png" alt="Imagen 2" /></div>
-    <div class="carousel-slide"><img src="/images/banner-web-3.png" alt="Imagen 3" /></div>
-    <div class="carousel-slide"><img src="/images/banner-web-4.png" alt="Imagen 4" /></div>
+    <div class="carousel-slide">
+      <img
+        src="/images/banner-web-1.png"
+        alt="Shifu Jorge Quiñones frente al templo de la Escuela Sun Lutang en Dingxing, China"
+      />
+    </div>
+    <div class="carousel-slide">
+      <img
+        src="/images/banner-web-2.png"
+        alt="Shifu Jorge Quiñones junto a los maestros de la Asociación de Sun Lu Tang de Dingxing, China"
+      />
+    </div>
+    <div class="carousel-slide">
+      <img
+        src="/images/banner-web-3.png"
+        alt="Shifu Jorge Quiñones ejecutando una forma de Sun Tai Chi frente al templo de Dingxing"
+      />
+    </div>
+    <div class="carousel-slide">
+      <img
+        src="/images/banner-web-4.png"
+        alt="Shifu Jorge Quiñones en postura inicial de Sun Tai Chi en el templo de Dingxing, China"
+      />
+    </div>
 
-    <!-- Clon de la primera imagen -->
-    <div class="carousel-slide"><img src="/images/banner-web-1.png" alt="Imagen 1 (clon)" /></div>
+    <!-- Clon de la primera imagen (decorativo, para efecto loop) -->
+    <div class="carousel-slide">
+      <img src="/images/banner-web-1.png" alt="" />
+    </div>
   </div>
 
   <!-- Botones de navegación -->
@@ -72,8 +96,8 @@
 
 <script>
   // JavaScript para el carrusel infinito
-  const track = document.getElementById('carouselTrack');
-  
+  const track = document.getElementById("carouselTrack");
+
   if (track) {
     const slides = Array.from(track.children);
     let currentIndex = 1; // Comenzamos en la primera imagen original (después del clon inicial)
@@ -85,10 +109,10 @@
 
     // Configuración inicial: posicionar el carrusel sin transición
     function initializeCarousel() {
-      track.style.transition = 'none'; // Desactivar transición temporalmente
+      track.style.transition = "none"; // Desactivar transición temporalmente
       track.style.transform = `translateX(${-currentIndex * (100 / slides.length)}%)`; // Posicionar en la primera imagen
       setTimeout(() => {
-        track.style.transition = 'transform 0.5s ease-in-out'; // Reactivar transición
+        track.style.transition = "transform 0.5s ease-in-out"; // Reactivar transición
       }, 50); // Pequeño retraso para asegurar que el navegador procese el cambio
     }
 
@@ -99,11 +123,11 @@
       // Si llegamos al clon de la primera imagen, reiniciamos sin transición
       if (currentIndex === slides.length - 1) {
         setTimeout(() => {
-          track.style.transition = 'none';
+          track.style.transition = "none";
           currentIndex = 1;
           updateCarousel();
           setTimeout(() => {
-            track.style.transition = 'transform 0.5s ease-in-out';
+            track.style.transition = "transform 0.5s ease-in-out";
           }, 50); // Restaurar la transición después del ajuste
         }, 500); // Esperar a que termine la transición actual
       }
@@ -116,11 +140,11 @@
       // Si llegamos al clon de la última imagen, reiniciamos sin transición
       if (currentIndex === 0) {
         setTimeout(() => {
-          track.style.transition = 'none';
+          track.style.transition = "none";
           currentIndex = slides.length - 2;
           updateCarousel();
           setTimeout(() => {
-            track.style.transition = 'transform 0.5s ease-in-out';
+            track.style.transition = "transform 0.5s ease-in-out";
           }, 50); // Restaurar la transición después del ajuste
         }, 500); // Esperar a que termine la transición actual
       }
@@ -130,11 +154,11 @@
     initializeCarousel();
 
     // Agregar eventos a los botones
-    const prevButton = document.getElementById('prevButton');
-    const nextButton = document.getElementById('nextButton');
+    const prevButton = document.getElementById("prevButton");
+    const nextButton = document.getElementById("nextButton");
     if (prevButton && nextButton) {
-      nextButton.addEventListener('click', moveToNextSlide);
-      prevButton.addEventListener('click', moveToPrevSlide);
+      nextButton.addEventListener("click", moveToNextSlide);
+      prevButton.addEventListener("click", moveToPrevSlide);
     }
 
     // Movimiento automático infinito

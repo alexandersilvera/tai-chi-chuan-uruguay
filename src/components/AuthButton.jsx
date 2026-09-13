@@ -20,20 +20,20 @@ export default function AuthButton() {
       alert("La imagen no puede superar los 2MB.");
       return;
     }
-    
+
     setUploading(true);
     try {
       const auth = getAuth(app);
       if (!auth.currentUser) {
         throw new Error("No hay un usuario autenticado para actualizar el perfil.");
       }
-    
+
       const storage = getStorage(app);
       const avatarRef = ref(storage, `avatars/${user.uid}.jpg`);
-      
+
       await uploadBytes(avatarRef, file);
       const url = await getDownloadURL(avatarRef);
-      
+
       await updateProfile(auth.currentUser, { photoURL: url });
 
       if (refreshUser) {
@@ -76,13 +76,13 @@ export default function AuthButton() {
             </div>
           )}
         </label>
-        
+
         {user.isAdmin && (
-           <a href="/dashboard" className="ml-2 px-2 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors">
-              Dashboard
-           </a>
+          <a href="/dashboard" className="ml-2 px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors">
+            Dashboard
+          </a>
         )}
-        
+
         <button onClick={handleLogout} className="bg-red-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-700 transition-colors">
           Logout
         </button>
@@ -92,7 +92,7 @@ export default function AuthButton() {
 
   return (
     <>
-      <button onClick={() => setShowModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+      <button onClick={() => setShowModal(true)} className="bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-emerald-700 transition-colors">
         Iniciar Sesión / Registro
       </button>
       {showModal && (
