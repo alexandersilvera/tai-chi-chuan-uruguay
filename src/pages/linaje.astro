@@ -1,7 +1,7 @@
 ---
-import { Image } from 'astro:assets';
-import Layout from '@/layouts/Layout.astro';
-import PageHeader from '@/components/PageHeader.astro';
+import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import PageHeader from "@/components/PageHeader.astro";
 
 // Datos originales del linaje (anidados)
 const lineageDataNested = [
@@ -303,7 +303,8 @@ const lineageDataNested = [
                     children: [
                       {
                         name: "Qin Feng - Jorge Quiñones",
-                        title: "Discípulo, Dìzǐ: Bajo ceremonia Bàishī Yíshì 拜師仪式",
+                        title:
+                          "Discípulo, Dìzǐ: Bajo ceremonia Bàishī Yíshì 拜師仪式",
                         image: "/images/shifu_jorge.jpg",
                         link: "/maestros/qin-feng",
                         info: `
@@ -372,24 +373,24 @@ const lineageDataNested = [
         </ul>
       </section>
     `,
-                        children: []
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+                        children: [],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 // Función para aplanar la estructura de datos del linaje
 const flattenLineage = (arr) => {
   let result = [];
-  arr.forEach(person => {
+  arr.forEach((person) => {
     result.push(person);
     if (person.children && person.children.length > 0) {
       result = result.concat(flattenLineage(person.children));
@@ -403,7 +404,7 @@ const allPeople = flattenLineage(lineageDataNested);
 
 // Crear una lista de personas únicas para la galería
 const uniquePeopleNames = new Set();
-const uniquePeopleForGallery = allPeople.filter(person => {
+const uniquePeopleForGallery = allPeople.filter((person) => {
   if (uniquePeopleNames.has(person.name)) {
     return false;
   }
@@ -414,9 +415,12 @@ const uniquePeopleForGallery = allPeople.filter(person => {
 // Datos para el acordeón (puede ser el mismo lineageDataNested o uno procesado si es necesario)
 // Por ahora, asumimos que el acordeón usará la estructura anidada directamente.
 const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa así.
-
 ---
-<Layout title="Linaje | Sun Taiji Quan Uruguay">
+
+<Layout
+  title="Linaje del Sun Taiji Quan"
+  description="El linaje del Sun Taiji Quan: desde Sun Lutang y la familia Sun hasta los maestros actuales que preservan la tradición del arte marcial chino."
+>
   <PageHeader
     title="Nuestro Linaje"
     description="Explora la rica herencia y el linaje de nuestra escuela Tai Ji Quan."
@@ -424,76 +428,115 @@ const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa
 
   <section class="mb-12">
     <h2 class="text-3xl font-bold text-center text-gray-100 mb-8">Linaje</h2>
-    <div class="w-full overflow-hidden" id="gallery-container"> 
-      <div class="flex whitespace-nowrap" id="gallery-track"> 
-        {uniquePeopleForGallery.map((person, index) => (
-          <div class="gallery-image-wrapper cursor-pointer mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5" data-accordion-target={index}>
-            <Image
-              src={person.image}
-              alt={`Foto de ${person.name}`}
-              width={300}
-              height={400}
-              class="rounded-lg object-cover w-full h-80 mb-3" 
-              densities={[1, 1.5, 2]}
-              quality="mid"
-            />
-            <p class="text-center text-base font-semibold text-gray-100 truncate px-2">{person.name}</p> 
-            <p class="text-center text-sm text-gray-400 truncate px-2">{person.title}</p>
-          </div>
-        ))}
-        {uniquePeopleForGallery.map((person, index) => (
-          <div class="gallery-image-wrapper cursor-pointer mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5" aria-hidden="true" data-accordion-target={index}>
-            <Image
-              src={person.image}
-              alt={`Foto de ${person.name}`}
-              width={300}
-              height={400}
-              class="rounded-lg object-cover w-full h-80 mb-3"
-              densities={[1, 1.5, 2]}
-              quality="mid"
-            />
-            <p class="text-center text-base font-semibold text-gray-100 truncate px-2">{person.name}</p>
-            <p class="text-center text-sm text-gray-400 truncate px-2">{person.title}</p>
-          </div>
-        ))}
+    <div class="w-full overflow-hidden" id="gallery-container">
+      <div class="flex whitespace-nowrap" id="gallery-track">
+        {
+          uniquePeopleForGallery.map((person, index) => (
+            <div
+              class="gallery-image-wrapper cursor-pointer mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5"
+              data-accordion-target={index}
+            >
+              <Image
+                src={person.image}
+                alt={`Foto de ${person.name}`}
+                width={300}
+                height={400}
+                class="rounded-lg object-cover w-full h-80 mb-3"
+                densities={[1, 1.5, 2]}
+                quality="mid"
+              />
+              <p class="text-center text-base font-semibold text-gray-100 truncate px-2">
+                {person.name}
+              </p>
+              <p class="text-center text-sm text-gray-400 truncate px-2">
+                {person.title}
+              </p>
+            </div>
+          ))
+        }
+        {
+          uniquePeopleForGallery.map((person, index) => (
+            <div
+              class="gallery-image-wrapper cursor-pointer mx-3 flex-shrink-0 w-72 bg-gray-800 p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:ring-2 hover:ring-sky-500 hover:transform hover:-translate-y-1.5"
+              aria-hidden="true"
+              data-accordion-target={index}
+            >
+              <Image
+                src={person.image}
+                alt={`Foto de ${person.name}`}
+                width={300}
+                height={400}
+                class="rounded-lg object-cover w-full h-80 mb-3"
+                densities={[1, 1.5, 2]}
+                quality="mid"
+              />
+              <p class="text-center text-base font-semibold text-gray-100 truncate px-2">
+                {person.name}
+              </p>
+              <p class="text-center text-sm text-gray-400 truncate px-2">
+                {person.title}
+              </p>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
 
   <!-- Lista de Acordeón -->
   <div class="accordion-container max-w-3xl mx-auto px-4 mt-8">
-    {uniquePeopleForGallery.map((person, index) => (
-      <div class="accordion-item border-b border-zinc-800">
-        <h2>
-          <button type="button" class="accordion-button flex items-center justify-between w-full py-4 px-3 text-left text-gray-200 hover:bg-zinc-800/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out" data-accordion-index={index}>
-            <span class="text-lg font-medium">{person.name}</span>
-            <svg class="accordion-icon w-5 h-5 text-gray-400 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-          </button>
-        </h2>
-        <div class="accordion-content hidden overflow-hidden transition-all duration-500 ease-in-out">
-          <div class="p-4 md:p-6 flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-6 bg-zinc-900/30 rounded-b-lg border border-t-0 border-zinc-800/80 mb-4">
-            <div class="flex-1">
-              <h3 class="text-xl font-semibold text-gray-100 mb-1">{person.name}</h3>
-              <p class="text-md text-sky-400 font-medium mb-3">{person.title}</p>
-              <div class="p-4 border-t border-zinc-800">
-                <div class="text-gray-300 text-sm prose prose-invert prose-sm max-w-none" set:html={person.info}></div>
+    {
+      uniquePeopleForGallery.map((person, index) => (
+        <div class="accordion-item border-b border-zinc-800">
+          <h2>
+            <button
+              type="button"
+              class="accordion-button flex items-center justify-between w-full py-4 px-3 text-left text-gray-200 hover:bg-zinc-800/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out"
+              data-accordion-index={index}
+            >
+              <span class="text-lg font-medium">{person.name}</span>
+              <svg
+                class="accordion-icon w-5 h-5 text-gray-400 transform transition-transform duration-300"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </h2>
+          <div class="accordion-content hidden overflow-hidden transition-all duration-500 ease-in-out">
+            <div class="p-4 md:p-6 flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-6 bg-zinc-900/30 rounded-b-lg border border-t-0 border-zinc-800/80 mb-4">
+              <div class="flex-1">
+                <h3 class="text-xl font-semibold text-gray-100 mb-1">
+                  {person.name}
+                </h3>
+                <p class="text-md text-sky-400 font-medium mb-3">
+                  {person.title}
+                </p>
+                <div class="p-4 border-t border-zinc-800">
+                  <div
+                    class="text-gray-300 text-sm prose prose-invert prose-sm max-w-none"
+                    set:html={person.info}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    ))}
+      ))
+    }
   </div>
-
 </Layout>
 
 <style>
   #gallery-track {
     animation: scroll 40s linear infinite;
   }
-  
+
   #gallery-container:hover #gallery-track {
     animation-play-state: paused;
   }
@@ -503,31 +546,33 @@ const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa
   }
 
   @keyframes scroll {
-    0% { 
-      transform: translateX(0); 
+    0% {
+      transform: translateX(0);
     }
-    100% { 
-      transform: translateX(calc(-300px * 6 - 24px * 6)); 
+    100% {
+      transform: translateX(calc(-300px * 6 - 24px * 6));
     }
   }
 </style>
 
 <script>
-  const accordionButtons = document.querySelectorAll('.accordion-button');
-  const galleryImageWrappers = document.querySelectorAll('.gallery-image-wrapper');
-  const galleryTrack = document.getElementById('gallery-track');
+  const accordionButtons = document.querySelectorAll(".accordion-button");
+  const galleryImageWrappers = document.querySelectorAll(
+    ".gallery-image-wrapper",
+  );
+  const galleryTrack = document.getElementById("gallery-track");
 
   // Configurar carrusel infinito
   if (galleryTrack) {
     const cards = galleryTrack.children;
     const cardWidth = 300; // 288px (w-72) + 24px (mx-3 * 2)
     const totalWidth = cardWidth * (cards.length / 2); // Solo contamos las originales
-    
+
     // Función para resetear la posición sin animación
     function resetPosition() {
       if (galleryTrack) {
-        galleryTrack.style.animation = 'none';
-        galleryTrack.style.transform = 'translateX(0)';
+        galleryTrack.style.animation = "none";
+        galleryTrack.style.transform = "translateX(0)";
         // Forzar reflow
         galleryTrack.offsetHeight;
         // Restaurar animación
@@ -536,7 +581,7 @@ const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa
     }
 
     // Escuchar el final de la animación
-    galleryTrack.addEventListener('animationiteration', resetPosition);
+    galleryTrack.addEventListener("animationiteration", resetPosition);
   }
 
   function closeAllAccordionItems(exceptIndex = -1) {
@@ -544,55 +589,67 @@ const lineage = lineageDataNested; // O lineageDataNested si el acordeón lo usa
       if (index === exceptIndex) return;
       const content = button.parentElement?.nextElementSibling as HTMLElement;
       if (content) {
-        button.classList.remove('active');
-        button.setAttribute('aria-expanded', 'false');
-        content.style.maxHeight = '';
-        content.classList.add('hidden');
+        button.classList.remove("active");
+        button.setAttribute("aria-expanded", "false");
+        content.style.maxHeight = "";
+        content.classList.add("hidden");
       }
       // Actualizar estado de imagen de galería si está conectada
-      const galleryButton = document.querySelector(`.gallery-image-wrapper[data-accordion-target='${index}']`);
+      const galleryButton = document.querySelector(
+        `.gallery-image-wrapper[data-accordion-target='${index}']`,
+      );
       if (galleryButton) {
-          galleryButton.classList.remove('active');
+        galleryButton.classList.remove("active");
       }
     });
   }
 
   accordionButtons.forEach((button, index) => {
-    button.addEventListener('click', () => {
+    button.addEventListener("click", () => {
       const content = button.parentElement?.nextElementSibling as HTMLElement;
       if (!content) return;
-      
-      const isCurrentlyActive = button.classList.contains('active');
+
+      const isCurrentlyActive = button.classList.contains("active");
 
       closeAllAccordionItems(isCurrentlyActive ? -1 : index);
 
       if (!isCurrentlyActive) {
-        button.classList.add('active');
-        button.setAttribute('aria-expanded', 'true');
-        content.classList.remove('hidden');
+        button.classList.add("active");
+        button.setAttribute("aria-expanded", "true");
+        content.classList.remove("hidden");
         content.style.maxHeight = content.scrollHeight + "px";
         // Activar imagen de galería correspondiente
-        const galleryButton = document.querySelector(`.gallery-image-wrapper[data-accordion-target='${index}']`);
+        const galleryButton = document.querySelector(
+          `.gallery-image-wrapper[data-accordion-target='${index}']`,
+        );
         if (galleryButton) {
-          galleryButton.classList.add('active');
+          galleryButton.classList.add("active");
         }
       }
     });
   });
 
-  galleryImageWrappers.forEach(wrapper => {
-      wrapper.addEventListener('click', () => {
-          const targetIndex = parseInt((wrapper as HTMLElement).dataset.accordionTarget || '0');
-          const targetAccordionButton = document.querySelector(`.accordion-button[data-accordion-index='${targetIndex}']`) as HTMLElement;
-          if (targetAccordionButton) {
-              const isCurrentlyActive = targetAccordionButton.classList.contains('active');
-              
-              if (!isCurrentlyActive) {
-                  targetAccordionButton.click();
-              } else {
-                  targetAccordionButton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-              }
-          }
-      });
+  galleryImageWrappers.forEach((wrapper) => {
+    wrapper.addEventListener("click", () => {
+      const targetIndex = parseInt(
+        (wrapper as HTMLElement).dataset.accordionTarget || "0",
+      );
+      const targetAccordionButton = document.querySelector(
+        `.accordion-button[data-accordion-index='${targetIndex}']`,
+      ) as HTMLElement;
+      if (targetAccordionButton) {
+        const isCurrentlyActive =
+          targetAccordionButton.classList.contains("active");
+
+        if (!isCurrentlyActive) {
+          targetAccordionButton.click();
+        } else {
+          targetAccordionButton.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        }
+      }
+    });
   });
 </script>

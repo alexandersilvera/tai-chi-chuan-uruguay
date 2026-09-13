@@ -2,65 +2,88 @@
 // Asegura que esta página se renderice en el servidor para evitar warnings de headers
 export const prerender = false;
 
-import Layout from '@/layouts/Layout.astro';
-import { Image } from 'astro:assets';
-import HorizontalGalleryWrapper from '@/components/HorizontalGalleryWrapper.astro';
-import YoutubeVideo from '@/components/YoutubeVideo.astro';
-import LatestBlogPost from '@/components/LatestBlogPost.astro';
-
+import Layout from "@/layouts/Layout.astro";
+import { Image } from "astro:assets";
+import HorizontalGalleryWrapper from "@/components/HorizontalGalleryWrapper.astro";
+import YoutubeVideo from "@/components/YoutubeVideo.astro";
+import LatestBlogPost from "@/components/LatestBlogPost.astro";
 ---
 
-<Layout 
-	title="Bienvenidos a Tai Ji Quan Uruguay"
-	description="Escuela de Taiji Quan Sun en Uruguay. Aprende el auténtico arte marcial chino con maestros experimentados en un ambiente armonioso y disciplinado."
-	image="/images/social/whatsapp-share.png"
+<Layout
+  title="Bienvenidos a Tai Ji Quan Uruguay"
+  description="Escuela de Taiji Quan Sun en Uruguay. Aprende el auténtico arte marcial chino con maestros experimentados en un ambiente armonioso y disciplinado."
+  image="/images/social/whatsapp-share.png"
 >
-	<LatestBlogPost />
-	
-	<main>
-		
-		  <!-- About Section -->
-		  <section class="py-16 bg-gray-600">
-			<div class="container mx-auto px-4">
-			  <div class="flex flex-col md:flex-row items-center">
-				<div class="md:w-1/2 mb-8 md:mb-0">
-				  <Image
-					src="/logo.jpeg"
-					alt="Logo Tai Ji Quan"
-					width={400}
-					height={400}
-					class="rounded-full shadow-lg mx-auto"
-				  />
-				</div>
-				<div class="md:w-1/2 md:pl-12">
-				  <h2 class="text-3xl font-bold text-green-600 mb-4">Nuestra Filosofía</h2>
-				  <p class="text-white mb-6">
-					En nuestra escuela transmitimos el Taiji Quan basado en la tradición de la familia Sun, promoviendo el equilibrio entre mente, cuerpo y espíritu. A través de una formación auténtica y profunda, buscamos inspirar a nuestros estudiantes a alcanzar su máximo potencial físico y personal, transmitiendo los principios del Taiji con respeto, disciplina y armonía. Queremos formar una comunidad unida, comprometida con el bienestar integral y la preservación del legado marcial de Sun Lutang, llevando el Taiji a cada rincón del Uruguay.
-				  </p>
-				  <a href="/filosofia" class="text-green-600 font-semibold hover:text-green-700 transition duration-300">
-					Descubre más sobre nuestra filosofía →
-				  </a>
-				</div>
-			  </div>
-			</div>
-		  </section>
-		
-		<!-- Gallery Section -->
-		<HorizontalGalleryWrapper />
-		
-		<!-- YouTube Video Section -->
-		<YoutubeVideo />
-		
-		<!-- Call to Action -->
-		<section class="bg-gray-600 py-16 mt-7">
-		  <div class="container mx-auto px-4 text-center">
-			<h2 class="text-3xl font-bold text-green-400 mb-4">¿Listo para Comenzar?</h2>
-			<p class="text-xl text-green-400 mb-8">Únete a nuestra comunidad y comienza tu viaje en el auténtico Sun Taiji Quan</p>
-			<a href="/clases" class="bg-green-500 text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-green-600 transition duration-300">
-			  Ver Nuestras Clases
-			</a>
-		  </div>
-		</section>
-	</main>
+  <LatestBlogPost />
+
+  <main>
+    <h1 class="sr-only">
+      Escuela Sun Taiji Quan Uruguay: el arte marcial tradicional chino en
+      Montevideo
+    </h1>
+    <!-- About Section -->
+    <section class="py-16 bg-gray-600">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center">
+          <div class="md:w-1/2 mb-8 md:mb-0">
+            <Image
+              src="/logo.jpeg"
+              alt="Logo de la Escuela Sun Taiji Quan Uruguay"
+              width={400}
+              height={400}
+              class="rounded-full shadow-lg mx-auto"
+            />
+          </div>
+          <div class="md:w-1/2 md:pl-12">
+            <h2 class="text-3xl font-bold text-green-600 mb-4">
+              Nuestra Filosofía
+            </h2>
+            <p class="text-white mb-6">
+              En nuestra escuela transmitimos el Taiji Quan basado en la
+              tradición de la familia Sun, promoviendo el equilibrio entre
+              mente, cuerpo y espíritu. A través de una formación auténtica y
+              profunda, buscamos inspirar a nuestros estudiantes a alcanzar su
+              máximo potencial físico y personal, transmitiendo los principios
+              del Taiji con respeto, disciplina y armonía. Queremos formar una
+              comunidad unida, comprometida con el bienestar integral y la
+              preservación del legado marcial de Sun Lutang, llevando el Taiji a
+              cada rincón del Uruguay.
+            </p>
+            <a
+              href="/filosofia"
+              class="text-green-600 font-semibold hover:text-green-700 transition duration-300"
+            >
+              Descubre más sobre nuestra filosofía →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <HorizontalGalleryWrapper />
+
+    <!-- YouTube Video Section -->
+    <YoutubeVideo />
+
+    <!-- Call to Action -->
+    <section class="bg-gray-600 py-16 mt-7">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold text-green-400 mb-4">
+          ¿Listo para Comenzar?
+        </h2>
+        <p class="text-xl text-green-400 mb-8">
+          Únete a nuestra comunidad y comienza tu viaje en el auténtico Sun
+          Taiji Quan
+        </p>
+        <a
+          href="/clases"
+          class="bg-green-500 text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-green-600 transition duration-300"
+        >
+          Ver Nuestras Clases
+        </a>
+      </div>
+    </section>
+  </main>
   <!-- Hero Section -->
 </Layout>

@@ -1,9 +1,12 @@
 ---
-import { Image } from 'astro:assets';
-import Layout from '@/layouts/Layout.astro';
+import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
 ---
 
-<Layout title="王德龙 (Wáng Dé Lóng)">
+<Layout
+  title="王德龙 (Wáng Dé Lóng)"
+  description="Wang Delong: maestro de la 5ª generación de la familia Sun, referente actual del linaje directo del Sun Tai Ji Quan."
+>
   <div class="max-w-4xl mx-auto px-4 py-8">
     <!-- Encabezado -->
     <header class="text-center mb-8">
@@ -23,86 +26,116 @@ import Layout from '@/layouts/Layout.astro';
         >
           <path
             d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"
-            fill="currentColor"
-          ></path>
+            fill="currentColor"></path>
         </svg>
         Volver al Linaje
       </a>
     </div>
 
     <div class="flex justify-center mb-8">
-      <Image 
-        src="/images/foto_linaje_1.jpg" 
-        alt="Wang Delong" 
+      <Image
+        src="/images/foto_linaje_1.jpg"
+        alt="Retrato del maestro Wang Delong, 5ª generación del linaje Sun Tai Ji Quan"
         width={200}
         height={200}
         class="rounded-full w-40 h-40 object-cover shadow-lg border-2 border-white"
       />
     </div>
-    </div>
-    <!-- Sección: Biografía y Formación -->
-    <section class="mb-8">
-      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Biografía y Formación</h2>
-      <p class="text-gray-200 leading-relaxed">
-        El Maestro Wang Delong, nacido el 14 de octubre de 1980 en el condado de Dingxing, China, es hijo del Gran Maestro 王振玉 (Wáng Zhènyù). Es un reconocido discípulo de Sun Yukuí, representante de la 5ª generación de la familia Sun en las artes marciales de Sun Lutang.
-      </p>
-      <p class="text-gray-200 leading-relaxed mt-2">
-        Desde joven, Wang Delong fue atraído por la profunda filosofía y las técnicas marciales que caracterizan a la familia Sun, y decidió seguir los pasos de su padre Wáng Zhènyù y su Maestro Sun Yukuí, ambos representantes de la 4ª generación de la familia Sun.
-      </p>
-      <p class="text-gray-200 leading-relaxed mt-2">
-        Se formó en los estilos Taiji Quan, Xing Yi Quan y Bagua Zhang, bajo la dirección directa de Sun Yukuí, quien lo acogió como discípulo en su escuela, transmitiéndole los conocimientos y secretos del arte.
-      </p>
-    </section>
-
-    <!-- Sección: Carrera y Logros -->
-    <section class="mb-8">
-      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Carrera y Logros</h2>
-      <p class="text-gray-200 leading-relaxed">
-        A lo largo de los años, el Maestro Wang Delong ha ganado reconocimiento por su habilidad excepcional y su capacidad para enseñar a nuevos discípulos. Su enfoque en la práctica de Sun Taiji y otros estilos de las artes marciales internas ha sido un modelo de dedicación y perseverancia.
-      </p>
-      <p class="text-gray-200 leading-relaxed mt-2">
-        Ha representado a la familia Sun en varios torneos y eventos de artes marciales, obteniendo numerosos títulos y honores. Además, ha sido invitado a enseñar en diversas partes de China y es el maestro del primer occidental en ser Representante de la Asociación de Artes Marciales de Sun Lutang de DingXing fuera de China, difundiendo el legado de Sun Lutang y su estilo de Taiji Quan.
-      </p>
-    </section>
-
-    <!-- Sección: Filosofía y Enseñanza -->
-    <section class="mb-8">
-      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Filosofía y Enseñanza</h2>
-      <p class="text-gray-200 leading-relaxed">
-        Además de ser un experto en la técnica, el Maestro Wang Delong también se ha destacado por su profunda comprensión de la filosofía subyacente al arte marcial, que aboga por la armonía entre cuerpo y mente. Su enfoque pedagógico combina la tradición con la innovación, asegurando que las enseñanzas de sus antecesores se mantengan vivas y relevantes para las nuevas generaciones.
-      </p>
-    </section>
-
-    <!-- Sección: Legado y Contribuciones -->
-    <section class="mb-8">
-      <h2 class="text-2xl font-semibold text-gray-400 mb-4">Legado y Contribuciones</h2>
-      <p class="text-gray-200 leading-relaxed">
-        Como maestro de la 5ª generación de la familia Sun, el Maestro Wang Delong continúa su labor en la enseñanza y la preservación de la tradición marcial, guiando a sus discípulos en el camino de la disciplina, el respeto y la excelencia marcial. A lo largo de su carrera, ha mostrado un profundo compromiso con la autenticidad del arte y la transmisión fiel de las enseñanzas de sus antecesores.
-      </p>
-    </section>
   </div>
+  <!-- Sección: Biografía y Formación -->
+  <section class="mb-8">
+    <h2 class="text-2xl font-semibold text-gray-400 mb-4">
+      Biografía y Formación
+    </h2>
+    <p class="text-gray-200 leading-relaxed">
+      El Maestro Wang Delong, nacido el 14 de octubre de 1980 en el condado de
+      Dingxing, China, es hijo del Gran Maestro 王振玉 (Wáng Zhènyù). Es un
+      reconocido discípulo de Sun Yukuí, representante de la 5ª generación de la
+      familia Sun en las artes marciales de Sun Lutang.
+    </p>
+    <p class="text-gray-200 leading-relaxed mt-2">
+      Desde joven, Wang Delong fue atraído por la profunda filosofía y las
+      técnicas marciales que caracterizan a la familia Sun, y decidió seguir los
+      pasos de su padre Wáng Zhènyù y su Maestro Sun Yukuí, ambos representantes
+      de la 4ª generación de la familia Sun.
+    </p>
+    <p class="text-gray-200 leading-relaxed mt-2">
+      Se formó en los estilos Taiji Quan, Xing Yi Quan y Bagua Zhang, bajo la
+      dirección directa de Sun Yukuí, quien lo acogió como discípulo en su
+      escuela, transmitiéndole los conocimientos y secretos del arte.
+    </p>
+  </section>
 
-  <style>
-    /* Estilos generales */
-    h2 {
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 0.5rem;
-    }
-    p {
-      line-height: 1.6;
-    }
-    ul {
-      margin-left: 1.5rem;
-    }
-    /* Estilo para el botón de regresar */
-    a {
-      font-size: 1rem;
-      font-weight: 500;
-      text-decoration: none;
-    }
-    a:hover svg {
-      transform: translateX(-4px);
-      transition: transform 0.3s ease-in-out;
-    }
-  </style>
+  <!-- Sección: Carrera y Logros -->
+  <section class="mb-8">
+    <h2 class="text-2xl font-semibold text-gray-400 mb-4">Carrera y Logros</h2>
+    <p class="text-gray-200 leading-relaxed">
+      A lo largo de los años, el Maestro Wang Delong ha ganado reconocimiento
+      por su habilidad excepcional y su capacidad para enseñar a nuevos
+      discípulos. Su enfoque en la práctica de Sun Taiji y otros estilos de las
+      artes marciales internas ha sido un modelo de dedicación y perseverancia.
+    </p>
+    <p class="text-gray-200 leading-relaxed mt-2">
+      Ha representado a la familia Sun en varios torneos y eventos de artes
+      marciales, obteniendo numerosos títulos y honores. Además, ha sido
+      invitado a enseñar en diversas partes de China y es el maestro del primer
+      occidental en ser Representante de la Asociación de Artes Marciales de Sun
+      Lutang de DingXing fuera de China, difundiendo el legado de Sun Lutang y
+      su estilo de Taiji Quan.
+    </p>
+  </section>
+
+  <!-- Sección: Filosofía y Enseñanza -->
+  <section class="mb-8">
+    <h2 class="text-2xl font-semibold text-gray-400 mb-4">
+      Filosofía y Enseñanza
+    </h2>
+    <p class="text-gray-200 leading-relaxed">
+      Además de ser un experto en la técnica, el Maestro Wang Delong también se
+      ha destacado por su profunda comprensión de la filosofía subyacente al
+      arte marcial, que aboga por la armonía entre cuerpo y mente. Su enfoque
+      pedagógico combina la tradición con la innovación, asegurando que las
+      enseñanzas de sus antecesores se mantengan vivas y relevantes para las
+      nuevas generaciones.
+    </p>
+  </section>
+
+  <!-- Sección: Legado y Contribuciones -->
+  <section class="mb-8">
+    <h2 class="text-2xl font-semibold text-gray-400 mb-4">
+      Legado y Contribuciones
+    </h2>
+    <p class="text-gray-200 leading-relaxed">
+      Como maestro de la 5ª generación de la familia Sun, el Maestro Wang Delong
+      continúa su labor en la enseñanza y la preservación de la tradición
+      marcial, guiando a sus discípulos en el camino de la disciplina, el
+      respeto y la excelencia marcial. A lo largo de su carrera, ha mostrado un
+      profundo compromiso con la autenticidad del arte y la transmisión fiel de
+      las enseñanzas de sus antecesores.
+    </p>
+  </section>
 </Layout>
+
+<style>
+  /* Estilos generales */
+  h2 {
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+  }
+  p {
+    line-height: 1.6;
+  }
+  ul {
+    margin-left: 1.5rem;
+  }
+  /* Estilo para el botón de regresar */
+  a {
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  a:hover svg {
+    transform: translateX(-4px);
+    transition: transform 0.3s ease-in-out;
+  }
+</style>
