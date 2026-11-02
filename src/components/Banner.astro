@@ -8,23 +8,28 @@
     position: relative;
     overflow: hidden;
     width: 100%;
-    max-width: auto; /* Ajusta según tus necesidades */
     margin: 0 auto;
   }
 
   .carousel-track {
     display: flex;
+    width: 100%;
     transition: transform 0.5s ease-in-out;
   }
 
   .carousel-slide {
+    flex: 0 0 100%;
     min-width: 100%;
     box-sizing: border-box;
   }
 
   .carousel-slide img {
     width: 100%;
+    min-height: 200px;
+    max-height: 600px;
     height: auto;
+    object-fit: cover;
+    object-position: center;
     display: block;
   }
 
@@ -36,9 +41,15 @@
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
-    padding: 10px;
+    padding: 10px 14px;
     cursor: pointer;
     z-index: 10;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+
+  .carousel-button:hover {
+    background-color: rgba(0, 0, 0, 0.75);
   }
 
   .carousel-button.prev {
@@ -90,8 +101,8 @@
   </div>
 
   <!-- Botones de navegación -->
-  <button class="carousel-button prev" id="prevButton">&#10094;</button>
-  <button class="carousel-button next" id="nextButton">&#10095;</button>
+  <button class="carousel-button prev" id="prevButton" aria-label="Imagen anterior">&#10094;</button>
+  <button class="carousel-button next" id="nextButton" aria-label="Siguiente imagen">&#10095;</button>
 </div>
 
 <script>
@@ -101,67 +112,67 @@
   if (track) {
     const slides = Array.from(track.children);
     let currentIndex = 1; // Comenzamos en la primera imagen original (después del clon inicial)
+    let isTransitioning = false;
+    let autoPlayInterval: ReturnType<typeof setInterval>;
 
-    function updateCarousel() {
-      // Usamos porcentajes en lugar de píxeles para que sea totalmente responsivo y no dependa de la carga de imágenes
-      track.style.transform = `translateX(${-currentIndex * (100 / slides.length)}%)`;
-    }
-
-    // Configuración inicial: posicionar el carrusel sin transición
-    function initializeCarousel() {
-      track.style.transition = "none"; // Desactivar transición temporalmente
-      track.style.transform = `translateX(${-currentIndex * (100 / slides.length)}%)`; // Posicionar en la primera imagen
-      setTimeout(() => {
-        track.style.transition = "transform 0.5s ease-in-out"; // Reactivar transición
-      }, 50); // Pequeño retraso para asegurar que el navegador procese el cambio
+    function updateCarousel(withTransition = true) {
+      if (!track) return;
+      track.style.transition = withTransition
+        ? "transform 0.5s ease-in-out"
+        : "none";
+      // Cada slide ocupa el 100% del contenedor (.carousel-track), por lo que desplazamos -currentIndex * 100%
+      track.style.transform = `translateX(${-currentIndex * 100}%)`;
     }
 
     function moveToNextSlide() {
+      if (isTransitioning) return;
+      isTransitioning = true;
       currentIndex++;
-      updateCarousel();
-
-      // Si llegamos al clon de la primera imagen, reiniciamos sin transición
-      if (currentIndex === slides.length - 1) {
-        setTimeout(() => {
-          track.style.transition = "none";
-          currentIndex = 1;
-          updateCarousel();
-          setTimeout(() => {
-            track.style.transition = "transform 0.5s ease-in-out";
-          }, 50); // Restaurar la transición después del ajuste
-        }, 500); // Esperar a que termine la transición actual
-      }
+      updateCarousel(true);
     }
 
     function moveToPrevSlide() {
+      if (isTransitioning) return;
+      isTransitioning = true;
       currentIndex--;
-      updateCarousel();
-
-      // Si llegamos al clon de la última imagen, reiniciamos sin transición
-      if (currentIndex === 0) {
-        setTimeout(() => {
-          track.style.transition = "none";
-          currentIndex = slides.length - 2;
-          updateCarousel();
-          setTimeout(() => {
-            track.style.transition = "transform 0.5s ease-in-out";
-          }, 50); // Restaurar la transición después del ajuste
-        }, 500); // Esperar a que termine la transición actual
-      }
+      updateCarousel(true);
     }
 
-    // Inicializar el carrusel
-    initializeCarousel();
+    // Al finalizar la transición, si estamos en un clon saltamos sin transición a la imagen original correspondiente
+    track.addEventListener("transitionend", () => {
+      isTransitioning = false;
+      if (currentIndex >= slides.length - 1) {
+        currentIndex = 1;
+        updateCarousel(false);
+      } else if (currentIndex <= 0) {
+        currentIndex = slides.length - 2;
+        updateCarousel(false);
+      }
+    });
+
+    function resetAutoPlay() {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = setInterval(moveToNextSlide, 5000);
+    }
+
+    // Configuración inicial: posicionar el carrusel sin transición en la primera imagen
+    updateCarousel(false);
 
     // Agregar eventos a los botones
     const prevButton = document.getElementById("prevButton");
     const nextButton = document.getElementById("nextButton");
     if (prevButton && nextButton) {
-      nextButton.addEventListener("click", moveToNextSlide);
-      prevButton.addEventListener("click", moveToPrevSlide);
+      nextButton.addEventListener("click", () => {
+        moveToNextSlide();
+        resetAutoPlay();
+      });
+      prevButton.addEventListener("click", () => {
+        moveToPrevSlide();
+        resetAutoPlay();
+      });
     }
 
     // Movimiento automático infinito
-    setInterval(moveToNextSlide, 5000); // Cambia cada 5 segundos
+    resetAutoPlay();
   }
 </script>
